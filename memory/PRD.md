@@ -87,6 +87,34 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - Backend: `/api/sanri/ask` endpoint
 - Mock yapı kaldırıldı, gerçek AI aktif
 
+### Büyük Güncelleme (19 Ocak 2026)
+
+**1. Navbar Okunabilirlik İyileştirmesi:**
+- Font boyutu artırıldı (text-base → text-lg)
+- Font weight 500-600
+- Letter spacing artırıldı
+- Text shadow eklendi
+- Aktif link: altın tonlu alt çizgi vurgusu
+- Glass navbar efekti güçlendirildi
+
+**2. Ritüel Sayfası Yeni Modüller:**
+- "7 Kapı Ritüeline Başla" ana butonu
+- "Bugünün Ritüeli" kartı (günlük mikro ritüel)
+- 3 modül: Mikro (1-3 dk), Derin (7-12 dk), Niyet & Kapanış (1 dk)
+- Tab navigation: "Hızlı Ritüeller" ve "112. Kitap"
+- Adım adım ritüel deneyimi (nefes animasyonu + zamanlayıcı)
+
+**3. 112. Kitap Ritüelleri:**
+- 8 ritüel entegre edildi (Kendini Yaratan Tanrıça)
+- Her ritüel: adımlar, süre, niyet
+- Güvenlik uyarısı eklendi
+
+**4. SANRI'ya Sor Genişletmeleri:**
+- 5 okuma modu: Rüya, Haber, Tarih/Sayı, Sembol, İçsel Ayna
+- Görsel yükleme özelliği
+- "Görsel Prompt" sekmesi (AI prompt üretici)
+- Mod bazlı context ekleme
+
 ## Gelecek Görevler (Backlog)
 - [ ] Görsel yükleme ve sembolik yorum özelliği
 - [ ] Kullanıcı deneyim kaydı (localStorage veya MongoDB)
