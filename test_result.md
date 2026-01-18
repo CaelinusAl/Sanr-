@@ -179,9 +179,9 @@ frontend:
 
   - task: "Reading layers page"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/pages/ReadingLayersPage.jsx"
-    stuck_count: 1
+    stuck_count: 0
     priority: "medium"
     needs_retesting: false
     status_history:
@@ -191,6 +191,9 @@ frontend:
         - working: false
         - agent: "testing"
         - comment: "❌ CANNOT TEST: Page is inaccessible due to routing issues. The reading layers functionality cannot be tested because navigation to /okuma-katmanlari fails."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTED: Reading layers page fully functional! Page accessible at /okuma-katmanlari. All 5 layers present (Literal Katman, Sembolik Katman, Duygusal Katman, Yansıtıcı Katman). Expansion functionality working - clicking layers increases page height and shows content."
 
   - task: "About page content"
     implemented: true
