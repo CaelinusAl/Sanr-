@@ -1,19 +1,31 @@
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 
-// Pages
-import HomePage from "@/pages/HomePage";
-import CitiesPage from "@/pages/CitiesPage";
-import CityDetailPage from "@/pages/CityDetailPage";
-import ReadingLayersPage from "@/pages/ReadingLayersPage";
-import SanriyaSorPage from "@/pages/SanriyaSorPage";
-import AboutPage from "@/pages/AboutPage";
+// Lazy load pages for better performance
+const HomePage = lazy(() => import("@/pages/HomePage"));
+const CitiesPage = lazy(() => import("@/pages/CitiesPage"));
+const CityDetailPage = lazy(() => import("@/pages/CityDetailPage"));
+const ReadingLayersPage = lazy(() => import("@/pages/ReadingLayersPage"));
+const SanriyaSorPage = lazy(() => import("@/pages/SanriyaSorPage"));
+const AboutPage = lazy(() => import("@/pages/AboutPage"));
 
 // Components
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+
+// Loading component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="text-center">
+      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 animate-pulse">
+        <span className="font-serif text-xl text-primary">∞</span>
+      </div>
+      <p className="text-muted-foreground text-sm">Yükleniyor...</p>
+    </div>
+  </div>
+);
 
 function App() {
   const [isDark, setIsDark] = useState(false);
@@ -40,14 +52,16 @@ function App() {
       <BrowserRouter>
         <Navbar isDark={isDark} toggleTheme={toggleTheme} />
         <main>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/sehirler" element={<CitiesPage />} />
-            <Route path="/sehir/:cityId" element={<CityDetailPage />} />
-            <Route path="/okuma-katmanlari" element={<ReadingLayersPage />} />
-            <Route path="/sanriya-sor" element={<SanriyaSorPage />} />
-            <Route path="/hakkinda" element={<AboutPage />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/sehirler" element={<CitiesPage />} />
+              <Route path="/sehir/:cityId" element={<CityDetailPage />} />
+              <Route path="/okuma-katmanlari" element={<ReadingLayersPage />} />
+              <Route path="/sanriya-sor" element={<SanriyaSorPage />} />
+              <Route path="/hakkinda" element={<AboutPage />} />
+            </Routes>
+          </Suspense>
         </main>
         <Footer />
         <Toaster position="bottom-right" />
