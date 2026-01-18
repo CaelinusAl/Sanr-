@@ -10,6 +10,7 @@ const navLinks = [
   { href: "/sehirler", label: "Şehirler" },
   { href: "/bilinc", label: "Bilinç" },
   { href: "/frekans", label: "Frekans" },
+  { href: "/rituel", label: "Ritüel" },
   { href: "/sanriya-sor", label: "SANRI'ya Sor" },
   { href: "/hakkinda", label: "Hakkında" },
 ];
