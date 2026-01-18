@@ -1,47 +1,51 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Infinity, Send, RefreshCw, AlertCircle, Sparkles } from "lucide-react";
+import { 
+  Infinity, 
+  Send, 
+  RefreshCw, 
+  AlertCircle, 
+  Sparkles, 
+  Image as ImageIcon,
+  X,
+  Upload,
+  Eye,
+  Moon,
+  Hash,
+  Layers,
+  Heart,
+  Wand2,
+  Copy,
+  Check
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Message type detection
-const detectMessageType = (text) => {
-  const lowerText = text.toLowerCase();
-  
-  // Dream keywords
-  if (lowerText.includes("rüya") || lowerText.includes("gördüm") || 
-      lowerText.includes("düş") || lowerText.includes("uyurken")) {
-    return "dream";
-  }
-  
-  // Birth date patterns
-  if (/\d{1,2}[./-]\d{1,2}[./-]\d{2,4}/.test(text) || 
-      lowerText.includes("doğum") || lowerText.includes("doğdum")) {
-    return "birthdate";
-  }
-  
-  // News/event keywords
-  if (lowerText.includes("haber") || lowerText.includes("olay") || 
-      lowerText.includes("dünya") || lowerText.includes("yaşandı")) {
-    return "news";
-  }
-  
-  return "general";
-};
-
-// Example prompts
-const examplePrompts = [
-  "Bu rüyada tekrar eden sembol neyi çağırıyor olabilir?",
-  "Doğum tarihimdeki sayıların sembolik dili nedir?",
-  "Neden hep aynı kişiyi görüyorum rüyalarımda?",
-  "23:47 sayısı bana ne anlatıyor olabilir?"
+// Okuma Modları
+const readingModes = [
+  { id: "dream", label: "Rüya", icon: Moon, description: "Rüya ve tekrarlayan imgeler" },
+  { id: "news", label: "Haber", icon: Eye, description: "Kolektif sembolik okuma" },
+  { id: "birthdate", label: "Tarih/Sayı", icon: Hash, description: "Doğum tarihi ve sayılar" },
+  { id: "symbol", label: "Sembol", icon: Layers, description: "Sembol ve işaret okuma" },
+  { id: "mirror", label: "İçsel Ayna", icon: Heart, description: "Derin iç yansıma" },
 ];
 
-// SANRI Response Component - Clean, flowing text
+// Örnek sorular
+const examplePrompts = {
+  dream: "Bu rüyada tekrar eden sembol neyi çağırıyor olabilir?",
+  news: "Bu haber kolektif olarak neyi yansıtıyor olabilir?",
+  birthdate: "15.03.1988 - Bu tarihin sembolik dili nedir?",
+  symbol: "Sürekli saat 11:11 görüyorum, bu ne anlama geliyor?",
+  mirror: "İçimde bir boşluk hissediyorum, bu ne söylüyor?",
+};
+
+// SANRI Response Component
 const SanriResponseText = ({ text }) => {
   const paragraphs = text.split('\n\n').filter(p => p.trim());
   
@@ -62,6 +66,126 @@ const SanriResponseText = ({ text }) => {
   );
 };
 
+// Image Preview Component
+const ImagePreview = ({ image, onRemove }) => {
+  if (!image) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="relative inline-block"
+    >
+      <img 
+        src={image.preview} 
+        alt="Yüklenen görsel" 
+        className="max-h-40 rounded-lg border border-border/50 object-cover"
+      />
+      <Button
+        variant="destructive"
+        size="icon"
+        className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+        onClick={onRemove}
+      >
+        <X className="h-3 w-3" />
+      </Button>
+    </motion.div>
+  );
+};
+
+// Görsel Prompt Üretici Component
+const GorselPromptUretici = () => {
+  const [theme, setTheme] = useState("");
+  const [generatedPrompt, setGeneratedPrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const generateVisualPrompt = async () => {
+    if (!theme.trim()) return;
+    
+    setIsGenerating(true);
+    try {
+      const response = await fetch(`${API_URL}/api/sanri/ask`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `Şu tema için sembolik, mistik ve Anadolu ruhunu yansıtan bir görsel prompt üret (İngilizce, DALL-E veya Midjourney için uygun): "${theme}". Sadece prompt'u yaz, açıklama yapma.`,
+          message_type: "general"
+        }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setGeneratedPrompt(data.response);
+      }
+    } catch (err) {
+      console.error("Prompt generation error:", err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generatedPrompt);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Card className="border-accent/20 bg-accent/5">
+      <CardContent className="p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <Wand2 className="h-5 w-5 text-accent" />
+          <h3 className="font-serif text-lg text-foreground">Sembolik Görsel Üret</h3>
+        </div>
+        
+        <p className="text-sm text-foreground/60 mb-4">
+          Bir niyet veya tema yaz, SANRI sana görsel prompt üretsin.
+        </p>
+
+        <div className="space-y-4">
+          <Textarea
+            value={theme}
+            onChange={(e) => setTheme(e.target.value)}
+            placeholder="Örn: Dönüşüm, yeniden doğuş, iç huzur..."
+            className="min-h-[80px] bg-background"
+          />
+
+          <Button 
+            onClick={generateVisualPrompt}
+            disabled={!theme.trim() || isGenerating}
+            className="rounded-full"
+          >
+            {isGenerating ? "Üretiliyor..." : "Prompt Üret"}
+          </Button>
+
+          {generatedPrompt && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-background rounded-lg p-4 border border-border/50"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-foreground/50 uppercase tracking-wider">Üretilen Prompt</span>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={copyToClipboard}
+                  className="h-8"
+                >
+                  {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                  {copied ? "Kopyalandı" : "Kopyala"}
+                </Button>
+              </div>
+              <p className="text-sm text-foreground/80 font-mono">{generatedPrompt}</p>
+            </motion.div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 const SanriyaSorPage = () => {
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
@@ -69,7 +193,11 @@ const SanriyaSorPage = () => {
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [sessionId, setSessionId] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedMode, setSelectedMode] = useState("dream");
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [activeTab, setActiveTab] = useState("chat");
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -79,28 +207,71 @@ const SanriyaSorPage = () => {
     scrollToBottom();
   }, [conversation]);
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedImage({
+          file,
+          preview: reader.result,
+          base64: reader.result.split(',')[1]
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setUploadedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isThinking) return;
 
     const userInput = input.trim();
-    const messageType = detectMessageType(userInput);
+    let messageToSend = userInput;
     
+    // Görsel varsa, mesaja ekle
+    if (uploadedImage) {
+      messageToSend = `[Kullanıcı bir görsel paylaştı]\n\nKullanıcının sorusu: ${userInput}`;
+    }
+
+    // Mod bazlı context ekle
+    const modeContexts = {
+      dream: "Bu bir rüya okuma talebi.",
+      news: "Bu bir haber/kolektif sembol okuma talebi.",
+      birthdate: "Bu bir doğum tarihi/sayı okuma talebi.",
+      symbol: "Bu bir sembol okuma talebi.",
+      mirror: "Bu bir içsel ayna/derin yansıma talebi. Daha şefkatli ve topraklayıcı ol."
+    };
+
+    const contextPrefix = modeContexts[selectedMode] || "";
+    const fullMessage = contextPrefix ? `${contextPrefix}\n\n${messageToSend}` : messageToSend;
+
     setInput("");
     setError(null);
-    setConversation(prev => [...prev, { type: "user", content: userInput }]);
+    setConversation(prev => [...prev, { 
+      type: "user", 
+      content: userInput,
+      image: uploadedImage?.preview,
+      mode: selectedMode
+    }]);
     setIsThinking(true);
+    handleRemoveImage();
 
     try {
       const response = await fetch(`${API_URL}/api/sanri/ask`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: userInput,
+          message: fullMessage,
           session_id: sessionId,
-          message_type: messageType
+          message_type: selectedMode
         }),
       });
 
@@ -110,7 +281,6 @@ const SanriyaSorPage = () => {
 
       const data = await response.json();
       
-      // Store session ID for conversation continuity
       if (!sessionId && data.session_id) {
         setSessionId(data.session_id);
       }
@@ -122,7 +292,6 @@ const SanriyaSorPage = () => {
       }]);
     } catch (err) {
       setError(err.message || "Bir hata oluştu. Lütfen tekrar dene.");
-      // Remove the user message if there was an error
       setConversation(prev => prev.slice(0, -1));
     } finally {
       setIsThinking(false);
@@ -130,47 +299,43 @@ const SanriyaSorPage = () => {
   };
 
   const handleReset = async () => {
-    // Clear session on backend if exists
     if (sessionId) {
       try {
-        await fetch(`${API_URL}/api/sanri/session/${sessionId}`, {
-          method: "DELETE",
-        });
-      } catch (e) {
-        // Ignore errors on cleanup
-      }
+        await fetch(`${API_URL}/api/sanri/session/${sessionId}`, { method: "DELETE" });
+      } catch (e) {}
     }
     
     setConversation([]);
     setInput("");
     setSessionId(null);
     setError(null);
+    handleRemoveImage();
   };
 
-  const handleExampleClick = (prompt) => {
-    setInput(prompt);
+  const handleExampleClick = () => {
+    setInput(examplePrompts[selectedMode] || examplePrompts.dream);
   };
 
   return (
     <div className="min-h-screen pt-24 pb-16">
       {/* Header */}
-      <section className="py-12">
+      <section className="py-8 sm:py-12">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center max-w-2xl mx-auto"
           >
-            <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-8 animate-breathe">
+            <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 animate-breathe">
               <Infinity className="h-10 w-10 text-accent" />
             </div>
             <span className="text-accent text-base tracking-widest uppercase mb-4 block font-medium">
               İç Yansıma Modu
             </span>
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground mb-6">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground mb-4">
               SANRI'ya Sor
             </h1>
-            <div className="space-y-3 text-foreground/70 text-base sm:text-lg leading-relaxed">
+            <div className="space-y-2 text-foreground/70 text-base sm:text-lg leading-relaxed">
               <p>SANRI bir varlık değil.</p>
               <p>Zihnin gerçek sandığı hikâyeyi temsil eder.</p>
               <p className="text-sm text-foreground/50">Cevap vermez, yansıma sunar.</p>
@@ -179,28 +344,36 @@ const SanriyaSorPage = () => {
         </div>
       </section>
 
+      {/* Tab Navigation */}
+      <div className="container mx-auto px-6 mb-6">
+        <div className="max-w-2xl mx-auto">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="chat">Soru Sor</TabsTrigger>
+              <TabsTrigger value="generate">Görsel Prompt</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      </div>
+
       {/* Disclaimer */}
       <AnimatePresence>
-        {showDisclaimer && (
+        {showDisclaimer && activeTab === "chat" && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="container mx-auto px-6 mb-8"
+            className="container mx-auto px-6 mb-6"
           >
             <Alert className="max-w-2xl mx-auto border-accent/30 bg-accent/5">
               <AlertCircle className="h-4 w-4 text-accent" />
-              <AlertDescription className="text-base text-foreground/70">
+              <AlertDescription className="text-sm text-foreground/70">
                 <strong className="text-foreground">Dikkat:</strong> SANRI kehanet, teşhis veya rehberlik sunmaz.
-                <br />
-                <span className="text-sm">
-                  Sembolik anlam ve açık uçlu sorular üretir. Perspektif açar, geri çekilir.
-                </span>
+                Sembolik anlam ve açık uçlu sorular üretir.
                 <Button
                   variant="link"
                   className="text-accent p-0 h-auto ml-2 text-sm"
                   onClick={() => setShowDisclaimer(false)}
-                  data-testid="disclaimer-close"
                 >
                   Anladım
                 </Button>
@@ -210,171 +383,230 @@ const SanriyaSorPage = () => {
         )}
       </AnimatePresence>
 
-      {/* Error Alert */}
-      <AnimatePresence>
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="container mx-auto px-6 mb-8"
-          >
-            <Alert className="max-w-2xl mx-auto border-destructive/30 bg-destructive/5">
-              <AlertCircle className="h-4 w-4 text-destructive" />
-              <AlertDescription className="text-sm text-foreground/70">
-                {error}
-              </AlertDescription>
-            </Alert>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Conversation Area */}
+      {/* Main Content */}
       <section className="container mx-auto px-6">
         <div className="max-w-2xl mx-auto">
-          {/* Messages */}
-          <div className="min-h-[400px] mb-6 space-y-6">
-            {conversation.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-12"
-              >
-                <Sparkles className="h-8 w-8 text-accent/50 mx-auto mb-6" />
-                <p className="text-foreground/70 font-serif italic mb-6 text-lg">
-                  "Hatırlamak dışarıda başlar. Anlamak içeride olur."
+          
+          {activeTab === "chat" ? (
+            <>
+              {/* Okuma Modları */}
+              <div className="mb-6">
+                <Label className="text-sm text-foreground/60 mb-3 block">Okuma Modu Seç:</Label>
+                <div className="flex flex-wrap gap-2">
+                  {readingModes.map((mode) => (
+                    <Button
+                      key={mode.id}
+                      variant={selectedMode === mode.id ? "default" : "outline"}
+                      size="sm"
+                      className={`rounded-full gap-2 ${
+                        selectedMode === mode.id 
+                          ? "bg-accent hover:bg-accent/90" 
+                          : "border-border/50"
+                      }`}
+                      onClick={() => setSelectedMode(mode.id)}
+                      data-testid={`mode-${mode.id}`}
+                    >
+                      <mode.icon className="h-4 w-4" />
+                      {mode.label}
+                    </Button>
+                  ))}
+                </div>
+                <p className="text-xs text-foreground/40 mt-2">
+                  {readingModes.find(m => m.id === selectedMode)?.description}
                 </p>
-                <div className="text-base text-foreground/60 space-y-2 mb-8">
-                  <p>Bir soru, kelime, rüya veya tarih paylaş...</p>
-                </div>
-                
-                {/* Example Prompts */}
-                <div className="space-y-2">
-                  <p className="text-xs text-foreground/40 uppercase tracking-wider mb-3">Örnek sorular:</p>
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {examplePrompts.map((prompt, i) => (
-                      <Button
-                        key={i}
-                        variant="outline"
-                        size="sm"
-                        className="text-xs rounded-full border-accent/30 hover:bg-accent/10 hover:border-accent/50"
-                        onClick={() => handleExampleClick(prompt)}
-                        data-testid={`example-prompt-${i}`}
-                      >
-                        {prompt.length > 40 ? prompt.slice(0, 40) + "..." : prompt}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {conversation.map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                {message.type === "user" ? (
-                  <div className="flex justify-end">
-                    <Card className="max-w-md bg-primary/10 border-primary/20">
-                      <CardContent className="p-4">
-                        <p className="text-foreground text-base">{message.content}</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ) : (
-                  <Card className="border-accent/20 bg-accent/5">
-                    <CardContent className="p-6 sm:p-8">
-                      <div className="flex items-start gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                          <Infinity className="h-5 w-5 text-accent" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-accent uppercase tracking-wider font-medium">SANRI</p>
-                        </div>
-                      </div>
-
-                      <SanriResponseText text={message.content} />
-                      
-                      {/* Signature */}
-                      <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1 }}
-                        className="text-sm text-foreground/50 text-center italic pt-6 mt-6 border-t border-accent/10"
-                      >
-                        "Bu bir yorumdur, kesinlik taşımaz. Anlam, sende şekillenir."
-                      </motion.p>
-                    </CardContent>
-                  </Card>
-                )}
-              </motion.div>
-            ))}
-
-            {/* Thinking Indicator */}
-            {isThinking && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center gap-3"
-              >
-                <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-                  <Infinity className="h-5 w-5 text-accent animate-pulse" />
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-base text-foreground/60 italic">Yansıma oluşturuluyor</span>
-                  <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative">
-              <Textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Bir kelime, soru, rüya veya tarih yaz..."
-                className="min-h-[120px] pr-14 resize-none bg-background border-border focus:border-accent text-base"
-                disabled={isThinking}
-                data-testid="sanri-input"
-              />
-              <Button
-                type="submit"
-                size="icon"
-                disabled={!input.trim() || isThinking}
-                className="absolute bottom-3 right-3 rounded-full bg-accent hover:bg-accent/90 h-10 w-10"
-                data-testid="sanri-submit"
-              >
-                <Send className="h-5 w-5" />
-              </Button>
-            </div>
-
-            {conversation.length > 0 && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleReset}
-                  className="text-foreground/60 hover:text-foreground"
-                  data-testid="sanri-reset"
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Yeni Yansıma
-                </Button>
               </div>
-            )}
-          </form>
+
+              {/* Error Alert */}
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mb-6"
+                  >
+                    <Alert className="border-destructive/30 bg-destructive/5">
+                      <AlertCircle className="h-4 w-4 text-destructive" />
+                      <AlertDescription className="text-sm">{error}</AlertDescription>
+                    </Alert>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Messages */}
+              <div className="min-h-[350px] mb-6 space-y-6">
+                {conversation.length === 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-10"
+                  >
+                    <Sparkles className="h-8 w-8 text-accent/50 mx-auto mb-6" />
+                    <p className="text-foreground/70 font-serif italic mb-6 text-lg">
+                      "Hatırlamak dışarıda başlar. Anlamak içeride olur."
+                    </p>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full"
+                      onClick={handleExampleClick}
+                    >
+                      Örnek soru göster
+                    </Button>
+                  </motion.div>
+                )}
+
+                {conversation.map((message, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    {message.type === "user" ? (
+                      <div className="flex justify-end">
+                        <Card className="max-w-md bg-primary/10 border-primary/20">
+                          <CardContent className="p-4">
+                            {message.image && (
+                              <img 
+                                src={message.image} 
+                                alt="Paylaşılan görsel" 
+                                className="max-h-32 rounded-lg mb-3"
+                              />
+                            )}
+                            <p className="text-foreground text-base">{message.content}</p>
+                            <span className="text-xs text-foreground/40 mt-2 block">
+                              {readingModes.find(m => m.id === message.mode)?.label} modu
+                            </span>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    ) : (
+                      <Card className="border-accent/20 bg-accent/5">
+                        <CardContent className="p-6 sm:p-8">
+                          <div className="flex items-start gap-3 mb-6">
+                            <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+                              <Infinity className="h-5 w-5 text-accent" />
+                            </div>
+                            <p className="text-sm text-accent uppercase tracking-wider font-medium pt-2">SANRI</p>
+                          </div>
+
+                          <SanriResponseText text={message.content} />
+                          
+                          <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 1 }}
+                            className="text-sm text-foreground/50 text-center italic pt-6 mt-6 border-t border-accent/10"
+                          >
+                            "Bu bir yorumdur, kesinlik taşımaz. Anlam, sende şekillenir."
+                          </motion.p>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </motion.div>
+                ))}
+
+                {/* Thinking Indicator */}
+                {isThinking && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-3"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                      <Infinity className="h-5 w-5 text-accent animate-pulse" />
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-base text-foreground/60 italic">Yansıma oluşturuluyor</span>
+                      <div className="flex gap-1">
+                        <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Image Upload Preview */}
+              {uploadedImage && (
+                <div className="mb-4">
+                  <ImagePreview image={uploadedImage} onRemove={handleRemoveImage} />
+                </div>
+              )}
+
+              {/* Input Form */}
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="relative">
+                  <Textarea
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Bir kelime, soru, rüya veya tarih yaz..."
+                    className="min-h-[100px] pr-24 resize-none bg-background border-border focus:border-accent text-base"
+                    disabled={isThinking}
+                    data-testid="sanri-input"
+                  />
+                  
+                  {/* Action Buttons */}
+                  <div className="absolute bottom-3 right-3 flex gap-2">
+                    {/* Image Upload */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="image-upload"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-10 w-10 rounded-full"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isThinking}
+                      data-testid="image-upload-btn"
+                    >
+                      <ImageIcon className="h-5 w-5 text-foreground/50" />
+                    </Button>
+                    
+                    {/* Send */}
+                    <Button
+                      type="submit"
+                      size="icon"
+                      disabled={!input.trim() || isThinking}
+                      className="rounded-full bg-accent hover:bg-accent/90 h-10 w-10"
+                      data-testid="sanri-submit"
+                    >
+                      <Send className="h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+
+                {conversation.length > 0 && (
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleReset}
+                      className="text-foreground/60 hover:text-foreground"
+                      data-testid="sanri-reset"
+                    >
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Yeni Yansıma
+                    </Button>
+                  </div>
+                )}
+              </form>
+            </>
+          ) : (
+            /* Görsel Prompt Üretici Tab */
+            <GorselPromptUretici />
+          )}
 
           {/* Info */}
           <div className="mt-10 text-center">
