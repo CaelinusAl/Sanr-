@@ -179,7 +179,7 @@ const KapiSecimi = ({ onSelectKapi }) => {
           Hangi Kapıyı Açmak İstiyorsun?
         </h2>
         <p className="text-sm text-muted-foreground">
-          Her kapı farklı bir eşiğe götürür
+          Her kapı farklı bir bilinç katmanına götürür
         </p>
       </div>
 
@@ -194,16 +194,23 @@ const KapiSecimi = ({ onSelectKapi }) => {
             <Card 
               className="border-border/50 bg-card/50 hover:bg-card hover:border-primary/30 transition-all duration-300 cursor-pointer group"
               onClick={() => onSelectKapi(kapi)}
+              data-testid={`kapi-${kapi.id}`}
             >
               <CardContent className="p-6 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                  <span className="font-serif text-xl text-primary">{kapi.symbol}</span>
-                </div>
+                <motion.div 
+                  className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                >
+                  <span className="font-serif text-2xl text-primary">{kapi.symbol}</span>
+                </motion.div>
                 <div className="flex-1">
                   <p className="text-xs text-muted-foreground mb-1">{kapi.subtitle}</p>
                   <h3 className="font-serif text-lg text-foreground group-hover:text-primary transition-colors">
                     {kapi.title}
                   </h3>
+                  <p className="text-xs text-muted-foreground/70 mt-1 line-clamp-1">
+                    {kapi.element}
+                  </p>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
               </CardContent>
@@ -211,6 +218,18 @@ const KapiSecimi = ({ onSelectKapi }) => {
           </motion.div>
         ))}
       </div>
+
+      {/* Alt bilgi */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="text-center mt-12"
+      >
+        <p className="text-xs text-muted-foreground/50">
+          Her kapı açıldığında, bir parça daha hatırlarsın.
+        </p>
+      </motion.div>
     </motion.div>
   );
 };
