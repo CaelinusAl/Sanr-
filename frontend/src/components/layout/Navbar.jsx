@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Moon, Sun, Menu, X } from "lucide-react";
+import { Moon, Sun, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -35,36 +35,36 @@ export const Navbar = ({ isDark, toggleTheme }) => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "glass py-3"
-          : "bg-transparent py-5"
+          ? "glass-navbar py-3"
+          : "bg-gradient-to-b from-background/80 to-transparent py-5"
       }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <span className="text-primary font-serif text-lg">∞</span>
+          <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shadow-sm">
+            <span className="text-primary font-serif text-xl">∞</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-serif text-xl tracking-wide text-foreground group-hover:text-primary transition-colors">
+            <span className="font-serif text-xl tracking-wide text-foreground group-hover:text-primary transition-colors nav-text-shadow">
               CAELINUS
             </span>
-            <span className="text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+            <span className="text-[10px] tracking-[0.2em] text-foreground/60 uppercase">
               Anadolu'nun Tanrıçaları
             </span>
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-8">
+        {/* Desktop Navigation - Enhanced Readability */}
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               to={link.href}
-              className={`text-sm tracking-wide animated-underline transition-colors ${
+              className={`nav-link text-base xl:text-lg font-medium tracking-wide transition-all duration-300 ${
                 location.pathname === link.href
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "text-primary nav-link-active"
+                  : "text-foreground/80 hover:text-primary"
               }`}
             >
               {link.label}
@@ -78,7 +78,8 @@ export const Navbar = ({ isDark, toggleTheme }) => {
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
-            className="rounded-full hover:bg-primary/10"
+            className="rounded-full hover:bg-primary/10 h-10 w-10"
+            data-testid="theme-toggle"
           >
             <AnimatePresence mode="wait">
               {isDark ? (
@@ -108,13 +109,13 @@ export const Navbar = ({ isDark, toggleTheme }) => {
           {/* Mobile Menu */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Menu className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="rounded-full h-10 w-10">
+                <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-80 bg-background/95 backdrop-blur-xl">
+            <SheetContent side="right" className="w-80 bg-background/98 backdrop-blur-xl border-l border-border/50">
               <div className="flex flex-col h-full pt-12">
-                <nav className="flex flex-col gap-6">
+                <nav className="flex flex-col gap-5">
                   {navLinks.map((link, index) => (
                     <motion.div
                       key={link.href}
@@ -125,10 +126,10 @@ export const Navbar = ({ isDark, toggleTheme }) => {
                       <Link
                         to={link.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`text-2xl font-serif transition-colors ${
+                        className={`text-xl font-serif transition-colors block py-2 ${
                           location.pathname === link.href
-                            ? "text-primary"
-                            : "text-muted-foreground hover:text-foreground"
+                            ? "text-primary border-l-2 border-primary pl-4"
+                            : "text-foreground/70 hover:text-foreground pl-4"
                         }`}
                       >
                         {link.label}
@@ -138,7 +139,7 @@ export const Navbar = ({ isDark, toggleTheme }) => {
                 </nav>
                 
                 <div className="mt-auto pb-8">
-                  <p className="text-sm text-muted-foreground font-serif italic">
+                  <p className="text-sm text-foreground/50 font-serif italic">
                     "Hatırlamak dışarıda başlar.<br/>Anlamak içeride olur."
                   </p>
                 </div>
