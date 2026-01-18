@@ -10,6 +10,8 @@ const CityDetailPage = lazy(() => import("@/pages/CityDetailPage"));
 const ReadingLayersPage = lazy(() => import("@/pages/ReadingLayersPage"));
 const SanriyaSorPage = lazy(() => import("@/pages/SanriyaSorPage"));
 const AboutPage = lazy(() => import("@/pages/AboutPage"));
+const BilincPage = lazy(() => import("@/pages/BilincPage"));
+const FrekansPage = lazy(() => import("@/pages/FrekansPage"));
 
 // Components
 import { Navbar } from "@/components/layout/Navbar";
