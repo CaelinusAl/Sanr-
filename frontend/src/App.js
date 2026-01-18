@@ -64,6 +64,7 @@ function App() {
               <Route path="/sanriya-sor" element={<SanriyaSorPage />} />
               <Route path="/bilinc" element={<BilincPage />} />
               <Route path="/frekans" element={<FrekansPage />} />
+              <Route path="/rituel" element={<RituelAlaniPage />} />
               <Route path="/hakkinda" element={<AboutPage />} />
             </Routes>
           </Suspense>
