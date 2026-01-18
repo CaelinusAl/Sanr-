@@ -88,8 +88,8 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - Mock yapı kaldırıldı, gerçek AI aktif
 
 ## Gelecek Görevler (Backlog)
-- [ ] SANRI'ya Sor için LLM entegrasyonu (opsiyonel)
-- [ ] Görsel/fotoğraf analizi özelliği
-- [ ] Kullanıcı deneyim kaydı (localStorage)
+- [ ] Görsel yükleme ve sembolik yorum özelliği
+- [ ] Kullanıcı deneyim kaydı (localStorage veya MongoDB)
 - [ ] Ses/müzik katmanları
 - [ ] Mobil optimizasyon iyileştirmeleri
+- [ ] Çoklu dil desteği (İngilizce)
