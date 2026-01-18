@@ -443,7 +443,7 @@ const KapiDeneyimi = ({ kapi, onBack, onComplete }) => {
           <motion.h2 
             className="font-serif text-6xl text-foreground mb-12"
             animate={{ opacity: [1, 0.7, 1] }}
-            transition={{ duration: 3, repeat: Infinity }}
+            transition={{ duration: 3, repeat: 2 }}
           >
             DUR
           </motion.h2>
