@@ -7,7 +7,8 @@ import {
   ChevronLeft,
   Lock,
   Unlock,
-  X
+  X,
+  Infinity
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,7 +19,12 @@ import {
   ritueller, 
   girisEsigi, 
   rituelAsamalari,
-  getRituellerByKapi 
+  getRituellerByKapi,
+  getBilincKatmani,
+  getRandomFrekansTitresim,
+  getRandomMuhurYansima,
+  getRandomRituelSonuSoru,
+  kapiGecis
 } from "@/data/rituel-data";
 
 // Giriş Eşiği - Niyet Kapısı
