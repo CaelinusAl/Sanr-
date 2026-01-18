@@ -360,7 +360,7 @@ const RituelDeneyimi = ({ rituel, onClose, onComplete }) => {
             }}
             transition={{
               duration: 6,
-              repeat: Infinity,
+              repeat: 10,
               ease: "easeInOut",
             }}
             className="w-24 h-24 rounded-full border border-primary/30 flex items-center justify-center mx-auto mb-12"
@@ -371,7 +371,7 @@ const RituelDeneyimi = ({ rituel, onClose, onComplete }) => {
               }}
               transition={{
                 duration: 6,
-                repeat: Infinity,
+                repeat: 10,
                 ease: "easeInOut",
               }}
               className="w-10 h-10 rounded-full bg-primary/20"
