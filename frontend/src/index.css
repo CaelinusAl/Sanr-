@@ -220,6 +220,17 @@
         background-clip: text;
     }
     
+    /* Hero text shadow for better readability over images */
+    .hero-text-shadow {
+        text-shadow: 0 2px 20px hsl(var(--background) / 0.8),
+                     0 4px 40px hsl(var(--background) / 0.6);
+    }
+    
+    /* Light text shadow for subtle depth */
+    .text-shadow-subtle {
+        text-shadow: 0 1px 10px hsl(var(--background) / 0.5);
+    }
+    
     /* Animated underline */
     .animated-underline {
         position: relative;
