@@ -482,7 +482,7 @@ const KapiDeneyimi = ({ kapi, onBack, onComplete }) => {
             }}
             transition={{
               duration: 7,
-              repeat: Infinity,
+              repeat: 2,
               ease: "easeInOut",
             }}
             className="w-32 h-32 rounded-full border border-primary/20 flex items-center justify-center mx-auto mb-12"
@@ -493,7 +493,7 @@ const KapiDeneyimi = ({ kapi, onBack, onComplete }) => {
               }}
               transition={{
                 duration: 7,
-                repeat: Infinity,
+                repeat: 2,
                 ease: "easeInOut",
               }}
               className="w-12 h-12 rounded-full bg-primary/15"
