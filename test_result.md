@@ -256,16 +256,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Cities page routing and display"
-    - "Navigation between pages"
-  stuck_tasks:
-    - "Cities page routing and display"
-    - "Navigation between pages"
-    - "SANRI chat interface"
-    - "Reading layers page"
-    - "About page content"
-  test_all: false
-  test_priority: "high_first"
+    - "All major functionality tested and working"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "complete"
 
 agent_communication:
     - agent: "testing"
