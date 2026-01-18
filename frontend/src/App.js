@@ -61,6 +61,8 @@ function App() {
               <Route path="/sehir/:cityId" element={<CityDetailPage />} />
               <Route path="/okuma-katmanlari" element={<ReadingLayersPage />} />
               <Route path="/sanriya-sor" element={<SanriyaSorPage />} />
+              <Route path="/bilinc" element={<BilincPage />} />
+              <Route path="/frekans" element={<FrekansPage />} />
               <Route path="/hakkinda" element={<AboutPage />} />
             </Routes>
           </Suspense>
