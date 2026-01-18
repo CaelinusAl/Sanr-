@@ -101,3 +101,96 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Test the Caelinus application - a Turkish cultural heritage app with homepage, cities page, SANRI chat interface, reading layers, and about page. Current issue: routing to /sehirler shows 'No routes matched location' error."
+
+frontend:
+  - task: "Homepage rendering and navigation"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/HomePage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Initial testing - need to verify homepage loads correctly with hero section and navigation buttons"
+
+  - task: "Cities page routing and display"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/CitiesPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Initial testing - reported issue with 'No routes matched location /sehirler' error needs investigation"
+
+  - task: "Navigation between pages"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/layout/Navbar.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Initial testing - need to verify all navigation links work correctly"
+
+  - task: "SANRI chat interface"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/SanriyaSorPage.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Initial testing - need to verify chat interface works with mock responses"
+
+  - task: "Reading layers page"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ReadingLayersPage.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Initial testing - need to verify expandable layers functionality"
+
+  - task: "About page content"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AboutPage.jsx"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Initial testing - need to verify about page content displays correctly"
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+
+test_plan:
+  current_focus:
+    - "Homepage rendering and navigation"
+    - "Cities page routing and display"
+    - "Navigation between pages"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "testing"
+    - message: "Starting comprehensive testing of Caelinus application. Will focus on routing issues first, then test all major functionality including homepage, cities page, navigation, SANRI chat, reading layers, and about page."
