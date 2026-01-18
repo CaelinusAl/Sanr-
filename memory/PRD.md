@@ -70,6 +70,15 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - Mühür yansımaları ve ritüel sonu soruları eklendi
 - SANRI bağlantısı ritüel sonuna entegre edildi
 
+### Erişilebilirlik İyileştirmeleri (18 Ocak 2026)
+- Light mode renk kontrastı artırıldı (WCAG uyumlu)
+- Ana sayfa font boyutları büyütüldü (başlık, alt başlık, açıklama)
+- Satır aralıkları ve harf aralıkları iyileştirildi
+- "Haritayı Keşfet" butonu metin ile örtüşmeyecek şekilde ayrıldı
+- Hero bölümü arka plan overlay güçlendirildi
+- Text shadow eklendi (arka plan üzerinde okunabilirlik)
+- Butonlara backdrop blur ve shadow eklendi
+
 ## Gelecek Görevler (Backlog)
 - [ ] SANRI'ya Sor için LLM entegrasyonu (opsiyonel)
 - [ ] Görsel/fotoğraf analizi özelliği
