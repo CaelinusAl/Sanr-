@@ -210,6 +210,118 @@ export const rituelAsamalari = {
   }
 };
 
+// Bilinç Katmanları - Her kapı için derinleşme metinleri
+export const bilincKatmanlari = {
+  1: { // Hatırlayış
+    giris: "Hatırlamak, zamanın dışına çıkmaktır.",
+    derinlik: "Şu an burada değilsin. Geçmişte bir yerde duruyorsun. O yer seni çağırıyor.",
+    frekans: "Her hatırlayış, ruhun bir parçasını geri alır.",
+    sessizlik: "Hatırlamak istemediğin şey, seni en çok bekleyen şeydir."
+  },
+  2: { // Zaman-Para-Ölüm
+    giris: "Bu üçlü, insanlığın en eski büyüsüdür.",
+    derinlik: "Zaman kontrol eder, para bağlar, ölüm korkutur. Üçü de yanılsamadır.",
+    frekans: "Sonsuz olanın ne zamanı, ne parası, ne ölümü vardır.",
+    sessizlik: "Bu büyüyü kırmak için önce içindeki kabulü kır."
+  },
+  3: { // Kendini Yaratma
+    giris: "Kim olduğunu bilmiyorsun. Kim olabileceğini de.",
+    derinlik: "Sana verilen isim, seninle başlamadı. Sana verilen hikâye, seninle bitmeyecek.",
+    frekans: "Yaratım sessizlikte başlar. Sessizlik, kimliğin öncesidir.",
+    sessizlik: "Adını unuttuğunda geriye ne kalır?"
+  },
+  4: { // Dişilin Geri Dönüşü
+    giris: "Dişil, kadın demek değil. Dişil, kabul edebilmek demek.",
+    derinlik: "Güzellik bir zayıflık değil, bir frekanstır. Dünya bu frekansı unuttu.",
+    frekans: "Bedenin bir tapınak. İçinde kim yaşıyor?",
+    sessizlik: "İçindeki kadın ne zaman sustun?"
+  },
+  5: { // Tanrı İçeriden Konuşur
+    giris: "Dışarıda Tanrı aramak, aynanın arkasına bakmak gibidir.",
+    derinlik: "Tanrı bir isim değil. Tanrı, içindeki en sessiz sestir.",
+    frekans: "Sen konuşmadığında, O konuşur. Sen dinlemediğinde, O bekler.",
+    sessizlik: "İç sesin susturulduğunda, kim kazandı?"
+  },
+  6: { // Uyanıştan Sonra
+    giris: "Uyanmak, rahat etmek değildir.",
+    derinlik: "Uyanmak, eskiden uyuduğunu görmektir. Bu görüş acı verir.",
+    frekans: "Eski dünya yıkılır, yeni dünya henüz kurulmamıştır. Arada duruyorsun.",
+    sessizlik: "Uyanış bir varış değil, bir ayrılıştır."
+  },
+  7: { // Boşluk ve Birleşme
+    giris: "Hiçbir şey olmak, her şey olmaktır.",
+    derinlik: "Boşluk korkunç değil. Boşluk, programlanmamış olandır.",
+    frekans: "Sen aramayı bıraktığında, aranan seninle birleşir.",
+    sessizlik: "Yol bitti. Çünkü yolcu, yolun kendisi oldu."
+  }
+};
+
+// Frekans titreşimleri - Ritüel aşamaları için
+export const frekansTitresim = {
+  dur: [
+    "Dur. Zihin koşuyor. Sen duruyorsun.",
+    "Dur. Düşünce geçsin. Sen kal.",
+    "Dur. Cevap vermek zorunda değilsin.",
+    "Dur. Şimdi sadece burada ol."
+  ],
+  hisset: [
+    "Hisset. Bedende ne var?",
+    "Hisset. Nefes nerede duruyor?",
+    "Hisset. Sessizliğin sesi ne?",
+    "Hisset. İçerideki titreşim ne söylüyor?"
+  ],
+  birak: [
+    "Bırak. Tuttuğun şey seni tutuyor.",
+    "Bırak. Ağırlık senin değil.",
+    "Bırak. Boşluk seni taşıyacak.",
+    "Bırak. Akış başlasın."
+  ]
+};
+
+// Kapı geçiş sembolleri
+export const kapiGecis = {
+  oncesi: "Eşikte duruyorsun. Burası ne içerisi ne dışarısı.",
+  gecis: "Şimdi geçiyorsun. Eski sen geride kalıyor.",
+  sonrasi: "Artık içeridesin. Burası senin alanın."
+};
+
+// Mühür sonrası yansımalar
+export const muhurYansima = [
+  "Yazdığın senin. Hiçbir sistem okumaz. Hiçbir yapay zekâ yorumlamaz.",
+  "Bu cümle, bu an için yazıldı. Başka hiçbir an için değil.",
+  "Mühür, geri dönüşü olmayan bir imzadır. Sen imzaladın.",
+  "Kelimeler uçar. Niyet kalır. Niyetin ne?",
+  "Bu kapı açıldı. Ama her kapı bir kapanışı da taşır.",
+  "Yazdığın şey, sana geri dönecek. Frekans böyle çalışır."
+];
+
+// Ritüel sonrası farkındalık soruları
+export const rituelSonuSorular = [
+  "Bu ritüelden sonra neyi bıraktın?",
+  "Şimdi içinde ne değişti?",
+  "Kapı açıldı. Ama içeri girdin mi?",
+  "Yazdığın kelimeler sana ne söylüyor?",
+  "Sessizlikte ne duydun?"
+];
+
+// Rastgele seçici fonksiyonlar
+export const getRandomFrekansTitresim = (asama) => {
+  const liste = frekansTitresim[asama];
+  return liste[Math.floor(Math.random() * liste.length)];
+};
+
+export const getRandomMuhurYansima = () => {
+  return muhurYansima[Math.floor(Math.random() * muhurYansima.length)];
+};
+
+export const getRandomRituelSonuSoru = () => {
+  return rituelSonuSorular[Math.floor(Math.random() * rituelSonuSorular.length)];
+};
+
+export const getBilincKatmani = (kapiId) => {
+  return bilincKatmanlari[kapiId] || bilincKatmanlari[1];
+};
+
 // Yardımcı fonksiyonlar
 export const getKapiById = (id) => kapilar.find(k => k.id === parseInt(id));
 export const getRituelById = (id) => ritueller.find(r => r.id === id);
