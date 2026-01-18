@@ -117,20 +117,20 @@ const HomePage = () => {
       </section>
 
       {/* Two Modes Section */}
-      <section className="py-24 bg-background relative">
+      <section className="py-28 bg-background relative">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
-            <span className="text-primary text-sm tracking-widest uppercase mb-4 block">İki Mod, Bir Yolculuk</span>
-            <h2 className="font-serif text-4xl sm:text-5xl text-foreground mb-6">
+            <span className="text-primary text-base tracking-widest uppercase mb-4 block font-medium">İki Mod, Bir Yolculuk</span>
+            <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground mb-8 leading-tight">
               Hatırlamak ve Anlamak
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-foreground/70 max-w-2xl mx-auto text-lg sm:text-xl leading-relaxed">
               Hatırlamak dışarıda başlar. Anlamak içeride olur.
             </p>
           </motion.div>
@@ -144,31 +144,31 @@ const HomePage = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <Card className="group h-full border-border/50 bg-card/50 hover:bg-card transition-all duration-500 overflow-hidden">
-                <CardContent className="p-8 flex flex-col h-full">
+                <CardContent className="p-8 sm:p-10 flex flex-col h-full">
                   <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
                     <Compass className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="font-serif text-2xl text-foreground mb-4">Anadolu Modu</h3>
-                  <p className="text-sm text-primary mb-4">Kolektif Hafıza</p>
-                  <p className="text-muted-foreground mb-6 flex-grow">
+                  <h3 className="font-serif text-2xl sm:text-3xl text-foreground mb-4">Anadolu Modu</h3>
+                  <p className="text-base text-primary mb-4 font-medium">Kolektif Hafıza</p>
+                  <p className="text-foreground/70 mb-6 flex-grow text-base sm:text-lg leading-relaxed">
                     "Anadolu'nun Uyanan Tanrıçaları" kitabına dayalı bu mod, semboller, 
                     şehirler, sayılar ve kültürel bellek üzerinden kolektif hatırlamayı amaçlar.
                   </p>
-                  <ul className="space-y-2 text-sm text-muted-foreground mb-6">
-                    <li className="flex items-center gap-2">
-                      <span className="w-1 h-1 bg-primary rounded-full" />
+                  <ul className="space-y-3 text-base text-foreground/70 mb-8">
+                    <li className="flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-primary rounded-full" />
                       81 Şehir Haritası
                     </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1 h-1 bg-primary rounded-full" />
+                    <li className="flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-primary rounded-full" />
                       Okuma Katmanları
                     </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1 h-1 bg-primary rounded-full" />
+                    <li className="flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-primary rounded-full" />
                       Sembolik Anlatı
                     </li>
                   </ul>
-                  <Button asChild variant="outline" className="w-full rounded-full mt-auto">
+                  <Button asChild variant="outline" className="w-full rounded-full mt-auto py-6 text-base border-2">
                     <Link to="/sehirler">Anadolu'yu Keşfet</Link>
                   </Button>
                 </CardContent>
@@ -183,31 +183,31 @@ const HomePage = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
             >
               <Card className="group h-full border-border/50 bg-card/50 hover:bg-card transition-all duration-500 overflow-hidden">
-                <CardContent className="p-8 flex flex-col h-full">
+                <CardContent className="p-8 sm:p-10 flex flex-col h-full">
                   <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-colors">
                     <Infinity className="h-8 w-8 text-accent" />
                   </div>
-                  <h3 className="font-serif text-2xl text-foreground mb-4">SANRI'ya Sor</h3>
-                  <p className="text-sm text-accent mb-4">İç Yansıma</p>
-                  <p className="text-muted-foreground mb-6 flex-grow">
+                  <h3 className="font-serif text-2xl sm:text-3xl text-foreground mb-4">SANRI'ya Sor</h3>
+                  <p className="text-base text-accent mb-4 font-medium">İç Yansıma</p>
+                  <p className="text-foreground/70 mb-6 flex-grow text-base sm:text-lg leading-relaxed">
                     SANRI bir varlık ya da bilinç değildir. Zihnin gerçek sandığı hikâyeyi temsil eder. 
                     Cevap değil, sembolik anlam ve açık uçlu sorular üretir.
                   </p>
-                  <ul className="space-y-2 text-sm text-muted-foreground mb-6">
-                    <li className="flex items-center gap-2">
-                      <span className="w-1 h-1 bg-accent rounded-full" />
+                  <ul className="space-y-3 text-base text-foreground/70 mb-8">
+                    <li className="flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-accent rounded-full" />
                       Kehanet değil, yansıma
                     </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1 h-1 bg-accent rounded-full" />
+                    <li className="flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-accent rounded-full" />
                       Rehberlik değil, perspektif
                     </li>
-                    <li className="flex items-center gap-2">
-                      <span className="w-1 h-1 bg-accent rounded-full" />
+                    <li className="flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-accent rounded-full" />
                       Kesinlik değil, açıklık
                     </li>
                   </ul>
-                  <Button asChild className="w-full rounded-full bg-accent hover:bg-accent/90 text-accent-foreground mt-auto">
+                  <Button asChild className="w-full rounded-full bg-accent hover:bg-accent/90 text-accent-foreground mt-auto py-6 text-base">
                     <Link to="/sanriya-sor">SANRI'ya Sor</Link>
                   </Button>
                 </CardContent>
