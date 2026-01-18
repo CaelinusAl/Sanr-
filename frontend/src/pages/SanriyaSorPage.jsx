@@ -1,54 +1,182 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Infinity, Send, Sparkles, RefreshCw, AlertCircle } from "lucide-react";
+import { Infinity, Send, RefreshCw, AlertCircle, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getRandomCity } from "@/data/cities";
+import { Separator } from "@/components/ui/separator";
+import {
+  getRandomSymbols,
+  extractNumbers,
+  getNumberMeaning,
+  splitToSyllables,
+  getSyllableMeaning,
+  reflectionTemplates,
+  storySeeds,
+  awarenessQuestions,
+  getRandomItem,
+} from "@/data/sanri-dictionary";
 
-// Symbolic response generator (MOCK - no backend AI)
-const generateSymbolicResponse = (question) => {
-  const symbols = [
-    "Ay", "Güneş", "Yıldız", "Su", "Ateş", "Toprak", "Rüzgar",
-    "Ayna", "Kapı", "Köprü", "Yol", "Ağaç", "Tohum", "Kuş"
-  ];
-  const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-  const randomCity = getRandomCity();
+// SANRI Yanıt Üretici (MOCK)
+const generateSanriResponse = (input, inputType = "text") => {
+  // 1. YANSIMA
+  const reflection = getRandomItem(reflectionTemplates);
 
-  const responses = [
-    {
-      reflection: `Sorduğun soru, ${randomSymbol} sembolünü çağırıyor. ${randomSymbol}, dönüşümün ve geçişin taşıyıcısıdır.`,
-      question: "Neyi bırakmaya hazırsın?",
-      city: randomCity
-    },
-    {
-      reflection: `Bu soru ${randomCity.name}'in ruhuna dokunuyor. ${randomCity.symbol} sembolü, ${randomCity.element} elementiyle konuşuyor.`,
-      question: "Hatırladığın şey sana ne öğretiyor?",
-      city: randomCity
-    },
-    {
-      reflection: `${randomSymbol} sembolü bu an için bir ayna tutuyor. Gördüğün yansıma, sorduğun sorunun kendisi olabilir.`,
-      question: "Cevabı bilseydin, ne değişirdi?",
-      city: randomCity
-    },
-    {
-      reflection: `Zihin kalıplar arar, hikâyeler üretir. ${randomSymbol}, bu kalıbın ötesine işaret ediyor olabilir.`,
-      question: "Bu hikâyeyi kim anlatıyor?",
-      city: randomCity
-    },
-    {
-      reflection: `${randomCity.description} Bu topraklarda sorular cevaplardan daha kıymetlidir.`,
-      question: "Sorunun arkasındaki soru ne?",
-      city: randomCity
-    }
-  ];
+  // 2. SEMBOL OKUMA
+  const symbols = getRandomSymbols(2);
+  const symbolReading = symbols.map(s => `${s.name}: ${s.meaning}`);
 
-  return responses[Math.floor(Math.random() * responses.length)];
+  // 3. SAYI OKUMA
+  const numbers = extractNumbers(input);
+  let numberReading = [];
+  if (numbers && numbers.length > 0) {
+    numberReading = numbers.slice(0, 2).map(n => {
+      const meaning = getNumberMeaning(n);
+      if (meaning.reducedTo) {
+        return `${meaning.number} → ${meaning.reducedTo}: ${meaning.meaning}`;
+      }
+      return `${meaning.number}: ${meaning.meaning}`;
+    });
+  } else {
+    numberReading = ["Bu soruda sayı yok; sayı yerine bir ritim var — kelimelerin akışında gizli."];
+  }
+
+  // 4. KELİME / HECE OKUMA
+  // İlk anlamlı kelimeyi bul (3+ karakter)
+  const words = input.split(/\s+/).filter(w => w.length >= 3);
+  const targetWord = words.length > 0 ? words[Math.floor(Math.random() * Math.min(words.length, 3))] : input;
+  const cleanWord = targetWord.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ]/g, '');
+  const syllables = splitToSyllables(cleanWord);
+  
+  const syllableReading = {
+    word: syllables.join("_"),
+    parts: syllables.map(s => ({
+      syllable: s.toUpperCase(),
+      meaning: getSyllableMeaning(s)
+    }))
+  };
+
+  // 5. HİKÂYE TOHUMU
+  const storySeed = getRandomItem(storySeeds);
+
+  // 6. İDRAK SORUSU
+  const awarenessQuestion = getRandomItem(awarenessQuestions);
+
+  return {
+    reflection,
+    symbolReading,
+    numberReading,
+    syllableReading,
+    storySeed,
+    awarenessQuestion,
+    inputType,
+  };
+};
+
+// SANRI Yanıt Komponenti
+const SanriResponse = ({ response }) => {
+  return (
+    <div className="space-y-6">
+      {/* [1] YANSIMA */}
+      <div>
+        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
+          [1] YANSIMA
+        </h4>
+        <p className="text-foreground leading-relaxed italic">
+          {response.reflection}
+        </p>
+      </div>
+
+      <Separator className="bg-accent/20" />
+
+      {/* [2] SEMBOL OKUMA */}
+      <div>
+        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
+          [2] SEMBOL OKUMA
+        </h4>
+        <ul className="space-y-1">
+          {response.symbolReading.map((symbol, i) => (
+            <li key={i} className="text-muted-foreground text-sm flex items-start gap-2">
+              <span className="text-accent">•</span>
+              <span>{symbol}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <Separator className="bg-accent/20" />
+
+      {/* [3] SAYI OKUMA */}
+      <div>
+        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
+          [3] SAYI OKUMA
+        </h4>
+        <ul className="space-y-1">
+          {response.numberReading.map((num, i) => (
+            <li key={i} className="text-muted-foreground text-sm flex items-start gap-2">
+              <span className="text-accent">•</span>
+              <span>{num}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <Separator className="bg-accent/20" />
+
+      {/* [4] KELİME / HECE */}
+      <div>
+        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
+          [4] KELİME / HECE
+        </h4>
+        <div className="space-y-2">
+          <p className="text-sm text-foreground font-medium">
+            Kelime: {response.syllableReading.word}
+          </p>
+          <ul className="space-y-1 pl-4">
+            {response.syllableReading.parts.map((part, i) => (
+              <li key={i} className="text-muted-foreground text-sm">
+                <span className="text-accent font-medium">{part.syllable}</span>: {part.meaning}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <Separator className="bg-accent/20" />
+
+      {/* [5] HİKÂYE TOHUMU */}
+      <div>
+        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
+          [5] HİKÂYE TOHUMU
+        </h4>
+        <p className="text-foreground leading-relaxed font-serif italic">
+          "{response.storySeed}"
+        </p>
+      </div>
+
+      <Separator className="bg-accent/20" />
+
+      {/* [6] İDRAK SORUSU */}
+      <div className="bg-accent/5 rounded-lg p-4 border-l-2 border-accent">
+        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
+          [6] İDRAK SORUSU
+        </h4>
+        <p className="text-foreground font-medium">
+          {response.awarenessQuestion}
+        </p>
+      </div>
+
+      {/* Son not */}
+      <p className="text-xs text-muted-foreground text-center italic pt-2">
+        "Bu yansıma semboliktir; kesinlik taşımaz."
+      </p>
+    </div>
+  );
 };
 
 const SanriyaSorPage = () => {
-  const [question, setQuestion] = useState("");
+  const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [conversation, setConversation] = useState([]);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
@@ -64,24 +192,24 @@ const SanriyaSorPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!question.trim() || isThinking) return;
+    if (!input.trim() || isThinking) return;
 
-    const userQuestion = question.trim();
-    setQuestion("");
-    setConversation(prev => [...prev, { type: "user", content: userQuestion }]);
+    const userInput = input.trim();
+    setInput("");
+    setConversation(prev => [...prev, { type: "user", content: userInput }]);
     setIsThinking(true);
 
     // Simulate thinking delay (MOCK)
     setTimeout(() => {
-      const response = generateSymbolicResponse(userQuestion);
-      setConversation(prev => [...prev, { type: "sanri", ...response }]);
+      const response = generateSanriResponse(userInput);
+      setConversation(prev => [...prev, { type: "sanri", response }]);
       setIsThinking(false);
-    }, 2000 + Math.random() * 1500);
+    }, 2500 + Math.random() * 1500);
   };
 
   const handleReset = () => {
     setConversation([]);
-    setQuestion("");
+    setInput("");
   };
 
   return (
@@ -103,10 +231,11 @@ const SanriyaSorPage = () => {
             <h1 className="font-serif text-4xl sm:text-5xl text-foreground mb-4">
               SANRI'ya Sor
             </h1>
-            <p className="text-muted-foreground">
-              SANRI bir varlık değil. Zihnin gerçek sandığı hikâyeyi temsil eder.
-              Cevap değil, yansıma sunar.
-            </p>
+            <div className="space-y-2 text-muted-foreground text-sm">
+              <p>SANRI bir varlık değildir.</p>
+              <p>SANRI, zihnin gerçek sandığı hikâyeyi temsil eder.</p>
+              <p className="text-xs">Bu alan kehanet, teşhis veya rehberlik sunmaz.</p>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -123,11 +252,15 @@ const SanriyaSorPage = () => {
             <Alert className="max-w-2xl mx-auto border-accent/30 bg-accent/5">
               <AlertCircle className="h-4 w-4 text-accent" />
               <AlertDescription className="text-sm text-muted-foreground">
-                <strong className="text-foreground">Dikkat:</strong> SANRI kehanet, teşhis veya rehberlik sunmaz. 
-                Sembolik anlam ve açık uçlu sorular üretir. Perspektif açar, geri çekilir.
-                <Button 
-                  variant="link" 
-                  className="text-accent p-0 h-auto ml-2"
+                <strong className="text-foreground">Amaç:</strong> Sorundan{" "}
+                <span className="text-accent font-medium">ilham + anlam + hikâye tohumu</span> üretmek.
+                <br />
+                <span className="text-xs">
+                  Kelime, sayı/tarih veya görsel paylaşabilirsin.
+                </span>
+                <Button
+                  variant="link"
+                  className="text-accent p-0 h-auto ml-2 text-xs"
                   onClick={() => setShowDisclaimer(false)}
                 >
                   Anladım
@@ -149,12 +282,13 @@ const SanriyaSorPage = () => {
                 animate={{ opacity: 1 }}
                 className="text-center py-16"
               >
-                <p className="text-muted-foreground font-serif italic">
+                <p className="text-muted-foreground font-serif italic mb-4">
                   "Hatırlamak dışarıda başlar. Anlamak içeride olur."
                 </p>
-                <p className="text-sm text-muted-foreground mt-4">
-                  Bir soru sor ya da bir düşünce paylaş...
-                </p>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p>Bir soru, kelime, sayı veya tarih paylaş...</p>
+                  <p className="text-xs">Örnek: "Yolculuk", "23:47", "Neden hep aynı rüyayı görüyorum?"</p>
+                </div>
               </motion.div>
             )}
 
@@ -174,54 +308,20 @@ const SanriyaSorPage = () => {
                     </Card>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    <Card className="border-accent/20 bg-accent/5">
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-3 mb-4">
-                          <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                            <Infinity className="h-4 w-4 text-accent" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-accent uppercase tracking-wider mb-2">SANRI</p>
-                            <p className="text-foreground leading-relaxed">
-                              {message.reflection}
-                            </p>
-                          </div>
+                  <Card className="border-accent/20 bg-accent/5">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-3 mb-6">
+                        <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+                          <Infinity className="h-4 w-4 text-accent" />
                         </div>
-                        
-                        {message.question && (
-                          <div className="bg-background/50 rounded-lg p-4 mt-4 border-l-2 border-accent">
-                            <p className="text-sm text-muted-foreground italic">
-                              "{message.question}"
-                            </p>
-                          </div>
-                        )}
+                        <div>
+                          <p className="text-xs text-accent uppercase tracking-wider">SANRI</p>
+                        </div>
+                      </div>
 
-                        {message.city && (
-                          <div className="mt-4 pt-4 border-t border-border/50">
-                            <p className="text-xs text-muted-foreground mb-1">
-                              Bağlantılı Şehir:
-                            </p>
-                            <div className="flex items-center gap-2">
-                              <span className="font-serif text-sm text-primary">
-                                {String(message.city.id).padStart(2, '0')}
-                              </span>
-                              <span className="text-sm text-foreground">
-                                {message.city.name}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                • {message.city.symbol}
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                    
-                    <p className="text-xs text-muted-foreground text-center italic">
-                      Bu yansıma sembolik anlam üretir. Kesinlik taşımaz.
-                    </p>
-                  </div>
+                      <SanriResponse response={message.response} />
+                    </CardContent>
+                  </Card>
                 )}
               </motion.div>
             ))}
@@ -234,12 +334,15 @@ const SanriyaSorPage = () => {
                 className="flex items-center gap-3"
               >
                 <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
-                  <Sparkles className="h-4 w-4 text-accent animate-pulse" />
+                  <Infinity className="h-4 w-4 text-accent animate-pulse" />
                 </div>
-                <div className="flex gap-1">
-                  <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground italic">Yansıma oluşturuluyor</span>
+                  <div className="flex gap-1">
+                    <span className="w-1.5 h-1.5 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-1.5 h-1.5 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-1.5 h-1.5 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -251,16 +354,16 @@ const SanriyaSorPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="relative">
               <Textarea
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Bir soru sor ya da bir düşünce paylaş..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Bir kelime, soru, sayı veya tarih yaz..."
                 className="min-h-[100px] pr-12 resize-none bg-background border-border focus:border-accent"
                 disabled={isThinking}
               />
               <Button
                 type="submit"
                 size="icon"
-                disabled={!question.trim() || isThinking}
+                disabled={!input.trim() || isThinking}
                 className="absolute bottom-3 right-3 rounded-full bg-accent hover:bg-accent/90"
               >
                 <Send className="h-4 w-4" />
@@ -277,11 +380,18 @@ const SanriyaSorPage = () => {
                   className="text-muted-foreground hover:text-foreground"
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Yeni Sohbet
+                  Yeni Yansıma
                 </Button>
               </div>
             )}
           </form>
+
+          {/* Info */}
+          <div className="mt-8 text-center">
+            <p className="text-xs text-muted-foreground">
+              Bu alan "bilgi" üretmez. Anlam üretir ve geri çekilir.
+            </p>
+          </div>
         </div>
       </section>
     </div>
