@@ -30,13 +30,35 @@ import {
 // Giriş Eşiği - Niyet Kapısı
 const GirisEsigi = ({ onReady }) => {
   const [breathPhase, setBreathPhase] = useState("in");
+  const [breathCount, setBreathCount] = useState(0);
+  const [showInvitation, setShowInvitation] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setBreathPhase(prev => prev === "in" ? "out" : "in");
-    }, 4000);
+      setBreathPhase(prev => {
+        if (prev === "in") return "hold";
+        if (prev === "hold") return "out";
+        return "in";
+      });
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (breathPhase === "in") {
+      setBreathCount(prev => prev + 1);
+    }
+    // 3 nefes sonrası daveti göster
+    if (breathCount >= 2 && !showInvitation) {
+      setTimeout(() => setShowInvitation(true), 2000);
+    }
+  }, [breathPhase, breathCount, showInvitation]);
+
+  const breathText = {
+    in: "Nefes al...",
+    hold: "Tut...",
+    out: "Bırak..."
+  };
 
   return (
     <motion.div
@@ -45,53 +67,97 @@ const GirisEsigi = ({ onReady }) => {
       exit={{ opacity: 0 }}
       className="min-h-screen flex flex-col items-center justify-center px-6"
     >
-      {/* Nefes animasyonu */}
+      {/* Nefes animasyonu - Merkez */}
       <motion.div
         animate={{
-          scale: breathPhase === "in" ? 1.3 : 1,
-          opacity: breathPhase === "in" ? 1 : 0.5,
+          scale: breathPhase === "in" ? 1.4 : breathPhase === "hold" ? 1.4 : 1,
+          opacity: breathPhase === "hold" ? 1 : 0.6,
         }}
-        transition={{ duration: 3.5, ease: "easeInOut" }}
-        className="w-16 h-16 rounded-full border-2 border-primary/30 flex items-center justify-center mb-12"
+        transition={{ duration: 2.8, ease: "easeInOut" }}
+        className="w-20 h-20 rounded-full border border-primary/20 flex items-center justify-center mb-6"
       >
         <motion.div
           animate={{
-            scale: breathPhase === "in" ? 1.2 : 0.8,
+            scale: breathPhase === "in" ? 1.3 : breathPhase === "hold" ? 1.3 : 0.7,
+            backgroundColor: breathPhase === "hold" 
+              ? "hsl(var(--primary) / 0.3)" 
+              : "hsl(var(--primary) / 0.15)"
           }}
-          transition={{ duration: 3.5, ease: "easeInOut" }}
-          className="w-6 h-6 rounded-full bg-primary/20"
+          transition={{ duration: 2.8, ease: "easeInOut" }}
+          className="w-8 h-8 rounded-full"
         />
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="text-center max-w-md"
+      {/* Nefes yönlendirmesi */}
+      <motion.p
+        key={breathPhase}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.6 }}
+        className="text-sm text-muted-foreground mb-12 h-6"
       >
-        <h1 className="font-serif text-3xl text-foreground mb-2">
-          {girisEsigi.baslik}
-        </h1>
-        <p className="text-sm text-muted-foreground mb-8">
-          {girisEsigi.altBaslik}
-        </p>
+        {breathText[breathPhase]}
+      </motion.p>
 
-        <p className="font-serif text-lg text-foreground whitespace-pre-line mb-12 leading-relaxed">
-          {girisEsigi.metin}
-        </p>
+      <AnimatePresence>
+        {showInvitation && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="text-center max-w-md"
+          >
+            <h1 className="font-serif text-3xl text-foreground mb-2">
+              {girisEsigi.baslik}
+            </h1>
+            <p className="text-sm text-muted-foreground mb-8">
+              {girisEsigi.altBaslik}
+            </p>
 
-        <Button
-          onClick={onReady}
-          size="lg"
-          className="rounded-full px-12 mb-8"
+            <p className="font-serif text-lg text-foreground whitespace-pre-line mb-8 leading-relaxed">
+              {girisEsigi.metin}
+            </p>
+
+            {/* Niyet cümlesi */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="bg-primary/5 rounded-lg p-4 mb-8 border-l-2 border-primary/20"
+            >
+              <p className="text-xs text-muted-foreground mb-2">Niyet:</p>
+              <p className="text-foreground font-serif italic">
+                "Bu alana açık kalp ve sessiz zihinle giriyorum."
+              </p>
+            </motion.div>
+
+            <Button
+              onClick={onReady}
+              size="lg"
+              className="rounded-full px-12 mb-8"
+              data-testid="giris-hazir-btn"
+            >
+              {girisEsigi.buton}
+            </Button>
+
+            <p className="text-xs text-muted-foreground/50 max-w-sm mx-auto">
+              {girisEsigi.uyari}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Nefes sayacı */}
+      {!showInvitation && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.3 }}
+          className="absolute bottom-12"
         >
-          {girisEsigi.buton}
-        </Button>
-
-        <p className="text-xs text-muted-foreground/50 max-w-sm mx-auto">
-          {girisEsigi.uyari}
-        </p>
-      </motion.div>
+          <p className="text-xs text-muted-foreground">
+            {breathCount < 3 ? `${3 - breathCount} nefes daha...` : ""}
+          </p>
+        </motion.div>
+      )}
     </motion.div>
   );
 };
