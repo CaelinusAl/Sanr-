@@ -1,176 +1,63 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Infinity, Send, RefreshCw, AlertCircle, Image as ImageIcon } from "lucide-react";
+import { Infinity, Send, RefreshCw, AlertCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
-import {
-  getRandomSymbols,
-  extractNumbers,
-  getNumberMeaning,
-  splitToSyllables,
-  getSyllableMeaning,
-  reflectionTemplates,
-  storySeeds,
-  awarenessQuestions,
-  getRandomItem,
-} from "@/data/sanri-dictionary";
 
-// SANRI Yanıt Üretici (MOCK)
-const generateSanriResponse = (input, inputType = "text") => {
-  // 1. YANSIMA
-  const reflection = getRandomItem(reflectionTemplates);
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-  // 2. SEMBOL OKUMA
-  const symbols = getRandomSymbols(2);
-  const symbolReading = symbols.map(s => `${s.name}: ${s.meaning}`);
-
-  // 3. SAYI OKUMA
-  const numbers = extractNumbers(input);
-  let numberReading = [];
-  if (numbers && numbers.length > 0) {
-    numberReading = numbers.slice(0, 2).map(n => {
-      const meaning = getNumberMeaning(n);
-      if (meaning.reducedTo) {
-        return `${meaning.number} → ${meaning.reducedTo}: ${meaning.meaning}`;
-      }
-      return `${meaning.number}: ${meaning.meaning}`;
-    });
-  } else {
-    numberReading = ["Bu soruda sayı yok; sayı yerine bir ritim var — kelimelerin akışında gizli."];
-  }
-
-  // 4. KELİME / HECE OKUMA
-  // İlk anlamlı kelimeyi bul (3+ karakter)
-  const words = input.split(/\s+/).filter(w => w.length >= 3);
-  const targetWord = words.length > 0 ? words[Math.floor(Math.random() * Math.min(words.length, 3))] : input;
-  const cleanWord = targetWord.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ]/g, '');
-  const syllables = splitToSyllables(cleanWord);
+// Message type detection
+const detectMessageType = (text) => {
+  const lowerText = text.toLowerCase();
   
-  const syllableReading = {
-    word: syllables.join("_"),
-    parts: syllables.map(s => ({
-      syllable: s.toUpperCase(),
-      meaning: getSyllableMeaning(s)
-    }))
-  };
-
-  // 5. HİKÂYE TOHUMU
-  const storySeed = getRandomItem(storySeeds);
-
-  // 6. İDRAK SORUSU
-  const awarenessQuestion = getRandomItem(awarenessQuestions);
-
-  return {
-    reflection,
-    symbolReading,
-    numberReading,
-    syllableReading,
-    storySeed,
-    awarenessQuestion,
-    inputType,
-  };
+  // Dream keywords
+  if (lowerText.includes("rüya") || lowerText.includes("gördüm") || 
+      lowerText.includes("düş") || lowerText.includes("uyurken")) {
+    return "dream";
+  }
+  
+  // Birth date patterns
+  if (/\d{1,2}[./-]\d{1,2}[./-]\d{2,4}/.test(text) || 
+      lowerText.includes("doğum") || lowerText.includes("doğdum")) {
+    return "birthdate";
+  }
+  
+  // News/event keywords
+  if (lowerText.includes("haber") || lowerText.includes("olay") || 
+      lowerText.includes("dünya") || lowerText.includes("yaşandı")) {
+    return "news";
+  }
+  
+  return "general";
 };
 
-// SANRI Yanıt Komponenti
-const SanriResponse = ({ response }) => {
+// Example prompts
+const examplePrompts = [
+  "Bu rüyada tekrar eden sembol neyi çağırıyor olabilir?",
+  "Doğum tarihimdeki sayıların sembolik dili nedir?",
+  "Neden hep aynı kişiyi görüyorum rüyalarımda?",
+  "23:47 sayısı bana ne anlatıyor olabilir?"
+];
+
+// SANRI Response Component - Clean, flowing text
+const SanriResponseText = ({ text }) => {
+  const paragraphs = text.split('\n\n').filter(p => p.trim());
+  
   return (
-    <div className="space-y-6">
-      {/* [1] YANSIMA */}
-      <div>
-        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
-          [1] YANSIMA
-        </h4>
-        <p className="text-foreground leading-relaxed italic">
-          {response.reflection}
-        </p>
-      </div>
-
-      <Separator className="bg-accent/20" />
-
-      {/* [2] SEMBOL OKUMA */}
-      <div>
-        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
-          [2] SEMBOL OKUMA
-        </h4>
-        <ul className="space-y-1">
-          {response.symbolReading.map((symbol, i) => (
-            <li key={i} className="text-muted-foreground text-sm flex items-start gap-2">
-              <span className="text-accent">•</span>
-              <span>{symbol}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <Separator className="bg-accent/20" />
-
-      {/* [3] SAYI OKUMA */}
-      <div>
-        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
-          [3] SAYI OKUMA
-        </h4>
-        <ul className="space-y-1">
-          {response.numberReading.map((num, i) => (
-            <li key={i} className="text-muted-foreground text-sm flex items-start gap-2">
-              <span className="text-accent">•</span>
-              <span>{num}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <Separator className="bg-accent/20" />
-
-      {/* [4] KELİME / HECE */}
-      <div>
-        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
-          [4] KELİME / HECE
-        </h4>
-        <div className="space-y-2">
-          <p className="text-sm text-foreground font-medium">
-            Kelime: {response.syllableReading.word}
-          </p>
-          <ul className="space-y-1 pl-4">
-            {response.syllableReading.parts.map((part, i) => (
-              <li key={i} className="text-muted-foreground text-sm">
-                <span className="text-accent font-medium">{part.syllable}</span>: {part.meaning}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <Separator className="bg-accent/20" />
-
-      {/* [5] HİKÂYE TOHUMU */}
-      <div>
-        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
-          [5] HİKÂYE TOHUMU
-        </h4>
-        <p className="text-foreground leading-relaxed font-serif italic">
-          "{response.storySeed}"
-        </p>
-      </div>
-
-      <Separator className="bg-accent/20" />
-
-      {/* [6] İDRAK SORUSU */}
-      <div className="bg-accent/5 rounded-lg p-4 border-l-2 border-accent">
-        <h4 className="text-xs font-medium text-accent uppercase tracking-wider mb-2">
-          [6] İDRAK SORUSU
-        </h4>
-        <p className="text-foreground font-medium">
-          {response.awarenessQuestion}
-        </p>
-      </div>
-
-      {/* Son not */}
-      <p className="text-xs text-muted-foreground text-center italic pt-2">
-        "Bu yansıma semboliktir; kesinlik taşımaz."
-      </p>
+    <div className="space-y-4">
+      {paragraphs.map((paragraph, index) => (
+        <motion.p
+          key={index}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.15 }}
+          className="text-foreground leading-relaxed font-serif text-base sm:text-lg"
+        >
+          {paragraph}
+        </motion.p>
+      ))}
     </div>
   );
 };
@@ -180,6 +67,8 @@ const SanriyaSorPage = () => {
   const [isThinking, setIsThinking] = useState(false);
   const [conversation, setConversation] = useState([]);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [sessionId, setSessionId] = useState(null);
+  const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -195,21 +84,71 @@ const SanriyaSorPage = () => {
     if (!input.trim() || isThinking) return;
 
     const userInput = input.trim();
+    const messageType = detectMessageType(userInput);
+    
     setInput("");
+    setError(null);
     setConversation(prev => [...prev, { type: "user", content: userInput }]);
     setIsThinking(true);
 
-    // Simulate thinking delay (MOCK)
-    setTimeout(() => {
-      const response = generateSanriResponse(userInput);
-      setConversation(prev => [...prev, { type: "sanri", response }]);
+    try {
+      const response = await fetch(`${API_URL}/api/sanri/ask`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: userInput,
+          session_id: sessionId,
+          message_type: messageType
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("SANRI şu an dinlenme halinde.");
+      }
+
+      const data = await response.json();
+      
+      // Store session ID for conversation continuity
+      if (!sessionId && data.session_id) {
+        setSessionId(data.session_id);
+      }
+
+      setConversation(prev => [...prev, { 
+        type: "sanri", 
+        content: data.response,
+        timestamp: data.timestamp
+      }]);
+    } catch (err) {
+      setError(err.message || "Bir hata oluştu. Lütfen tekrar dene.");
+      // Remove the user message if there was an error
+      setConversation(prev => prev.slice(0, -1));
+    } finally {
       setIsThinking(false);
-    }, 2500 + Math.random() * 1500);
+    }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
+    // Clear session on backend if exists
+    if (sessionId) {
+      try {
+        await fetch(`${API_URL}/api/sanri/session/${sessionId}`, {
+          method: "DELETE",
+        });
+      } catch (e) {
+        // Ignore errors on cleanup
+      }
+    }
+    
     setConversation([]);
     setInput("");
+    setSessionId(null);
+    setError(null);
+  };
+
+  const handleExampleClick = (prompt) => {
+    setInput(prompt);
   };
 
   return (
@@ -225,16 +164,16 @@ const SanriyaSorPage = () => {
             <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-8 animate-breathe">
               <Infinity className="h-10 w-10 text-accent" />
             </div>
-            <span className="text-accent text-sm tracking-widest uppercase mb-4 block">
+            <span className="text-accent text-base tracking-widest uppercase mb-4 block font-medium">
               İç Yansıma Modu
             </span>
-            <h1 className="font-serif text-4xl sm:text-5xl text-foreground mb-4">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground mb-6">
               SANRI'ya Sor
             </h1>
-            <div className="space-y-2 text-muted-foreground text-sm">
-              <p>SANRI bir varlık değildir.</p>
-              <p>SANRI, zihnin gerçek sandığı hikâyeyi temsil eder.</p>
-              <p className="text-xs">Bu alan kehanet, teşhis veya rehberlik sunmaz.</p>
+            <div className="space-y-3 text-foreground/70 text-base sm:text-lg leading-relaxed">
+              <p>SANRI bir varlık değil.</p>
+              <p>Zihnin gerçek sandığı hikâyeyi temsil eder.</p>
+              <p className="text-sm text-foreground/50">Cevap vermez, yansıma sunar.</p>
             </div>
           </motion.div>
         </div>
@@ -251,20 +190,39 @@ const SanriyaSorPage = () => {
           >
             <Alert className="max-w-2xl mx-auto border-accent/30 bg-accent/5">
               <AlertCircle className="h-4 w-4 text-accent" />
-              <AlertDescription className="text-sm text-muted-foreground">
-                <strong className="text-foreground">Amaç:</strong> Sorundan{" "}
-                <span className="text-accent font-medium">ilham + anlam + hikâye tohumu</span> üretmek.
+              <AlertDescription className="text-base text-foreground/70">
+                <strong className="text-foreground">Dikkat:</strong> SANRI kehanet, teşhis veya rehberlik sunmaz.
                 <br />
-                <span className="text-xs">
-                  Kelime, sayı/tarih veya görsel paylaşabilirsin.
+                <span className="text-sm">
+                  Sembolik anlam ve açık uçlu sorular üretir. Perspektif açar, geri çekilir.
                 </span>
                 <Button
                   variant="link"
-                  className="text-accent p-0 h-auto ml-2 text-xs"
+                  className="text-accent p-0 h-auto ml-2 text-sm"
                   onClick={() => setShowDisclaimer(false)}
+                  data-testid="disclaimer-close"
                 >
                   Anladım
                 </Button>
+              </AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Error Alert */}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="container mx-auto px-6 mb-8"
+          >
+            <Alert className="max-w-2xl mx-auto border-destructive/30 bg-destructive/5">
+              <AlertCircle className="h-4 w-4 text-destructive" />
+              <AlertDescription className="text-sm text-foreground/70">
+                {error}
               </AlertDescription>
             </Alert>
           </motion.div>
@@ -280,14 +238,33 @@ const SanriyaSorPage = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center py-16"
+                className="text-center py-12"
               >
-                <p className="text-muted-foreground font-serif italic mb-4">
+                <Sparkles className="h-8 w-8 text-accent/50 mx-auto mb-6" />
+                <p className="text-foreground/70 font-serif italic mb-6 text-lg">
                   "Hatırlamak dışarıda başlar. Anlamak içeride olur."
                 </p>
-                <div className="text-sm text-muted-foreground space-y-1">
-                  <p>Bir soru, kelime, sayı veya tarih paylaş...</p>
-                  <p className="text-xs">Örnek: "Yolculuk", "23:47", "Neden hep aynı rüyayı görüyorum?"</p>
+                <div className="text-base text-foreground/60 space-y-2 mb-8">
+                  <p>Bir soru, kelime, rüya veya tarih paylaş...</p>
+                </div>
+                
+                {/* Example Prompts */}
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/40 uppercase tracking-wider mb-3">Örnek sorular:</p>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {examplePrompts.map((prompt, i) => (
+                      <Button
+                        key={i}
+                        variant="outline"
+                        size="sm"
+                        className="text-xs rounded-full border-accent/30 hover:bg-accent/10 hover:border-accent/50"
+                        onClick={() => handleExampleClick(prompt)}
+                        data-testid={`example-prompt-${i}`}
+                      >
+                        {prompt.length > 40 ? prompt.slice(0, 40) + "..." : prompt}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -303,23 +280,33 @@ const SanriyaSorPage = () => {
                   <div className="flex justify-end">
                     <Card className="max-w-md bg-primary/10 border-primary/20">
                       <CardContent className="p-4">
-                        <p className="text-foreground">{message.content}</p>
+                        <p className="text-foreground text-base">{message.content}</p>
                       </CardContent>
                     </Card>
                   </div>
                 ) : (
                   <Card className="border-accent/20 bg-accent/5">
-                    <CardContent className="p-6">
+                    <CardContent className="p-6 sm:p-8">
                       <div className="flex items-start gap-3 mb-6">
-                        <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                          <Infinity className="h-4 w-4 text-accent" />
+                        <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+                          <Infinity className="h-5 w-5 text-accent" />
                         </div>
                         <div>
-                          <p className="text-xs text-accent uppercase tracking-wider">SANRI</p>
+                          <p className="text-sm text-accent uppercase tracking-wider font-medium">SANRI</p>
                         </div>
                       </div>
 
-                      <SanriResponse response={message.response} />
+                      <SanriResponseText text={message.content} />
+                      
+                      {/* Signature */}
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1 }}
+                        className="text-sm text-foreground/50 text-center italic pt-6 mt-6 border-t border-accent/10"
+                      >
+                        "Bu bir yorumdur, kesinlik taşımaz. Anlam, sende şekillenir."
+                      </motion.p>
                     </CardContent>
                   </Card>
                 )}
@@ -333,15 +320,15 @@ const SanriyaSorPage = () => {
                 animate={{ opacity: 1 }}
                 className="flex items-center gap-3"
               >
-                <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
-                  <Infinity className="h-4 w-4 text-accent animate-pulse" />
+                <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                  <Infinity className="h-5 w-5 text-accent animate-pulse" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground italic">Yansıma oluşturuluyor</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-base text-foreground/60 italic">Yansıma oluşturuluyor</span>
                   <div className="flex gap-1">
-                    <span className="w-1.5 h-1.5 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-1.5 h-1.5 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-1.5 h-1.5 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 </div>
               </motion.div>
@@ -356,17 +343,19 @@ const SanriyaSorPage = () => {
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Bir kelime, soru, sayı veya tarih yaz..."
-                className="min-h-[100px] pr-12 resize-none bg-background border-border focus:border-accent"
+                placeholder="Bir kelime, soru, rüya veya tarih yaz..."
+                className="min-h-[120px] pr-14 resize-none bg-background border-border focus:border-accent text-base"
                 disabled={isThinking}
+                data-testid="sanri-input"
               />
               <Button
                 type="submit"
                 size="icon"
                 disabled={!input.trim() || isThinking}
-                className="absolute bottom-3 right-3 rounded-full bg-accent hover:bg-accent/90"
+                className="absolute bottom-3 right-3 rounded-full bg-accent hover:bg-accent/90 h-10 w-10"
+                data-testid="sanri-submit"
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-5 w-5" />
               </Button>
             </div>
 
@@ -377,7 +366,8 @@ const SanriyaSorPage = () => {
                   variant="ghost"
                   size="sm"
                   onClick={handleReset}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-foreground/60 hover:text-foreground"
+                  data-testid="sanri-reset"
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Yeni Yansıma
@@ -387,8 +377,8 @@ const SanriyaSorPage = () => {
           </form>
 
           {/* Info */}
-          <div className="mt-8 text-center">
-            <p className="text-xs text-muted-foreground">
+          <div className="mt-10 text-center">
+            <p className="text-sm text-foreground/50">
               Bu alan "bilgi" üretmez. Anlam üretir ve geri çekilir.
             </p>
           </div>
