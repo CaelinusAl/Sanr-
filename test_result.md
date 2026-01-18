@@ -202,13 +202,19 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Homepage rendering and navigation"
     - "Cities page routing and display"
     - "Navigation between pages"
-  stuck_tasks: []
+  stuck_tasks:
+    - "Cities page routing and display"
+    - "Navigation between pages"
+    - "SANRI chat interface"
+    - "Reading layers page"
+    - "About page content"
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
     - agent: "testing"
     - message: "Starting comprehensive testing of Caelinus application. Will focus on routing issues first, then test all major functionality including homepage, cities page, navigation, SANRI chat, reading layers, and about page."
+    - agent: "testing"
+    - message: "CRITICAL FINDINGS: The application has a major React Router configuration issue. While the homepage displays beautifully with correct Turkish content, ALL navigation is broken. Users cannot access any pages beyond the homepage (/sehirler, /sanriya-sor, /okuma-katmanlari, /hakkinda). The routing system needs immediate attention. The application is also in 'Frontend Preview Only' mode which may be contributing to the issue."
