@@ -138,12 +138,29 @@
         font-family: 'Inter', sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        /* Improved base font size for accessibility */
+        font-size: 16px;
+        line-height: 1.7;
     }
     
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Cormorant Garamond', serif;
         font-weight: 500;
         letter-spacing: -0.01em;
+        line-height: 1.3;
+    }
+    
+    /* Accessibility: Improved heading sizes */
+    h1 {
+        line-height: 1.2;
+    }
+    
+    h2 {
+        line-height: 1.25;
+    }
+    
+    p {
+        letter-spacing: 0.01em;
     }
     
     .font-serif {
