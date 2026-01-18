@@ -8,7 +8,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const navLinks = [
   { href: "/", label: "Başlangıç" },
   { href: "/sehirler", label: "Şehirler" },
-  { href: "/okuma-katmanlari", label: "Okuma Katmanları" },
+  { href: "/bilinc", label: "Bilinç" },
+  { href: "/frekans", label: "Frekans" },
   { href: "/sanriya-sor", label: "SANRI'ya Sor" },
   { href: "/hakkinda", label: "Hakkında" },
 ];
