@@ -31,7 +31,8 @@ const HomePage = () => {
               backgroundImage: `url('https://images.unsplash.com/photo-1768278929581-7f38d1ce1fb2?w=1920&q=80')`,
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
+          {/* Stronger overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
         </motion.div>
 
         {/* Hero Content */}
@@ -45,14 +46,14 @@ const HomePage = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mb-6"
           >
-            <span className="text-primary font-serif text-2xl">∞</span>
+            <span className="text-primary font-serif text-2xl hero-text-shadow">∞</span>
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-foreground mb-8 leading-tight tracking-tight"
+            className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-foreground mb-8 leading-tight tracking-tight hero-text-shadow"
           >
             Anadolu'nun
             <span className="block text-gradient">Uyanan Tanrıçaları</span>
@@ -62,7 +63,7 @@ const HomePage = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-xl sm:text-2xl text-foreground/80 mb-4 font-serif tracking-wide"
+            className="text-xl sm:text-2xl text-foreground mb-4 font-serif tracking-wide text-shadow-subtle"
           >
             01'den 81'e Ruh Haritası
           </motion.p>
@@ -71,7 +72,7 @@ const HomePage = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
-            className="text-lg sm:text-xl text-foreground/70 mb-16 max-w-lg mx-auto leading-relaxed"
+            className="text-lg sm:text-xl text-foreground/80 mb-16 max-w-lg mx-auto leading-relaxed text-shadow-subtle"
           >
             Bu kitap harita değil. Kayıp hafızanın frekans kaydıdır.
           </motion.p>
@@ -82,13 +83,13 @@ const HomePage = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="flex flex-col sm:flex-row gap-4 justify-center mb-20"
           >
-            <Button asChild size="lg" className="rounded-full px-10 py-6 text-lg bg-primary hover:bg-primary/90">
+            <Button asChild size="lg" className="rounded-full px-10 py-6 text-lg bg-primary hover:bg-primary/90 shadow-lg">
               <Link to="/sehirler">
                 <MapPin className="mr-2 h-5 w-5" />
                 Haritayı Keşfet
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="rounded-full px-10 py-6 text-lg border-2">
+            <Button asChild variant="outline" size="lg" className="rounded-full px-10 py-6 text-lg border-2 bg-background/80 backdrop-blur-sm">
               <Link to="/hakkinda">
                 Kitap Hakkında
               </Link>
@@ -102,9 +103,9 @@ const HomePage = () => {
             transition={{ delay: 1.2 }}
             className="mt-8"
           >
-            <div className="flex flex-col items-center gap-3 text-foreground/60">
-              <span className="text-sm tracking-widest uppercase font-medium">Keşfet</span>
-              <span className="text-sm">Her yolculuk bir soruyla başlar.</span>
+            <div className="flex flex-col items-center gap-3 text-foreground/70">
+              <span className="text-sm tracking-widest uppercase font-medium text-shadow-subtle">Keşfet</span>
+              <span className="text-sm text-shadow-subtle">Her yolculuk bir soruyla başlar.</span>
               <motion.div
                 animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
