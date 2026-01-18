@@ -526,7 +526,7 @@ const KapiDeneyimi = ({ kapi, onBack, onComplete }) => {
           <motion.div
             initial={{ y: 0 }}
             animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ duration: 3, repeat: 2, ease: "easeInOut" }}
             className="mb-12"
           >
             <Infinity className="h-16 w-16 text-accent/40 mx-auto" />
