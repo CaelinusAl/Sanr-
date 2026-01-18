@@ -1,0 +1,43 @@
+<analysis>
+
+    PROJECT SUMMARY – DO NOT REBUILD FROM SCRATCH
+
+Project name:
+CAELINUS – Anadolu’nun Uyanan Tanrıçaları
+
+This is NOT a chatbot and NOT a standard app.
+It is a consciousness, symbolism, and frequency-based experience
+inspired by the book “Anadolu’nun Uyanan Tanrıçaları”.
+
+CORE INTENT:
+Transfer awareness, balance, and inner reflection.
+No guidance, no prediction, no authority voice.
+
+ALREADY BUILT STRUCTURE (DO NOT RECREATE):
+- Home page (map-based entry, “Haritayı Keşfet”)
+- Cities (01–81 symbolic city consciousness)
+- Bilinç Page (awareness & perception)
+- Frekans Page (micro-texts & frequency alignment)
+- Ritüel Alanı (symbolic inner rituals, no instruction)
+- SANRI’ya Sor (reflection & balance, Selin Irmak tone)
+
+SANRI DEFINITION:
+SANRI is not an entity or consciousness.
+SANRI mirrors the user gently, grounds them, and restores balance.
+Warm, poetic, human language.
+Never robotic, never cold.
+
+IMPORTANT RULES:
+- Do NOT redesign UI
+- Do NOT rebuild pages
+- Do NOT create new sections
+- Only reconnect logic, content flow, and tone
+
+CURRENT STATUS:
+Ritual Area was created successfully.
+Context was lost due to session limit.
+
+TASK FOR NEW SESSION:
+Reconnect to the existing CAELINUS app structure
+and continue from the Ritual Area integration.
+</analysis>
