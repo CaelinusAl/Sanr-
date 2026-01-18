@@ -218,7 +218,7 @@ const HomePage = () => {
       </section>
 
       {/* Quote Section */}
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-28 relative overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-10"
           style={{
@@ -231,13 +231,13 @@ const HomePage = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto text-center"
+            className="max-w-4xl mx-auto text-center"
           >
-            <Sparkles className="h-8 w-8 text-primary mx-auto mb-8" />
-            <blockquote className="font-serif text-3xl sm:text-4xl text-foreground leading-relaxed mb-8">
+            <Sparkles className="h-10 w-10 text-primary mx-auto mb-10" />
+            <blockquote className="font-serif text-3xl sm:text-4xl md:text-5xl text-foreground leading-relaxed mb-10">
               "Bu sistem bilgi değil, ilham, anlam ve hikâye üretir."
             </blockquote>
-            <p className="text-muted-foreground">
+            <p className="text-foreground/70 text-lg sm:text-xl">
               Caelinus AI, perspektif açar ve geri çekilir.
             </p>
           </motion.div>
@@ -245,7 +245,7 @@ const HomePage = () => {
       </section>
 
       {/* Features Grid */}
-      <section className="py-24 bg-muted/30">
+      <section className="py-28 bg-muted/30">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -253,8 +253,8 @@ const HomePage = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="font-serif text-4xl text-foreground mb-4">Temel İlkeler</h2>
-            <p className="text-muted-foreground">Bu deneyimin rehber prensipleri</p>
+            <h2 className="font-serif text-4xl sm:text-5xl text-foreground mb-6">Temel İlkeler</h2>
+            <p className="text-foreground/70 text-lg sm:text-xl">Bu deneyimin rehber prensipleri</p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -272,12 +272,12 @@ const HomePage = () => {
                 transition={{ delay: index * 0.1 }}
               >
                 <Card className="h-full border-border/50 bg-background/50">
-                  <CardContent className="p-6">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                      <span className="text-primary font-serif text-sm">{index + 1}</span>
+                  <CardContent className="p-8">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-5">
+                      <span className="text-primary font-serif text-lg">{index + 1}</span>
                     </div>
-                    <h4 className="font-serif text-lg text-foreground mb-2">{item.title}</h4>
-                    <p className="text-sm text-muted-foreground">{item.desc}</p>
+                    <h4 className="font-serif text-xl sm:text-2xl text-foreground mb-3">{item.title}</h4>
+                    <p className="text-base text-foreground/70 leading-relaxed">{item.desc}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -287,32 +287,32 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24">
+      <section className="py-28">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="max-w-2xl mx-auto text-center"
+            className="max-w-3xl mx-auto text-center"
           >
-            <BookOpen className="h-12 w-12 text-primary mx-auto mb-8" />
-            <h2 className="font-serif text-4xl text-foreground mb-6">
+            <BookOpen className="h-14 w-14 text-primary mx-auto mb-10" />
+            <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground mb-8 leading-tight">
               Yolculuğa Başla
             </h2>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-foreground/70 mb-10 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto">
               Kitap, uygulama ve anlatı yapay zekasını birleştiren bu sakin, premium, 
               sembolik deneyime adım at.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="rounded-full px-8">
+              <Button asChild size="lg" className="rounded-full px-10 py-6 text-lg">
                 <Link to="/sehirler">
-                  <MapPin className="mr-2 h-4 w-4" />
+                  <MapPin className="mr-2 h-5 w-5" />
                   Şehirleri Keşfet
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="rounded-full px-8">
+              <Button asChild variant="outline" size="lg" className="rounded-full px-10 py-6 text-lg border-2">
                 <Link to="/sanriya-sor">
-                  <Infinity className="mr-2 h-4 w-4" />
+                  <Infinity className="mr-2 h-5 w-5" />
                   SANRI'ya Sor
                 </Link>
               </Button>
