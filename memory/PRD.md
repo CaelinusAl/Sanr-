@@ -79,6 +79,14 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - Text shadow eklendi (arka plan üzerinde okunabilirlik)
 - Butonlara backdrop blur ve shadow eklendi
 
+### SANRI'ya Sor - LLM Entegrasyonu (19 Ocak 2026)
+- Claude Sonnet 4.5 ile gerçek AI yanıtları
+- Selin'in tonu: sıcak, şiirsel, insani - asla robotik
+- Rüya, doğum tarihi, haber sembolik yorumlama
+- Session-based konuşma desteği
+- Backend: `/api/sanri/ask` endpoint
+- Mock yapı kaldırıldı, gerçek AI aktif
+
 ## Gelecek Görevler (Backlog)
 - [ ] SANRI'ya Sor için LLM entegrasyonu (opsiyonel)
 - [ ] Görsel/fotoğraf analizi özelliği
