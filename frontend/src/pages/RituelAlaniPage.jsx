@@ -565,7 +565,7 @@ const KapiDeneyimi = ({ kapi, onBack, onComplete }) => {
             animate={{ 
               rotate: [0, 5, -5, 0],
             }}
-            transition={{ duration: 4, repeat: Infinity }}
+            transition={{ duration: 4, repeat: 3 }}
           >
             <Lock className="h-10 w-10 text-primary mx-auto mb-6" />
           </motion.div>
