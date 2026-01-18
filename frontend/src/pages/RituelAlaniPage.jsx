@@ -8,12 +8,24 @@ import {
   Lock,
   Unlock,
   X,
-  Infinity
+  Infinity,
+  Clock,
+  Play,
+  Pause,
+  RotateCcw,
+  Heart,
+  Flame,
+  Moon,
+  Sun,
+  BookOpen,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   kapilar, 
   ritueller, 
@@ -26,8 +38,388 @@ import {
   getRandomRituelSonuSoru,
   kapiGecis
 } from "@/data/rituel-data";
+import {
+  mikroRitueller,
+  derinRitueller,
+  kapanisRituelleri,
+  kitap112Rituelleri,
+  getBugunRitueli,
+  getRituelById
+} from "@/data/rituel-112-data";
 
-// Giriş Eşiği - Niyet Kapısı
+// ============================================
+// YENİ: Ritüel Modülleri Componenti
+// ============================================
+
+const RituelModulleri = ({ onStartRituel }) => {
+  const bugunRitueli = getBugunRitueli();
+
+  return (
+    <div className="space-y-8">
+      {/* Bugünün Ritüeli */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <Card className="border-accent/30 bg-gradient-to-br from-accent/5 to-primary/5 overflow-hidden">
+          <CardContent className="p-6 sm:p-8">
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-accent/20 flex items-center justify-center shrink-0">
+                <Sun className="h-7 w-7 text-accent" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs text-accent uppercase tracking-wider font-medium">Bugünün Ritüeli</span>
+                  <span className="text-xs text-foreground/50 bg-foreground/10 px-2 py-0.5 rounded-full">
+                    {bugunRitueli.duration}
+                  </span>
+                </div>
+                <h3 className="font-serif text-xl sm:text-2xl text-foreground mb-2">{bugunRitueli.title}</h3>
+                <p className="text-sm text-foreground/60 mb-4">{bugunRitueli.intention}</p>
+                <Button 
+                  onClick={() => onStartRituel(bugunRitueli)}
+                  className="rounded-full bg-accent hover:bg-accent/90"
+                  data-testid="bugun-rituel-btn"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  Başlat
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Üç Ana Modül */}
+      <div className="grid sm:grid-cols-3 gap-4">
+        {/* Mikro Ritüel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card className="h-full border-border/50 bg-card/50 hover:bg-card transition-all group">
+            <CardContent className="p-5">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                <Clock className="h-5 w-5 text-primary" />
+              </div>
+              <h4 className="font-serif text-lg text-foreground mb-1">Mikro Ritüel</h4>
+              <p className="text-xs text-foreground/50 mb-3">1-3 dakika</p>
+              <p className="text-sm text-foreground/60 mb-4">
+                Günlük akışı bozmadan, hızlı farkındalık anları.
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full rounded-full"
+                onClick={() => onStartRituel(mikroRitueller[0])}
+                data-testid="mikro-rituel-btn"
+              >
+                Seç
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Derin Ritüel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Card className="h-full border-border/50 bg-card/50 hover:bg-card transition-all group">
+            <CardContent className="p-5">
+              <div className="w-10 h-10 rounded-xl bg-emphasis/10 flex items-center justify-center mb-4 group-hover:bg-emphasis/20 transition-colors">
+                <Flame className="h-5 w-5 text-emphasis" />
+              </div>
+              <h4 className="font-serif text-lg text-foreground mb-1">Derin Ritüel</h4>
+              <p className="text-xs text-foreground/50 mb-3">7-12 dakika</p>
+              <p className="text-sm text-foreground/60 mb-4">
+                İçe yolculuk, dönüşüm, bırakma çalışmaları.
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full rounded-full"
+                onClick={() => onStartRituel(derinRitueller[0])}
+                data-testid="derin-rituel-btn"
+              >
+                Seç
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Niyet & Kapanış */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <Card className="h-full border-border/50 bg-card/50 hover:bg-card transition-all group">
+            <CardContent className="p-5">
+              <div className="w-10 h-10 rounded-xl bg-anatolian/10 flex items-center justify-center mb-4 group-hover:bg-anatolian/20 transition-colors">
+                <Moon className="h-5 w-5 text-anatolian" />
+              </div>
+              <h4 className="font-serif text-lg text-foreground mb-1">Niyet & Kapanış</h4>
+              <p className="text-xs text-foreground/50 mb-3">1 dakika</p>
+              <p className="text-sm text-foreground/60 mb-4">
+                Günü bilinçli başlat veya bitir.
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full rounded-full"
+                onClick={() => onStartRituel(kapanisRituelleri[0])}
+                data-testid="kapanis-rituel-btn"
+              >
+                Seç
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// YENİ: 112 Ritüelleri Listesi
+// ============================================
+
+const Rituel112Listesi = ({ onStartRituel }) => {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-3 mb-6">
+        <BookOpen className="h-6 w-6 text-primary" />
+        <div>
+          <h3 className="font-serif text-xl text-foreground">112. Kitap Ritüelleri</h3>
+          <p className="text-sm text-foreground/60">Kendini Yaratan Tanrıça</p>
+        </div>
+      </div>
+
+      <div className="grid gap-3">
+        {kitap112Rituelleri.map((rituel, index) => (
+          <motion.div
+            key={rituel.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.05 }}
+          >
+            <Card 
+              className="border-border/50 bg-card/50 hover:bg-card hover:border-primary/30 transition-all cursor-pointer group"
+              onClick={() => onStartRituel(rituel)}
+              data-testid={`rituel-112-${rituel.id}`}
+            >
+              <CardContent className="p-4 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                  <span className="font-serif text-primary">{rituel.chapter}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-serif text-base text-foreground truncate">{rituel.title}</h4>
+                    <span className="text-xs text-foreground/40 bg-foreground/5 px-2 py-0.5 rounded-full shrink-0">
+                      {rituel.duration}
+                    </span>
+                  </div>
+                  <p className="text-xs text-foreground/50 truncate">{rituel.description}</p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-foreground/30 group-hover:text-primary transition-colors shrink-0" />
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Güvenlik Notu */}
+      <Alert className="border-accent/20 bg-accent/5 mt-6">
+        <AlertCircle className="h-4 w-4 text-accent" />
+        <AlertDescription className="text-sm text-foreground/60">
+          Bu ritüeller terapi veya teşhis değildir. Duygusal zorlanma yaşıyorsanız profesyonel destek almanızı öneririz.
+        </AlertDescription>
+      </Alert>
+    </div>
+  );
+};
+
+// ============================================
+// YENİ: Adım Adım Ritüel Deneyimi
+// ============================================
+
+const RituelDeneyimi = ({ rituel, onClose, onComplete }) => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(rituel.steps[0]?.duration || 10);
+  const [isCompleted, setIsCompleted] = useState(false);
+
+  const step = rituel.steps[currentStep];
+  const totalSteps = rituel.steps.length;
+  const progress = ((currentStep + 1) / totalSteps) * 100;
+
+  useEffect(() => {
+    if (isPaused || isCompleted) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          // Sonraki adıma geç
+          if (currentStep < totalSteps - 1) {
+            setCurrentStep(currentStep + 1);
+            return rituel.steps[currentStep + 1]?.duration || 10;
+          } else {
+            // Ritüel tamamlandı
+            setIsCompleted(true);
+            return 0;
+          }
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [currentStep, isPaused, isCompleted, rituel.steps, totalSteps]);
+
+  const handleRestart = () => {
+    setCurrentStep(0);
+    setTimeLeft(rituel.steps[0]?.duration || 10);
+    setIsCompleted(false);
+    setIsPaused(false);
+  };
+
+  if (isCompleted) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="fixed inset-0 z-50 bg-background flex items-center justify-center px-6"
+      >
+        <div className="max-w-md w-full text-center">
+          <motion.div
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring" }}
+          >
+            <Heart className="h-12 w-12 text-accent mx-auto mb-6" />
+          </motion.div>
+          
+          <h2 className="font-serif text-3xl text-foreground mb-4">Tamamlandı</h2>
+          <p className="text-foreground/60 mb-8">{rituel.title}</p>
+          
+          <p className="font-serif text-lg text-foreground/80 italic mb-8">
+            "Şimdi bir an dur. Bu anı hisset."
+          </p>
+
+          <div className="flex gap-4 justify-center">
+            <Button variant="outline" onClick={handleRestart} className="rounded-full">
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Tekrarla
+            </Button>
+            <Button onClick={onComplete || onClose} className="rounded-full">
+              Bitir
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="fixed inset-0 z-50 bg-background flex flex-col"
+    >
+      {/* Header */}
+      <div className="p-4 flex items-center justify-between">
+        <Button variant="ghost" size="sm" onClick={onClose}>
+          <X className="h-5 w-5" />
+        </Button>
+        <span className="text-sm text-foreground/50">{rituel.title}</span>
+        <span className="text-sm text-foreground/50">{currentStep + 1}/{totalSteps}</span>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="h-1 bg-muted mx-4 rounded-full overflow-hidden">
+        <motion.div 
+          className="h-full bg-primary"
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.3 }}
+        />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center px-6">
+        <div className="text-center max-w-lg">
+          {/* Nefes Animasyonu */}
+          <motion.div
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.5, 1, 0.5],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="w-24 h-24 rounded-full border border-primary/30 flex items-center justify-center mx-auto mb-12"
+          >
+            <motion.div
+              animate={{
+                scale: [0.7, 1, 0.7],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="w-10 h-10 rounded-full bg-primary/20"
+            />
+          </motion.div>
+
+          {/* Adım Metni */}
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={currentStep}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="font-serif text-2xl sm:text-3xl text-foreground leading-relaxed"
+            >
+              {step.text}
+            </motion.p>
+          </AnimatePresence>
+
+          {/* Zamanlayıcı */}
+          <motion.div 
+            className="mt-12 text-4xl font-light text-foreground/30"
+            key={timeLeft}
+          >
+            {timeLeft}
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="p-6 flex justify-center gap-4">
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full h-12 w-12"
+          onClick={() => setIsPaused(!isPaused)}
+        >
+          {isPaused ? <Play className="h-5 w-5" /> : <Pause className="h-5 w-5" />}
+        </Button>
+      </div>
+    </motion.div>
+  );
+};
+
+// ============================================
+// MEVCUT: Giriş Eşiği Component
+// ============================================
+
 const GirisEsigi = ({ onReady }) => {
   const [breathPhase, setBreathPhase] = useState("in");
   const [breathCount, setBreathCount] = useState(0);
@@ -48,7 +440,6 @@ const GirisEsigi = ({ onReady }) => {
     if (breathPhase === "in") {
       setBreathCount(prev => prev + 1);
     }
-    // 3 nefes sonrası daveti göster
     if (breathCount >= 2 && !showInvitation) {
       setTimeout(() => setShowInvitation(true), 2000);
     }
@@ -65,9 +456,8 @@ const GirisEsigi = ({ onReady }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen flex flex-col items-center justify-center px-6"
+      className="min-h-[70vh] flex flex-col items-center justify-center px-6"
     >
-      {/* Nefes animasyonu - Merkez */}
       <motion.div
         animate={{
           scale: breathPhase === "in" ? 1.4 : breathPhase === "hold" ? 1.4 : 1,
@@ -88,7 +478,6 @@ const GirisEsigi = ({ onReady }) => {
         />
       </motion.div>
 
-      {/* Nefes yönlendirmesi */}
       <motion.p
         key={breathPhase}
         initial={{ opacity: 0 }}
@@ -117,7 +506,6 @@ const GirisEsigi = ({ onReady }) => {
               {girisEsigi.metin}
             </p>
 
-            {/* Niyet cümlesi */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -146,7 +534,6 @@ const GirisEsigi = ({ onReady }) => {
         )}
       </AnimatePresence>
 
-      {/* Nefes sayacı */}
       {!showInvitation && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -162,14 +549,17 @@ const GirisEsigi = ({ onReady }) => {
   );
 };
 
-// KAPI Seçim Ekranı
+// ============================================
+// MEVCUT: Kapı Seçimi Component (Kısaltılmış)
+// ============================================
+
 const KapiSecimi = ({ onSelectKapi }) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="py-12"
+      className="py-8"
     >
       <div className="text-center mb-12">
         <span className="text-primary/60 text-xs tracking-[0.3em] uppercase mb-2 block">
@@ -219,7 +609,6 @@ const KapiSecimi = ({ onSelectKapi }) => {
         ))}
       </div>
 
-      {/* Alt bilgi */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -234,573 +623,23 @@ const KapiSecimi = ({ onSelectKapi }) => {
   );
 };
 
-// KAPI Deneyimi - Bilinç ve Frekans ile Derinleştirilmiş Ritüel
-const KapiDeneyimi = ({ kapi, onBack, onComplete }) => {
-  // 0: giriş, 1: bilinç, 2: dur, 3: hisset, 4: birak, 5: mühür, 6: tamamlandı
-  const [asama, setAsama] = useState(0);
-  const [muhurMetin, setMuhurMetin] = useState("");
-  const [showRituel, setShowRituel] = useState(false);
-  const [selectedRituel, setSelectedRituel] = useState(null);
-  const [durText, setDurText] = useState("");
-  const [hissetText, setHissetText] = useState("");
-  const [birakText, setBirakText] = useState("");
-  const [muhurYansima, setMuhurYansima] = useState("");
-  const [rituelSonuSoru, setRituelSonuSoru] = useState("");
+// ============================================
+// ANA SAYFA
+// ============================================
 
-  const baglantiliRitueller = getRituellerByKapi(kapi.id);
-  const bilincKatmani = getBilincKatmani(kapi.id);
+const RituelAlaniPage = () => {
+  const [screen, setScreen] = useState("ana"); // ana, giris, kapilar, deneyim
+  const [selectedKapi, setSelectedKapi] = useState(null);
+  const [activeRituel, setActiveRituel] = useState(null);
+  const [activeTab, setActiveTab] = useState("moduller");
 
-  // Aşama geçişleri
-  useEffect(() => {
-    if (asama === 2) {
-      setDurText(getRandomFrekansTitresim("dur"));
-      const timer = setTimeout(() => setAsama(3), 6000);
-      return () => clearTimeout(timer);
-    }
-    if (asama === 3) {
-      setHissetText(getRandomFrekansTitresim("hisset"));
-      const timer = setTimeout(() => setAsama(4), 8000);
-      return () => clearTimeout(timer);
-    }
-    if (asama === 4) {
-      setBirakText(getRandomFrekansTitresim("birak"));
-      const timer = setTimeout(() => setAsama(5), 6000);
-      return () => clearTimeout(timer);
-    }
-  }, [asama]);
-
-  const handleMuhur = () => {
-    if (muhurMetin.trim()) {
-      localStorage.setItem(`muhur-kapi-${kapi.id}`, muhurMetin);
-    }
-    setMuhurYansima(getRandomMuhurYansima());
-    setRituelSonuSoru(getRandomRituelSonuSoru());
-    setAsama(6);
+  const handleStartRituel = (rituel) => {
+    setActiveRituel(rituel);
   };
 
-  // Giriş Aşaması
-  if (asama === 0) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-center py-12"
-      >
-        <Button
-          variant="ghost"
-          onClick={onBack}
-          className="absolute top-4 left-4"
-          data-testid="kapi-geri-btn"
-        >
-          <ChevronLeft className="h-4 w-4 mr-2" />
-          Geri
-        </Button>
-
-        <motion.div 
-          className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-8"
-          animate={{ 
-            boxShadow: [
-              "0 0 0 0 hsl(var(--primary) / 0.1)",
-              "0 0 0 20px hsl(var(--primary) / 0)",
-            ]
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <span className="font-serif text-4xl text-primary">{kapi.symbol}</span>
-        </motion.div>
-
-        <p className="text-sm text-muted-foreground mb-2">{kapi.subtitle}</p>
-        <h2 className="font-serif text-4xl text-foreground mb-8">{kapi.title}</h2>
-
-        <div className="max-w-md mx-auto mb-8">
-          <p className="font-serif text-lg text-foreground leading-relaxed mb-6">
-            "{kapi.frekans}"
-          </p>
-          <p className="text-muted-foreground italic">
-            {kapi.davet}
-          </p>
-        </div>
-
-        <Separator className="max-w-xs mx-auto mb-8" />
-
-        <div className="bg-accent/5 rounded-lg p-4 max-w-sm mx-auto mb-8 border-l-2 border-accent">
-          <p className="text-sm text-muted-foreground mb-1">Sembolik Soru:</p>
-          <p className="text-foreground font-medium">"{kapi.soru}"</p>
-        </div>
-
-        <Button 
-          onClick={() => setAsama(1)} 
-          className="rounded-full px-8"
-          data-testid="rituel-basla-btn"
-        >
-          Ritüele Başla
-        </Button>
-
-        {baglantiliRitueller.length > 0 && (
-          <div className="mt-12">
-            <p className="text-xs text-muted-foreground mb-4">
-              Bu kapıya bağlı ritüel:
-            </p>
-            {baglantiliRitueller.map(rituel => (
-              <Button
-                key={rituel.id}
-                variant="outline"
-                size="sm"
-                className="rounded-full"
-                onClick={() => {
-                  setSelectedRituel(rituel);
-                  setShowRituel(true);
-                }}
-                data-testid={`rituel-${rituel.id}-btn`}
-              >
-                {rituel.icon} {rituel.title}
-              </Button>
-            ))}
-          </div>
-        )}
-      </motion.div>
-    );
-  }
-
-  // BİLİNÇ KATMANI - Yeni Aşama
-  if (asama === 1) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="fixed inset-0 flex items-center justify-center z-50 bg-background px-6"
-      >
-        <div className="max-w-lg w-full text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <p className="text-xs text-accent uppercase tracking-widest mb-8">
-              Bilinç Katmanı
-            </p>
-            
-            <p className="font-serif text-2xl text-foreground mb-6 leading-relaxed">
-              {bilincKatmani.giris}
-            </p>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.5 }}
-              className="text-muted-foreground mb-8 leading-relaxed"
-            >
-              {bilincKatmani.derinlik}
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 3 }}
-              className="bg-primary/5 rounded-lg p-4 mb-8"
-            >
-              <p className="font-serif text-foreground italic">
-                "{bilincKatmani.frekans}"
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 4.5 }}
-            >
-              <p className="text-xs text-muted-foreground mb-6">
-                {kapiGecis.oncesi}
-              </p>
-              <Button 
-                onClick={() => setAsama(2)} 
-                className="rounded-full px-8"
-                data-testid="bilinc-devam-btn"
-              >
-                İçeri Gir
-              </Button>
-            </motion.div>
-          </motion.div>
-        </div>
-      </motion.div>
-    );
-  }
-
-  // DUR Aşaması - Derinleştirilmiş
-  if (asama === 2) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, backgroundColor: "transparent" }}
-        animate={{ opacity: 1, backgroundColor: "hsl(var(--background))" }}
-        className="fixed inset-0 flex items-center justify-center z-50"
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center px-6"
-        >
-          <motion.h2 
-            className="font-serif text-6xl text-foreground mb-12"
-            animate={{ opacity: [1, 0.7, 1] }}
-            transition={{ duration: 3, repeat: 2 }}
-          >
-            DUR
-          </motion.h2>
-          <p className="font-serif text-xl text-muted-foreground whitespace-pre-line mb-8">
-            {durText}
-          </p>
-          <motion.div
-            className="flex justify-center gap-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.3 }}
-            transition={{ delay: 2 }}
-          >
-            <span className="w-2 h-2 bg-primary/50 rounded-full animate-pulse" />
-            <span className="w-2 h-2 bg-primary/50 rounded-full animate-pulse" style={{ animationDelay: "0.3s" }} />
-            <span className="w-2 h-2 bg-primary/50 rounded-full animate-pulse" style={{ animationDelay: "0.6s" }} />
-          </motion.div>
-        </motion.div>
-      </motion.div>
-    );
-  }
-
-  // HİSSET Aşaması - Derinleştirilmiş
-  if (asama === 3) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="fixed inset-0 flex items-center justify-center z-50 bg-background"
-      >
-        <div className="text-center px-6">
-          {/* Nefes animasyonu - Büyük */}
-          <motion.div
-            animate={{
-              scale: [1, 1.5, 1],
-              opacity: [0.4, 1, 0.4],
-            }}
-            transition={{
-              duration: 7,
-              repeat: 2,
-              ease: "easeInOut",
-            }}
-            className="w-32 h-32 rounded-full border border-primary/20 flex items-center justify-center mx-auto mb-12"
-          >
-            <motion.div
-              animate={{
-                scale: [0.6, 1, 0.6],
-              }}
-              transition={{
-                duration: 7,
-                repeat: 2,
-                ease: "easeInOut",
-              }}
-              className="w-12 h-12 rounded-full bg-primary/15"
-            />
-          </motion.div>
-
-          <h2 className="font-serif text-4xl text-foreground mb-4">
-            HİSSET
-          </h2>
-          <p className="font-serif text-lg text-muted-foreground mb-8">
-            {hissetText}
-          </p>
-          <p className="text-xs text-muted-foreground/50">
-            Zihnin sustuğu yerde kal.
-          </p>
-        </div>
-      </motion.div>
-    );
-  }
-
-  // BIRAK Aşaması - Yeni
-  if (asama === 4) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="fixed inset-0 flex items-center justify-center z-50 bg-background"
-      >
-        <div className="text-center px-6">
-          <motion.div
-            initial={{ y: 0 }}
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 3, repeat: 2, ease: "easeInOut" }}
-            className="mb-12"
-          >
-            <Infinity className="h-16 w-16 text-accent/40 mx-auto" />
-          </motion.div>
-
-          <h2 className="font-serif text-4xl text-foreground mb-4">
-            BIRAK
-          </h2>
-          <p className="font-serif text-lg text-muted-foreground mb-8">
-            {birakText}
-          </p>
-          
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
-            transition={{ delay: 2 }}
-            className="text-xs text-muted-foreground"
-          >
-            {kapiGecis.gecis}
-          </motion.p>
-        </div>
-      </motion.div>
-    );
-  }
-
-  // MÜHÜR Aşaması - Derinleştirilmiş
-  if (asama === 5) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="fixed inset-0 flex items-center justify-center z-50 bg-background px-6"
-      >
-        <div className="max-w-md w-full text-center">
-          <motion.div
-            animate={{ 
-              rotate: [0, 5, -5, 0],
-            }}
-            transition={{ duration: 4, repeat: 3 }}
-          >
-            <Lock className="h-10 w-10 text-primary mx-auto mb-6" />
-          </motion.div>
-          
-          <h2 className="font-serif text-3xl text-foreground mb-4">
-            MÜHÜR
-          </h2>
-          <p className="text-muted-foreground whitespace-pre-line mb-4">
-            {rituelAsamalari.muhur.metin}
-          </p>
-          
-          <p className="text-xs text-accent mb-8">
-            "{bilincKatmani.sessizlik}"
-          </p>
-
-          <Textarea
-            value={muhurMetin}
-            onChange={(e) => setMuhurMetin(e.target.value)}
-            placeholder={rituelAsamalari.muhur.placeholder}
-            className="min-h-[120px] text-center mb-6 bg-muted/30 border-border/50 focus:border-primary/30"
-            data-testid="muhur-textarea"
-          />
-
-          <div className="flex gap-4 justify-center">
-            <Button
-              variant="ghost"
-              onClick={handleMuhur}
-              data-testid="muhur-gec-btn"
-            >
-              Geç
-            </Button>
-            <Button
-              onClick={handleMuhur}
-              className="rounded-full"
-              disabled={!muhurMetin.trim()}
-              data-testid="muhur-kaydet-btn"
-            >
-              Mühürle
-            </Button>
-          </div>
-        </div>
-      </motion.div>
-    );
-  }
-
-  // Tamamlandı - Derinleştirilmiş
-  if (asama === 6) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="fixed inset-0 flex items-center justify-center z-50 bg-background px-6 overflow-y-auto py-12"
-      >
-        <div className="max-w-md w-full text-center">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", duration: 0.8 }}
-          >
-            <Unlock className="h-10 w-10 text-accent mx-auto mb-6" />
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <p className="text-xs text-accent uppercase tracking-widest mb-4">
-              {kapi.subtitle}
-            </p>
-            <h2 className="font-serif text-3xl text-foreground mb-2">
-              {kapi.title}
-            </h2>
-            <p className="text-muted-foreground mb-8">
-              {kapiGecis.sonrasi}
-            </p>
-          </motion.div>
-
-          {muhurMetin && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="bg-muted/30 rounded-lg p-4 mb-6 border-l-2 border-primary/30"
-            >
-              <p className="text-xs text-muted-foreground mb-2">Senin mührün:</p>
-              <p className="text-foreground italic font-serif">"{muhurMetin}"</p>
-            </motion.div>
-          )}
-
-          {/* Mühür Yansıması */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
-            className="bg-accent/5 rounded-lg p-4 mb-6"
-          >
-            <p className="text-sm text-muted-foreground italic">
-              {muhurYansima}
-            </p>
-          </motion.div>
-
-          {/* Ritüel Sonu Sorusu */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            className="mb-8"
-          >
-            <p className="text-xs text-accent mb-2">Son bir soru:</p>
-            <p className="text-foreground font-medium">
-              "{rituelSonuSoru}"
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2 }}
-            className="flex gap-4 justify-center"
-          >
-            <Button
-              variant="outline"
-              onClick={onBack}
-              className="rounded-full"
-              data-testid="diger-kapilar-btn"
-            >
-              Diğer Kapılar
-            </Button>
-            <Button
-              onClick={onComplete}
-              className="rounded-full"
-              data-testid="bitir-btn"
-            >
-              Bitir
-            </Button>
-          </motion.div>
-
-          {/* SANRI'ya yönlendirme */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2.5 }}
-            className="mt-8 pt-6 border-t border-border/30"
-          >
-            <p className="text-xs text-muted-foreground mb-3">
-              Bu deneyimi derinleştirmek istersen:
-            </p>
-            <Link to="/sanriya-sor">
-              <Button variant="ghost" size="sm" className="text-accent">
-                <Infinity className="h-4 w-4 mr-2" />
-                SANRI'ya Sor
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </motion.div>
-    );
-  }
-
-  return null;
-};
-
-// Mini Ritüel Modal
-const RituelModal = ({ rituel, onClose }) => {
-  const [asama, setAsama] = useState(0);
-
-  if (!rituel) return null;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center px-6"
-    >
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onClose}
-        className="absolute top-4 right-4"
-      >
-        <X className="h-5 w-5" />
-      </Button>
-
-      <div className="max-w-lg w-full">
-        <div className="text-center mb-8">
-          <span className="text-4xl mb-4 block">{rituel.icon}</span>
-          <h2 className="font-serif text-2xl text-foreground">{rituel.title}</h2>
-          <p className="text-sm text-muted-foreground">{rituel.subtitle}</p>
-        </div>
-
-        <Card className="border-border/50 bg-card/50">
-          <CardContent className="p-6">
-            <p className="text-muted-foreground whitespace-pre-line mb-6">
-              {rituel.giris}
-            </p>
-
-            <div className="bg-primary/5 rounded-lg p-4 mb-6">
-              <p className="font-serif text-foreground whitespace-pre-line leading-relaxed">
-                {rituel.metin}
-              </p>
-            </div>
-
-            {rituel.sonMetin && (
-              <p className="font-serif text-foreground whitespace-pre-line leading-relaxed mb-6">
-                {rituel.sonMetin}
-              </p>
-            )}
-
-            {rituel.soru && (
-              <div className="bg-accent/5 rounded-lg p-4 border-l-2 border-accent">
-                <p className="text-sm text-muted-foreground mb-1">SANRI soruyor:</p>
-                <p className="text-foreground italic">"{rituel.soru}"</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <div className="text-center mt-6">
-          <Button onClick={onClose} variant="outline" className="rounded-full">
-            Kapat
-          </Button>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-// Ana Ritüel Alanı Sayfası
-const RituelAlaniPage = () => {
-  const [screen, setScreen] = useState("giris"); // giris, kapilar, deneyim
-  const [selectedKapi, setSelectedKapi] = useState(null);
-  const [showRituel, setShowRituel] = useState(false);
-  const [selectedRituel, setSelectedRituel] = useState(null);
+  const handleCloseRituel = () => {
+    setActiveRituel(null);
+  };
 
   const handleReady = () => {
     setScreen("kapilar");
@@ -818,22 +657,102 @@ const RituelAlaniPage = () => {
 
   const handleComplete = () => {
     setSelectedKapi(null);
+    setScreen("ana");
+  };
+
+  const handleEnterKapilar = () => {
     setScreen("giris");
   };
 
   return (
     <div className="min-h-screen pt-24 pb-16 bg-background">
       <div className="container mx-auto px-6">
+        
+        {/* Ana Ekran */}
+        {screen === "ana" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            {/* Header */}
+            <div className="text-center mb-12">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6 animate-breathe">
+                  <Sparkles className="h-8 w-8 text-primary" />
+                </div>
+                <h1 className="font-serif text-4xl sm:text-5xl text-foreground mb-4">
+                  Ritüel Alanı
+                </h1>
+                <p className="text-foreground/60 max-w-lg mx-auto">
+                  Bilinçli anlar için küçük duraksama alanları.
+                  <br />
+                  <span className="text-sm">Terapi değil, farkındalık.</span>
+                </p>
+              </motion.div>
+            </div>
+
+            {/* Ritüele Başla - Ana Buton */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-center mb-12"
+            >
+              <Button 
+                size="lg" 
+                className="rounded-full px-12 py-6 text-lg shadow-lg"
+                onClick={handleEnterKapilar}
+                data-testid="rituel-basla-ana-btn"
+              >
+                <Infinity className="h-5 w-5 mr-3" />
+                7 Kapı Ritüeline Başla
+              </Button>
+            </motion.div>
+
+            <Separator className="max-w-2xl mx-auto mb-12" />
+
+            {/* Tab Navigation */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-3xl mx-auto">
+              <TabsList className="grid w-full grid-cols-2 mb-8">
+                <TabsTrigger value="moduller" className="text-base">Hızlı Ritüeller</TabsTrigger>
+                <TabsTrigger value="112" className="text-base">112. Kitap</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="moduller">
+                <RituelModulleri onStartRituel={handleStartRituel} />
+              </TabsContent>
+
+              <TabsContent value="112">
+                <Rituel112Listesi onStartRituel={handleStartRituel} />
+              </TabsContent>
+            </Tabs>
+          </motion.div>
+        )}
+
+        {/* Giriş Eşiği */}
         <AnimatePresence mode="wait">
           {screen === "giris" && (
-            <GirisEsigi key="giris" onReady={handleReady} />
+            <motion.div key="giris">
+              <Button
+                variant="ghost"
+                onClick={() => setScreen("ana")}
+                className="mb-6"
+              >
+                <ChevronLeft className="h-4 w-4 mr-2" />
+                Geri
+              </Button>
+              <GirisEsigi onReady={handleReady} />
+            </motion.div>
           )}
           
           {screen === "kapilar" && (
             <motion.div key="kapilar">
               <Button
                 variant="ghost"
-                onClick={() => setScreen("giris")}
+                onClick={() => setScreen("ana")}
                 className="mb-6"
               >
                 <ChevronLeft className="h-4 w-4 mr-2" />
@@ -842,27 +761,16 @@ const RituelAlaniPage = () => {
               <KapiSecimi onSelectKapi={handleSelectKapi} />
             </motion.div>
           )}
-          
-          {screen === "deneyim" && selectedKapi && (
-            <KapiDeneyimi
-              key="deneyim"
-              kapi={selectedKapi}
-              onBack={handleBack}
-              onComplete={handleComplete}
-            />
-          )}
         </AnimatePresence>
       </div>
 
-      {/* Ritüel Modal */}
+      {/* Ritüel Deneyimi Overlay */}
       <AnimatePresence>
-        {showRituel && selectedRituel && (
-          <RituelModal
-            rituel={selectedRituel}
-            onClose={() => {
-              setShowRituel(false);
-              setSelectedRituel(null);
-            }}
+        {activeRituel && (
+          <RituelDeneyimi
+            rituel={activeRituel}
+            onClose={handleCloseRituel}
+            onComplete={handleCloseRituel}
           />
         )}
       </AnimatePresence>
