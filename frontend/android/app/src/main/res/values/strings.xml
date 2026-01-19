@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CAELINUS AI</string>
+    <string name="title_activity_main">CAELINUS AI</string>
+    <string name="package_name">com.caelinus.ai</string>
+    <string name="custom_url_scheme">com.caelinus.ai</string>
+</resources>
