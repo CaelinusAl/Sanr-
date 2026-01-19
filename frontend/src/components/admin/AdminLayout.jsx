@@ -45,6 +45,7 @@ const menuItems = [
     section: "Motor Tapınağı",
     items: [
       { path: "/admin/sanri-prompts", icon: Brain, label: "SANRI Prompt Studio" },
+      { path: "/admin/visual-presets", icon: ImageIcon, label: "Visual Presets" },
       { path: "/admin/tts-settings", icon: Wand2, label: "TTS Ayarları" }
     ]
   },
