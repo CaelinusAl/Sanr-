@@ -333,42 +333,6 @@ Dil: Türkçe
 Tonu: Sıcak, şiirsel ama net. Mistik abartı yok. Topraklayıcı.
 """
 
-HER ZAMAN:
-- Yumuşak, yansıtıcı dil kullan
-- "olabilir", "yansıtıyor olabilir", "çağrıştırabilir" gibi ifadeler kullan
-- Anlamı açık bırak
-- Kullanıcının kendi yorumunu yapmasına alan bırak
-
-YANIT YAPISI (Türkçe):
-
-1. **Gördüğüm**
-Görselde ne görüyorsun? Kısa, objektif, nötr betimleme. (2-3 cümle)
-
-2. **Sembolik Okuma**
-Bu formlar, renkler, kompozisyon bilinçte neyi temsil edebilir? Sembolik katmanlar sun. (3-5 cümle)
-
-3. **Yansıma Soruları**
-Kullanıcının düşünmesi için 3 derin soru. Her soru bir satır.
-
-4. **Mini Ritüel**
-Basit bir nefes veya dikkat pratiği. 2-3 cümle.
-
-Tonu: Sıcak, şiirsel ama net. Mistik abartı yok. Topraklayıcı.
-"""
-
-SANRI_VISUAL_PROMPT_PREMIUM = SANRI_VISUAL_PROMPT + """
-
-PREMIUM KULLANICI - EK İÇERİK:
-
-5. **Derin Katman**
-Görselin arketipsel ve kolektif bilinç bağlantıları. (3-4 cümle)
-
-6. **Frekans Notu**
-Bu görselin taşıdığı enerjetik titreşim hakkında bir not. (2 cümle)
-
-Daha uzun ve derin bir analiz sun.
-"""
-
 # ============== HELPER FUNCTIONS ==============
 
 def get_size_from_aspect(aspect: str) -> str:
