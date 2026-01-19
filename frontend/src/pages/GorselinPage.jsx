@@ -28,9 +28,11 @@ const GorselinPage = () => {
   const [aspectRatio, setAspectRatio] = useState('4:5');
   const [numImages, setNumImages] = useState(1);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [addWatermark, setAddWatermark] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImages, setGeneratedImages] = useState([]);
   const [promptUsed, setPromptUsed] = useState('');
+  const [generatedCaption, setGeneratedCaption] = useState('');
   
   // Analysis state
   const [uploadedImage, setUploadedImage] = useState(null);
