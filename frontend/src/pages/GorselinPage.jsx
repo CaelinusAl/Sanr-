@@ -413,12 +413,23 @@ const GorselinPage = () => {
                           alt={`Generated hologram ${idx + 1}`}
                           className="w-full rounded-xl border border-white/10"
                         />
+                        {/* Action buttons */}
                         <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => shareImage(img, idx)}
+                            className="bg-black/50 hover:bg-black/70 text-white"
+                            data-testid={`share-button-${idx}`}
+                          >
+                            <Share2 className="w-4 h-4" />
+                          </Button>
                           <Button
                             size="sm"
                             variant="secondary"
                             onClick={() => downloadImage(img, idx)}
                             className="bg-black/50 hover:bg-black/70 text-white"
+                            data-testid={`download-button-${idx}`}
                           >
                             <Download className="w-4 h-4" />
                           </Button>
@@ -426,6 +437,18 @@ const GorselinPage = () => {
                       </motion.div>
                     ))}
                   </div>
+
+                  {/* Caption */}
+                  {generatedCaption && (
+                    <div className="text-center pt-4 border-t border-white/10">
+                      <p 
+                        className="text-white/60 text-sm italic"
+                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                      >
+                        "{generatedCaption}"
+                      </p>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
