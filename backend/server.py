@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 from routes.sanri import router as sanri_router
 from routes.bilinc_alani import router as bilinc_alani_router
 from routes.ritual import router as ritual_router
+from routes.tts import router as tts_router
 
 
 ROOT_DIR = Path(__file__).parent
