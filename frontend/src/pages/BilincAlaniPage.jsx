@@ -157,7 +157,7 @@ const BolumKarti = ({ bolum, onClick }) => {
 };
 
 // Bölüm Detay Görünümü
-const BolumDetay = ({ bolum, onBack, onStartChat }) => {
+const BolumDetay = ({ bolum, onBack, onStartChat, onStartRitual }) => {
   const relatedRitueller = premiumRitueller.filter(r => r.chapter === bolum.chapter);
 
   return (
