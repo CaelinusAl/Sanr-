@@ -170,6 +170,7 @@ const HomePage = () => {
       bilinc: '/bilinc',
       frekans: '/frekans',
       sanri: '/sanriya-sor',
+      gorselin: '/gorselin',
       rituel: '/rituel',
       profil: '/bilinc-alani', // Profile leads to user area
     };
