@@ -62,12 +62,13 @@ export const Navbar = ({ isDark, toggleTheme }) => {
             <Link
               key={link.href}
               to={link.href}
-              className={`nav-link text-base xl:text-lg font-medium tracking-wide transition-all duration-300 ${
+              className={`nav-link text-base xl:text-lg font-medium tracking-wide transition-all duration-300 flex items-center gap-1.5 ${
                 location.pathname === link.href
                   ? "text-primary nav-link-active"
                   : "text-foreground/80 hover:text-primary"
               }`}
             >
+              {link.isPremium && <Crown className="h-3.5 w-3.5 text-accent" />}
               {link.label}
             </Link>
           ))}
