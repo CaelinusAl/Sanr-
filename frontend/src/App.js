@@ -22,6 +22,7 @@ const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLoginPage"));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const RitualsList = lazy(() => import("@/pages/admin/RitualsList"));
 const RitualBuilder = lazy(() => import("@/pages/admin/RitualBuilder"));
+const VisualPresetsPage = lazy(() => import("@/pages/admin/VisualPresetsPage"));
 
 // Components
 import { Navbar } from "@/components/layout/Navbar";
