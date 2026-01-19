@@ -114,6 +114,7 @@ function App() {
                   <Route path="/frekans" element={<FrekansPage />} />
                   <Route path="/rituel" element={<RituelAlaniPage />} />
                   <Route path="/bilinc-alani" element={<BilincAlaniPage />} />
+                  <Route path="/gorselin" element={<GorselinPage />} />
                   <Route path="/hakkinda" element={<AboutPage />} />
                   
                   {/* Admin Routes */}
