@@ -76,6 +76,9 @@ app.include_router(api_router)
 # Include SANRI router
 app.include_router(sanri_router, prefix="/api")
 
+# Include Bilinç Alanı router
+app.include_router(bilinc_alani_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
