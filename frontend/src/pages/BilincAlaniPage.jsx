@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Lock, 
@@ -18,7 +19,9 @@ import {
   RotateCcw,
   Crown,
   AlertCircle,
-  Volume2
+  Volume2,
+  Clock,
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,20 +31,50 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { 
   kitapBolumleri, 
-  premiumRitueller,
   kitapTemalari,
-  getBolumById,
-  getPremiumRituelById
+  getBolumById
 } from "@/data/bilinc-alani-data";
 import PremiumRitualExperience from "@/components/PremiumRitualExperience";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Premium Check - Simüle edilmiş (gerçek uygulamada auth ile)
+// Demo Premium Mode - env flag ile kontrol
+const DEMO_PREMIUM = process.env.REACT_APP_DEMO_PREMIUM !== "false";
+
+// Premium Check Hook
 const usePremiumStatus = () => {
-  // Şimdilik her zaman premium göster (demo amaçlı)
-  const [isPremium] = useState(true);
+  // Demo modda her zaman premium
+  // Gerçek uygulamada auth ile kontrol edilecek
+  const [isPremium] = useState(DEMO_PREMIUM);
   return isPremium;
+};
+
+// Fetch published rituals from API
+const usePublishedRituals = () => {
+  const [rituals, setRituals] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchRituals = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/public/rituals`);
+      if (response.ok) {
+        const data = await response.json();
+        setRituals(data.rituals || []);
+      }
+    } catch (err) {
+      console.error("Rituals fetch error:", err);
+      setError("Ritüeller yüklenemedi");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRituals();
+  }, []);
+
+  return { rituals, isLoading, error, refetch: fetchRituals };
 };
 
 // İkon seçici
