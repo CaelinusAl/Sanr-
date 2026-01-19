@@ -423,6 +423,7 @@ const BilincAlaniPage = () => {
   const [view, setView] = useState("list"); // list, detail, chat
   const [selectedBolum, setSelectedBolum] = useState(null);
   const [activeTab, setActiveTab] = useState("bolumler");
+  const [activeRitual, setActiveRitual] = useState(null);
 
   const handleSelectBolum = (bolum) => {
     setSelectedBolum(bolum);
