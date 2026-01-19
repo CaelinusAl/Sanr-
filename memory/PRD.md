@@ -21,13 +21,20 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 | Frekans | `/frekans` | ✅ Tamamlandı |
 | Ritüel Alanı | `/rituel` | ✅ Derinleştirildi |
 | SANRI'ya Sor | `/sanriya-sor` | ✅ Tamamlandı (AI aktif) |
-| Bilinç Alanı | `/bilinc-alani` | ✅ Premium Ritüeller Aktif |
+| Bilinç Alanı | `/bilinc-alani` | ✅ **API Entegrasyonu Tamamlandı** |
 | Hakkında | `/hakkinda` | ✅ Tamamlandı |
-| **Admin Panel** | `/admin` | ✅ **YENİ** |
+| **Admin Panel** | `/admin` | ✅ **Tamamlandı** |
 
-### Admin Panel - Tapınak Sistemi (19 Ocak 2026)
+## Admin Panel - Tapınak Sistemi
 
 **Giriş:** `/admin` → Şifre: `caelinus2026`
+
+**Tamamlanan Özellikler:**
+- ✅ Dashboard (istatistikler, sistem durumu, aktivite logu)
+- ✅ Ritüel Builder (CRUD, publish/unpublish)
+- ✅ Admin'den oluşturulan ritüeller frontend'de görünür
+- ✅ Yayınlanan ritüeller anında Bilinç Alanı > Premium Ritüeller'de listelenir
+- ✅ Unpublish edilen ritüeller listeden kaldırılır
 
 **Sol Menü Yapısı:**
 - **Kontrol**: Dashboard
@@ -36,42 +43,31 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - **Kollektif Tapınağı**: Kullanıcılar, Moderasyon, Analitik
 - **Sistem**: Ayarlar
 
-**Dashboard Özellikleri:**
-- İçerik istatistikleri (ritüeller, bölümler, kartlar)
-- Sistem durumu (TTS, SANRI, DB)
-- Son aktiviteler (audit log)
-- Hızlı aksiyonlar
+## Ritüel Sistemi
 
-**Ritüel Builder:**
-- Ritüel listesi (Tümü/Taslak/Yayında filtreleri)
-- Yeni ritüel oluşturma formu
-- Adım adım akış editörü (sürükle-bırak)
-- Phase seçimi (açılış, nefes, ana, kapanış)
-- TTS toggle
-- Etiket sistemi
-- Kaydet/Yayınla butonları
+### Admin'den Frontend'e Akış
+1. Admin Panel'de ritüel oluştur (`/admin/rituals/new`)
+2. Adımları ekle (phase, metin, süre)
+3. "Yayınla" butonuna bas
+4. Ritüel otomatik olarak Bilinç Alanı > Premium Ritüeller'de görünür
+5. Kullanıcı "Başlat" tıklayınca ritüel akışı başlar
 
-**API Endpoints:**
-- `/api/admin/login` - Giriş
-- `/api/admin/verify` - Token doğrulama
-- `/api/admin/dashboard/stats` - İstatistikler
-- `/api/admin/rituals` - CRUD
-- `/api/admin/rituals/:id/publish` - Yayınla
-- `/api/admin/chapters` - Bölümler CRUD
-- `/api/admin/bilinc-cards` - Bilinç kartları CRUD
-- `/api/admin/frekans-cards` - Frekans kartları CRUD
-- `/api/admin/sanri-prompts` - Prompt CRUD
-- `/api/admin/audit-logs` - Aktivite logları
-- `/api/admin/settings` - Ayarlar
-- `/api/admin/public/rituals` - Frontend için yayınlanan ritüeller
+### Ritüel Akışı
+1. **Intro Ekranı**: Başlık, süre, adım sayısı, hazırlık cümlesi
+2. **"Başla" Butonu**: Akışı başlatır
+3. **Adım Adım Gösterim**: Phase göstergesi, metin, nefes animasyonu
+4. **Sesli Okuma**: OpenAI TTS (HD kalite, nova sesi)
+5. **Kontroller**: Pause/Resume, Ses açma/kapama
+6. **Kapanış**: "Tamamlandı" mesajı, tekrar başlatma seçeneği
 
-### Ritüel + Ses Motoru (19 Ocak 2026)
-- ✅ Premium Ritüel "Başlat" butonları aktif
-- ✅ Tam ekran ritüel deneyimi (intro + akış + kapanış)
-- ✅ OpenAI TTS entegrasyonu (HD kalite, nova sesi)
-- ✅ Nefes animasyonu ve adım adım metin gösterimi
-- ✅ Pause/Resume ve ses kontrolleri
-- ✅ Web Speech API fallback
+### Premium Gating
+- Demo Modu: `REACT_APP_DEMO_PREMIUM=true` (herkese açık)
+- Premium ritüellere tıklandığında modal gösterilir (premium değilse)
+- Gerçek premium kontrolü için auth sistemi gerekli
+
+## Mevcut Yayınlanan Ritüeller
+1. **Beyin-Kalp Yaratım Titreşimi** - 12 dk, 11 adım
+2. **His ile Tanışma Ritüeli** - 8 dk, 9 adım
 
 ## Teknik Yapı
 - **Frontend**: React + Tailwind CSS + Framer Motion
@@ -81,17 +77,34 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - **TTS**: OpenAI TTS (tts-1-hd, nova voice)
 - **LLM**: Claude Sonnet 4.5 via Emergent LLM Key
 
+## API Endpoints
+
+### Admin API
+- `POST /api/admin/login` - Giriş
+- `GET /api/admin/verify` - Token doğrulama
+- `GET /api/admin/dashboard/stats` - İstatistikler
+- `GET/POST /api/admin/rituals` - Ritüel listele/oluştur
+- `GET/PUT/DELETE /api/admin/rituals/:id` - Ritüel detay/güncelle/sil
+- `POST /api/admin/rituals/:id/publish` - Yayınla
+- `POST /api/admin/rituals/:id/unpublish` - Yayından kaldır
+- `GET /api/admin/public/rituals` - Frontend için yayınlanan ritüeller
+
+### TTS API
+- `POST /api/tts/generate` - Ses üret
+- `GET /api/tts/status` - TTS durumu
+
+### SANRI API
+- `POST /api/sanri/ask` - Soru sor
+
 ## Gelecek Görevler (Backlog)
 
 ### P0 - Yüksek Öncelik
 - [ ] Kitap Bölümleri editörü (admin)
-- [ ] Bilinç Kartları editörü (admin)
 - [ ] SANRI Prompt Studio (versiyonlama)
-- [ ] Admin'den oluşturulan ritüellerin frontend'de görünmesi
+- [ ] Bilinç/Frekans Kartları editörleri
 
 ### P1 - Orta Öncelik
 - [ ] Premium üyelik sistemi (ödeme entegrasyonu)
-- [ ] Frekans Kartları editörü
 - [ ] TTS Ayarları sayfası
 - [ ] Kullanıcı yönetimi
 
@@ -101,3 +114,8 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - [ ] Ses/müzik katmanları (ambient sound)
 - [ ] Mobil optimizasyon
 - [ ] Çoklu dil desteği (İngilizce)
+
+## Son Güncelleme: 19 Ocak 2026
+- Admin'den oluşturulan ritüeller frontend'e bağlandı
+- Publish/unpublish anında frontend güncelleniyor
+- Premium gating eklendi (demo modda bypass)
