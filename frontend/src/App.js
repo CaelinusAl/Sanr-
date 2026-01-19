@@ -55,12 +55,14 @@ const AdminRoute = ({ children }) => {
   return <AdminLayout>{children}</AdminLayout>;
 };
 
-// Layout wrapper to hide navbar/footer on admin pages
+// Layout wrapper to hide navbar/footer on admin pages and home page
 const LayoutWrapper = ({ children, isDark, toggleTheme }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isHomePage = location.pathname === '/';
   
-  if (isAdminRoute) {
+  // Home page has its own full-screen design
+  if (isAdminRoute || isHomePage) {
     return children;
   }
   
