@@ -20,17 +20,18 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 | Bilinç | `/bilinc` | ✅ Tamamlandı |
 | Frekans | `/frekans` | ✅ Tamamlandı |
 | Ritüel Alanı | `/rituel` | ✅ Derinleştirildi |
-| SANRI'ya Sor | `/sanriya-sor` | ✅ Tamamlandı (MOCK) |
+| SANRI'ya Sor | `/sanriya-sor` | ✅ Tamamlandı (AI aktif) |
+| Bilinç Alanı | `/bilinc-alani` | ✅ Premium Ritüeller Aktif |
 | Hakkında | `/hakkinda` | ✅ Tamamlandı |
 
 ### Ritüel Alanı - Derinleştirilmiş Akış
 1. **Giriş Eşiği** - 3 nefes sonrası niyet kapısı açılır
 2. **7 Kutsal Kapı Seçimi** - Her kapı farklı bilinç katmanına götürür
 3. **Kapı Girişi** - Frekans cümlesi, davet ve sembolik soru
-4. **Bilinç Katmanı** (YENİ) - Giriş, derinlik, frekans metinleri
+4. **Bilinç Katmanı** - Giriş, derinlik, frekans metinleri
 5. **DUR** - Dinamik frekans titreşim metinleri
 6. **HİSSET** - Nefes animasyonu ile beden farkındalığı
-7. **BIRAK** (YENİ) - Sonsuzluk sembolü ile bırakma alanı
+7. **BIRAK** - Sonsuzluk sembolü ile bırakma alanı
 8. **MÜHÜR** - Kişisel yazı alanı (sistem okumaz)
 9. **Tamamlandı** - Mühür yansıması, son soru, SANRI bağlantısı
 
@@ -44,16 +45,19 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 7. Boşluk ve Birleşme (○) - Birlik
 
 ### SANRI'ya Sor
-- 6 katmanlı yansıma sistemi (MOCK)
+- 5 okuma modu: Rüya, Haber, Tarih/Sayı, Sembol, İçsel Ayna
 - Sembol, sayı, hece okuma
 - Hikaye tohumu ve idrak sorusu
 - Selin Irmak tonu: sıcak, şiirsel, insan dili
+- Claude Sonnet 4.5 ile gerçek AI yanıtları
 
 ## Teknik Yapı
 - **Frontend**: React + Tailwind CSS + Framer Motion
-- **Backend**: FastAPI (minimal)
+- **Backend**: FastAPI (Python)
 - **Veritabanı**: MongoDB
 - **UI**: Shadcn/UI components
+- **TTS**: OpenAI TTS (tts-1-hd, nova voice)
+- **LLM**: Claude Sonnet 4.5 via Emergent LLM Key
 
 ## Data Dosyaları
 - `/data/cities.js` - 81 şehir bilinci
@@ -61,72 +65,40 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - `/data/sanri-dictionary.js` - Sembol ve sayı sözlüğü
 - `/data/bilinc-frekans.js` - Mikro-metinler
 - `/data/layer-responses.js` - Okuma katmanları
+- `/data/bilinc-alani-data.js` - Premium ritüel verileri
 
-## Son Güncelleme: 18 Ocak 2026
-- Ritüel Alanı bilinç ve frekans katmanlarıyla derinleştirildi
-- Yeni bilinç katmanı aşaması eklendi
-- BIRAK aşaması eklendi
-- Her kapı için özel bilinç metinleri tanımlandı
-- Mühür yansımaları ve ritüel sonu soruları eklendi
-- SANRI bağlantısı ritüel sonuna entegre edildi
+## Son Güncelleme: 19 Ocak 2026
 
-### Erişilebilirlik İyileştirmeleri (18 Ocak 2026)
-- Light mode renk kontrastı artırıldı (WCAG uyumlu)
-- Ana sayfa font boyutları büyütüldü (başlık, alt başlık, açıklama)
-- Satır aralıkları ve harf aralıkları iyileştirildi
-- "Haritayı Keşfet" butonu metin ile örtüşmeyecek şekilde ayrıldı
-- Hero bölümü arka plan overlay güçlendirildi
-- Text shadow eklendi (arka plan üzerinde okunabilirlik)
-- Butonlara backdrop blur ve shadow eklendi
+### Ritüel + Ses Motoru Entegrasyonu (19 Ocak 2026)
+- ✅ Premium Ritüel "Başlat" butonları aktif
+- ✅ Tam ekran ritüel deneyimi (intro + akış + kapanış)
+- ✅ OpenAI TTS entegrasyonu (HD kalite, nova sesi)
+- ✅ Nefes animasyonu ve adım adım metin gösterimi
+- ✅ Pause/Resume ve ses kontrolleri
+- ✅ Web Speech API fallback
 
-### SANRI'ya Sor - LLM Entegrasyonu (19 Ocak 2026)
-- Claude Sonnet 4.5 ile gerçek AI yanıtları
-- Selin'in tonu: sıcak, şiirsel, insani - asla robotik
-- Rüya, doğum tarihi, haber sembolik yorumlama
-- Session-based konuşma desteği
-- Backend: `/api/sanri/ask` endpoint
-- Mock yapı kaldırıldı, gerçek AI aktif
+### API Endpoints
+- `/api/tts/generate` - TTS ses üretimi
+- `/api/tts/status` - TTS servis durumu
+- `/api/tts/voices` - Mevcut sesler
+- `/api/tts/test` - TTS test endpoint
+- `/api/ritual/start` - Ritüel başlat (LLM)
+- `/api/ritual/default/{type}` - Varsayılan ritüel adımları
+- `/api/sanri/ask` - SANRI sohbet
+- `/api/bilinc-alani/ask` - Bilinç Alanı sohbet
 
-### Büyük Güncelleme (19 Ocak 2026)
-
-**1. Navbar Okunabilirlik İyileştirmesi:**
-- Font boyutu artırıldı (text-base → text-lg)
-- Font weight 500-600
-- Letter spacing artırıldı
-- Text shadow eklendi
-- Aktif link: altın tonlu alt çizgi vurgusu
-- Glass navbar efekti güçlendirildi
-
-**2. Ritüel Sayfası Yeni Modüller:**
-- "7 Kapı Ritüeline Başla" ana butonu
-- "Bugünün Ritüeli" kartı (günlük mikro ritüel)
-- 3 modül: Mikro (1-3 dk), Derin (7-12 dk), Niyet & Kapanış (1 dk)
-- Tab navigation: "Hızlı Ritüeller" ve "112. Kitap"
-- Adım adım ritüel deneyimi (nefes animasyonu + zamanlayıcı)
-
-**3. 112. Kitap Ritüelleri:**
-- 8 ritüel entegre edildi (Kendini Yaratan Tanrıça)
-- Her ritüel: adımlar, süre, niyet
-- Güvenlik uyarısı eklendi
-
-**4. SANRI'ya Sor Genişletmeleri:**
-- 5 okuma modu: Rüya, Haber, Tarih/Sayı, Sembol, İçsel Ayna
-- Görsel yükleme özelliği
-- "Görsel Prompt" sekmesi (AI prompt üretici)
-- Mod bazlı context ekleme
-
-**5. PREMIUM Bilinç Alanı (YENİ):**
+### PREMIUM Bilinç Alanı
 - "Beyin Orgazmı – Bilinç, His ve Yaratım Kodları" kitabı entegrasyonu
 - 10 kitap bölümü: Zihin-Gönül Portalı, His Kodları, Sezgi Alanı, vb.
 - 5 premium ritüel: Beyin-Kalp Yaratım, His Tanışma, Kundalini, Tanrısal Yaratım, Epifiz Aktivasyonu
 - CAELINUS AI: Bilinç alanı için özel AI (ayna rolünde, Selin tonu)
-- Premium gate (paywall) sistemi
-- Backend: `/api/bilinc-alani/ask` endpoint
-- Navbar'da taç ikonu ile "Bilinç Alanı" linki
+- Şimdilik demo modu (herkese açık)
 
 ## Gelecek Görevler (Backlog)
+- [ ] Premium üyelik sistemi (ödeme entegrasyonu)
 - [ ] Görsel yükleme ve sembolik yorum özelliği
 - [ ] Kullanıcı deneyim kaydı (localStorage veya MongoDB)
-- [ ] Ses/müzik katmanları
+- [ ] Ses/müzik katmanları (ambient sound)
 - [ ] Mobil optimizasyon iyileştirmeleri
 - [ ] Çoklu dil desteği (İngilizce)
+- [ ] ElevenLabs entegrasyonu (ücretli plan ile)
