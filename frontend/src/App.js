@@ -39,6 +39,39 @@ const PageLoader = () => (
   </div>
 );
 
+// Admin Route Guard
+const AdminRoute = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAdmin();
+  
+  if (isLoading) {
+    return <PageLoader />;
+  }
+  
+  if (!isAuthenticated) {
+    return <AdminLoginPage />;
+  }
+  
+  return <AdminLayout>{children}</AdminLayout>;
+};
+
+// Layout wrapper to hide navbar/footer on admin pages
+const LayoutWrapper = ({ children, isDark, toggleTheme }) => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  
+  if (isAdminRoute) {
+    return children;
+  }
+  
+  return (
+    <>
+      <Navbar isDark={isDark} toggleTheme={toggleTheme} />
+      <main>{children}</main>
+      <Footer />
+    </>
+  );
+};
+
 function App() {
   const [isDark, setIsDark] = useState(false);
 
