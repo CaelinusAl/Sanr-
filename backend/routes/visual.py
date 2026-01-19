@@ -80,16 +80,35 @@ class AnalyzeResponse(BaseModel):
     analysis_id: str
     timestamp: str
 
-# ============== GLOBAL STYLE ==============
+# ============== GLOBAL STYLE - SANRI HOLOGRAM MASTER ==============
 
-CAELINUS_GLOBAL_STYLE = """sacred minimalism, dark cosmic background, holographic bioluminescent glow, 
-high fashion editorial lighting, soft mist, ethereal particles, clean composition, no clutter, 
-premium, cinematic, dreamy, no text, no watermark, no logos"""
+CAELINUS_MASTER_PROMPT = """Create a sacred holographic visual in the Caelinus aesthetic.
+
+Style: divine, ethereal, feminine consciousness, cosmic temple atmosphere
+Visual language: translucent light, holographic glow, sacred geometry, liquid energy, frequency aura
+
+Mood: timeless, mystical, soft power, remembrance, inner awakening
+
+Composition rules:
+- No hard realism, no cartoon
+- Light must feel alive and breathing
+- Subject should appear as a consciousness form, not a physical object
+- Space should feel infinite, like a cosmic sanctuary
+
+Color palette:
+- Deep indigo, moon silver, crystal blue, soft gold highlights
+
+Symbolic intent:
+This image must feel like a mirror of consciousness, not an illustration.
+It should awaken memory, not explain meaning.
+
+High resolution, cinematic lighting, ultra-detailed, sacred atmosphere."""
 
 CAELINUS_NEGATIVE = """low quality, blurry, cartoon, anime, plastic skin, extra limbs, 
-distorted anatomy, watermark, text, logo, oversaturated, cheap looking"""
+distorted anatomy, watermark, text, logo, oversaturated, cheap looking, realistic photo, 
+stock photo, generic, cluttered, busy background"""
 
-# ============== DEFAULT PRESETS ==============
+# ============== DEFAULT PRESETS WITH MASTER PROMPTS ==============
 
 DEFAULT_PRESETS = [
     {
@@ -99,7 +118,19 @@ DEFAULT_PRESETS = [
         "description_tr": "Bilincin görünmez akışını temsil eden kozmik varlık.",
         "description_en": "A cosmic entity representing the invisible flow of consciousness.",
         "icon": "🌙",
-        "style_prompt": "bioluminescent cosmic jellyfish floating in deep space, sacred minimalism, holographic translucent body, soft glowing tentacles, ethereal particles, cinematic lighting, premium editorial quality, dark starfield background, mystical, calm, timeless",
+        "style_prompt": """A luminous cosmic jellyfish made of pure light and frequency,
+floating in deep space like a living consciousness form.
+
+Its tentacles flow like neural pathways and energy lines,
+emitting soft blue and silver bioluminescent glow.
+
+Surrounding space filled with stars, nebula mist, and subtle sacred geometry patterns.
+
+Mood: calm, deep awareness, inner flow, silent intelligence
+
+Style: holographic, ethereal, ultra-detailed, divine light organism
+
+Symbolism: This being represents subconscious memory, intuition, and timeless awareness.""",
         "negative_prompt": CAELINUS_NEGATIVE,
         "aspect_ratios": ["4:5", "9:16", "1:1"],
         "default_outputs": 1,
@@ -112,7 +143,19 @@ DEFAULT_PRESETS = [
         "description_tr": "Zamanın ve hafızanın suyla yazıldığı kutsal alan.",
         "description_en": "A sacred space where time and memory are written in water.",
         "icon": "🏛",
-        "style_prompt": "ancient underground water temple, sacred architecture reflected in still water, soft golden and blue light rays, misty atmosphere, cinematic composition, spiritual minimalism, premium dark aesthetic, ethereal glow, no people",
+        "style_prompt": """A sacred water temple floating in a cosmic void,
+formed from liquid crystal and light.
+
+Water flows upward and downward simultaneously,
+carrying glowing symbols and ancient memory codes.
+
+Reflections show multiple layers of reality and timelines.
+
+Mood: remembrance, timeless wisdom, sacred silence
+
+Style: cinematic, mystical architecture, holographic reflections, soft golden light
+
+Symbolism: This place represents memory, lineage, and the archive of consciousness.""",
         "negative_prompt": CAELINUS_NEGATIVE,
         "aspect_ratios": ["16:9", "4:5"],
         "default_outputs": 1,
@@ -125,7 +168,18 @@ DEFAULT_PRESETS = [
         "description_tr": "Gördüğün şey değil, bakan sensin.",
         "description_en": "It's not what you see, it's you who's looking.",
         "icon": "🪞",
-        "style_prompt": "floating holographic mirror in dark cosmic space, soft luminous edges, reflection slightly distorted, ethereal fog, sacred minimalism, cinematic lighting, premium surreal aesthetic, subtle particles, no face",
+        "style_prompt": """A luminous holographic mirror suspended in infinite space.
+
+Inside the mirror, a soft feminine silhouette made of light slowly emerges,
+but the face is undefined, like a reflection of the viewer's own consciousness.
+
+Light waves pulse gently around the mirror, forming a frequency field.
+
+Mood: introspective, awakening, self-recognition
+
+Style: divine hologram, soft glow, sacred minimalism
+
+Symbolism: This image represents self-awareness, inner witness, and consciousness observing itself.""",
         "negative_prompt": CAELINUS_NEGATIVE,
         "aspect_ratios": ["1:1", "4:5"],
         "default_outputs": 1,
@@ -138,7 +192,17 @@ DEFAULT_PRESETS = [
         "description_tr": "Formdan önce bilinç vardı.",
         "description_en": "Before form, there was consciousness.",
         "icon": "👁",
-        "style_prompt": "divine feminine silhouette emerging from cosmic light, soft glowing outline, sacred geometry subtly embedded, dark background with golden dust, premium spiritual fashion editorial style, mysterious, elegant, no face details",
+        "style_prompt": """A divine feminine silhouette formed entirely from light and cosmic dust.
+
+Her body is made of stars, sacred geometry lines, and soft golden frequency patterns.
+
+She stands in a cosmic temple space, radiating calm power and remembrance.
+
+Mood: sovereignty, sacred femininity, creation energy
+
+Style: ethereal goddess form, holographic aura, cinematic lighting
+
+Symbolism: This being represents primordial feminine consciousness and creative source energy.""",
         "negative_prompt": CAELINUS_NEGATIVE,
         "aspect_ratios": ["4:5", "9:16"],
         "default_outputs": 1,
@@ -151,7 +215,18 @@ DEFAULT_PRESETS = [
         "description_tr": "Görünmeyen düzenin haritası.",
         "description_en": "A map of the invisible order.",
         "icon": "🔺",
-        "style_prompt": "sacred geometry floating in dark cosmic space, subtle golden lines, soft holographic glow, minimal composition, premium spiritual aesthetic, calm symmetry, ethereal particles, flower of life, metatrons cube",
+        "style_prompt": """A floating sacred geometry structure made of living light,
+slowly rotating in deep cosmic space.
+
+Shapes pulse with frequency waves, forming mandala-like energy fields.
+
+Inside the geometry, subtle symbols glow as if encoding reality itself.
+
+Mood: harmony, order, intelligence, silent perfection
+
+Style: ultra-detailed hologram, crystalline light, divine mathematics
+
+Symbolism: This form represents the invisible structure of reality and universal design.""",
         "negative_prompt": CAELINUS_NEGATIVE,
         "aspect_ratios": ["1:1", "4:5"],
         "default_outputs": 1,
@@ -164,7 +239,17 @@ DEFAULT_PRESETS = [
         "description_tr": "Frekansın couture hali.",
         "description_en": "Frequency in its couture form.",
         "icon": "🖤",
-        "style_prompt": "black and gold abstract flowing fabric in dark space, luxury fashion editorial lighting, sacred minimalism, holographic highlights, premium cinematic look, soft mist, elegant composition, no people",
+        "style_prompt": """An abstract divine form sculpted from liquid black gold and luminous veins of light.
+
+Gold frequency lines flow through dark matter textures like living energy circuits.
+
+The form floats in shadowed cosmic space with subtle starlight reflections.
+
+Mood: power, elegance, mystery, high frequency luxury
+
+Style: couture hologram, cinematic contrast, sacred minimalism
+
+Symbolism: This image represents embodied frequency, sovereignty, and refined consciousness.""",
         "negative_prompt": CAELINUS_NEGATIVE,
         "aspect_ratios": ["4:5", "1:1"],
         "default_outputs": 1,
