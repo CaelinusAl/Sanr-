@@ -60,6 +60,8 @@ class GenerateRequest(BaseModel):
     aspect_ratio: str = "4:5"
     num_images: int = 1
     show_prompt: bool = False  # Whether to return the full prompt
+    is_premium: bool = False  # Premium user flag
+    add_watermark: bool = True  # Watermark preference (only premium can disable)
 
 class GenerateResponse(BaseModel):
     images: List[str]  # base64 encoded images
@@ -67,6 +69,7 @@ class GenerateResponse(BaseModel):
     prompt_used: Optional[str]  # Only if show_prompt is True
     generation_id: str
     timestamp: str
+    caption: str  # Auto-generated caption
 
 class AnalyzeRequest(BaseModel):
     context: Optional[str] = None  # Optional context from user
