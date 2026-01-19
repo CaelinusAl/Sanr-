@@ -68,6 +68,7 @@ const GorselinPage = () => {
     setIsGenerating(true);
     setGeneratedImages([]);
     setPromptUsed('');
+    setGeneratedCaption('');
 
     try {
       const response = await axios.post(`${API_URL}/api/visual/generate`, {
@@ -75,10 +76,13 @@ const GorselinPage = () => {
         preset_id: selectedPreset,
         aspect_ratio: aspectRatio,
         num_images: numImages,
-        show_prompt: showPrompt
+        show_prompt: showPrompt,
+        is_premium: IS_PREMIUM,
+        add_watermark: IS_PREMIUM ? addWatermark : true  // Free users always get watermark
       });
 
       setGeneratedImages(response.data.images);
+      setGeneratedCaption(response.data.caption || '');
       if (response.data.prompt_used) {
         setPromptUsed(response.data.prompt_used);
       }
@@ -88,6 +92,35 @@ const GorselinPage = () => {
       toast.error('Görsel üretiminde hata oluştu');
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  // Share functionality
+  const shareImage = async (base64, index) => {
+    const blob = await fetch(`data:image/png;base64,${base64}`).then(r => r.blob());
+    const file = new File([blob], `caelinus-hologram-${index + 1}.png`, { type: 'image/png' });
+    
+    const shareData = {
+      title: 'CAELINUS AI Hologram',
+      text: generatedCaption || 'Bu görsel bir cevap değildir. Bir hatırlatmadır. ✨',
+      files: [file]
+    };
+
+    try {
+      if (navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        toast.success('Paylaşıldı!');
+      } else {
+        // Fallback: copy image to clipboard or download
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ]);
+        toast.success('Görsel panoya kopyalandı!');
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      // Fallback to download
+      downloadImage(base64, index);
     }
   };
 
