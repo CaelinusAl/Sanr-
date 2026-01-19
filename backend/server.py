@@ -98,6 +98,9 @@ app.include_router(tts_router, prefix="/api")
 # Include Admin router
 app.include_router(admin_router, prefix="/api")
 
+# Include Visual router
+app.include_router(visual_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
