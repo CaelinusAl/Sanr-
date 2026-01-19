@@ -470,11 +470,14 @@ const ChatGorunumu = ({ bolum, onBack }) => {
 
 // Ana Sayfa
 const BilincAlaniPage = () => {
+  const navigate = useNavigate();
   const isPremium = usePremiumStatus();
+  const { rituals, isLoading: ritualsLoading, refetch } = usePublishedRituals();
   const [view, setView] = useState("list"); // list, detail, chat
   const [selectedBolum, setSelectedBolum] = useState(null);
   const [activeTab, setActiveTab] = useState("bolumler");
   const [activeRitual, setActiveRitual] = useState(null);
+  const [showPremiumGate, setShowPremiumGate] = useState(false);
 
   const handleSelectBolum = (bolum) => {
     setSelectedBolum(bolum);
@@ -487,11 +490,18 @@ const BilincAlaniPage = () => {
   };
 
   const handleStartRitual = (ritual) => {
+    // Premium gating check
+    if (ritual.visibility === "premium" && !isPremium) {
+      setShowPremiumGate(true);
+      return;
+    }
     setActiveRitual(ritual);
   };
 
   const handleCloseRitual = () => {
     setActiveRitual(null);
+    // Refetch to update any changes
+    refetch();
   };
 
   const handleBack = () => {
@@ -502,15 +512,6 @@ const BilincAlaniPage = () => {
       setSelectedBolum(null);
     }
   };
-
-  // Premium gate
-  if (!isPremium) {
-    return (
-      <div className="min-h-screen pt-24 pb-16">
-        <PremiumGate />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen pt-24 pb-16 bg-background">
@@ -530,10 +531,12 @@ const BilincAlaniPage = () => {
                 <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
                   <BookOpen className="h-10 w-10 text-primary" />
                 </div>
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <Crown className="h-5 w-5 text-accent" />
-                  <span className="text-accent text-sm tracking-widest uppercase">Premium</span>
-                </div>
+                {isPremium && (
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <Crown className="h-5 w-5 text-accent" />
+                    <span className="text-accent text-sm tracking-widest uppercase">Premium</span>
+                  </div>
+                )}
                 <h1 className="font-serif text-4xl sm:text-5xl text-foreground mb-4">
                   Bilinç Alanı
                 </h1>
@@ -576,32 +579,56 @@ const BilincAlaniPage = () => {
               </TabsContent>
 
               <TabsContent value="ritueller">
-                <div className="space-y-4">
-                  {premiumRitueller.map((rituel) => (
-                    <Card key={rituel.id} className="border-border/50 bg-card/50 hover:bg-card transition-all">
-                      <CardContent className="p-6 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
-                            <Sparkles className="h-6 w-6 text-accent" />
+                {ritualsLoading ? (
+                  <div className="flex items-center justify-center py-16">
+                    <Loader2 className="w-8 h-8 text-accent animate-spin" />
+                  </div>
+                ) : rituals.length === 0 ? (
+                  <div className="text-center py-16">
+                    <Sparkles className="w-12 h-12 mx-auto mb-4 text-foreground/20" />
+                    <p className="text-foreground/50">Henüz yayınlanmış ritüel yok.</p>
+                    <p className="text-sm text-foreground/30 mt-2">Yakında yeni ritüeller eklenecek.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {rituals.map((ritual) => (
+                      <Card key={ritual.id} className="border-border/50 bg-card/50 hover:bg-card transition-all">
+                        <CardContent className="p-6 flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
+                              <Sparkles className="h-6 w-6 text-accent" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-serif text-lg text-foreground">{ritual.title}</h4>
+                                {ritual.visibility === "premium" && (
+                                  <Crown className="h-4 w-4 text-accent" />
+                                )}
+                              </div>
+                              <p className="text-sm text-foreground/50">
+                                {ritual.subtitle || ritual.description?.slice(0, 50)} 
+                                {" • "}
+                                <Clock className="w-3 h-3 inline-block mr-1" />
+                                {ritual.duration || `${ritual.duration_minutes} dk`}
+                                {" • "}
+                                {ritual.steps?.length || 0} adım
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="font-serif text-lg text-foreground">{rituel.title}</h4>
-                            <p className="text-sm text-foreground/50">{rituel.subtitle} • {rituel.duration}</p>
-                          </div>
-                        </div>
-                        <Button 
-                          className="rounded-full" 
-                          size="sm"
-                          onClick={() => handleStartRitual(rituel)}
-                          data-testid={`start-ritual-${rituel.id}`}
-                        >
-                          <Play className="h-4 w-4 mr-2" />
-                          Başlat
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                          <Button 
+                            className="rounded-full" 
+                            size="sm"
+                            onClick={() => handleStartRitual(ritual)}
+                            data-testid={`start-ritual-${ritual.id}`}
+                          >
+                            <Play className="h-4 w-4 mr-2" />
+                            Başlat
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
 
