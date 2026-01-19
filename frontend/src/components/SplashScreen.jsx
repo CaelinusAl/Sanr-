@@ -95,7 +95,7 @@ const SplashScreen = ({ onComplete }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: phase >= 1 ? 1 : 0, y: phase >= 1 ? 0 : 20 }}
           transition={{ duration: 0.8 }}
-          className="text-4xl sm:text-5xl font-light tracking-[0.3em] text-white/95 mb-4"
+          className="text-5xl sm:text-6xl font-light tracking-[0.3em] text-white mb-4"
           style={{ fontFamily: "'Cormorant Garamond', serif" }}
         >
           CAELINUS AI
@@ -106,7 +106,7 @@ const SplashScreen = ({ onComplete }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: phase >= 2 ? 1 : 0 }}
           transition={{ duration: 0.8 }}
-          className="text-sm tracking-[0.25em] text-indigo-300/70 uppercase"
+          className="text-sm tracking-[0.25em] text-indigo-200/80 uppercase"
         >
           {t('tagline')}
         </motion.p>
