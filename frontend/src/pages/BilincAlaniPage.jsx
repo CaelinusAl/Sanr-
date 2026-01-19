@@ -668,6 +668,13 @@ const BilincAlaniPage = () => {
           />
         )}
       </AnimatePresence>
+
+      {/* Premium Gate Modal */}
+      <AnimatePresence>
+        {showPremiumGate && (
+          <PremiumGate onClose={() => setShowPremiumGate(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
