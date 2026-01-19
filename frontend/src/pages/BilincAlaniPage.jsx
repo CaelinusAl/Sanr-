@@ -573,6 +573,7 @@ const BilincAlaniPage = () => {
             bolum={selectedBolum} 
             onBack={handleBack}
             onStartChat={handleStartChat}
+            onStartRitual={handleStartRitual}
           />
         )}
 
@@ -583,6 +584,17 @@ const BilincAlaniPage = () => {
           />
         )}
       </div>
+
+      {/* Premium Ritual Experience Overlay */}
+      <AnimatePresence>
+        {activeRitual && (
+          <PremiumRitualExperience
+            ritual={activeRitual}
+            onClose={handleCloseRitual}
+            onComplete={handleCloseRitual}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
