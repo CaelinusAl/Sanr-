@@ -96,6 +96,13 @@ const SacredCard = ({ section, isMain, isNew, onClick, delay }) => {
           </div>
         )}
 
+        {/* NEW badge */}
+        {isNew && (
+          <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30">
+            <span className="text-[10px] tracking-wider text-emerald-400 uppercase font-medium">Yeni</span>
+          </div>
+        )}
+
         {/* Icon */}
         <div className={`
           mb-5 transition-transform duration-300 group-hover:scale-110
