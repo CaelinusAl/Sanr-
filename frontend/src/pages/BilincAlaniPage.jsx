@@ -220,7 +220,12 @@ const BolumDetay = ({ bolum, onBack, onStartChat, onStartRitual }) => {
                   <h4 className="font-serif text-lg text-foreground">{rituel.title}</h4>
                   <p className="text-sm text-foreground/50">{rituel.duration}</p>
                 </div>
-                <Button className="rounded-full" size="sm">
+                <Button 
+                  className="rounded-full" 
+                  size="sm"
+                  onClick={() => onStartRitual(rituel)}
+                  data-testid={`bolum-ritual-${rituel.id}`}
+                >
                   <Play className="h-4 w-4 mr-2" />
                   Başlat
                 </Button>
