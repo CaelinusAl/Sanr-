@@ -78,6 +78,10 @@ const translations = {
         title: 'Ask Sanri',
         subtitle: 'Dream • Symbol • Birth • Matrix'
       },
+      gorselin: {
+        title: 'Visualin',
+        subtitle: 'Hologram • Symbolic Reading'
+      },
       rituel: {
         title: 'Ritual',
         subtitle: 'Begin • Breathe • Remember'
