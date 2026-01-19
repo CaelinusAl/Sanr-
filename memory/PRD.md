@@ -145,7 +145,22 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - [ ] Local makinede AAB build
 
 ## Son Güncelleme: 19 Ocak 2026
-- Android deployment pipeline tamamlandı
-- Keystore ve signing config hazır
-- assetlinks.json domain doğrulama için hazır
-- Build script ve detaylı dokümantasyon oluşturuldu
+
+### Yeni Ana Sayfa Tasarımı (Tapınak Deneyimi)
+- ✅ **Splash Screen**: CAELINUS AI logosu, spiral sembol, "Bilinç ve Anlam Zekâsı" tagline
+- ✅ **Home Page**: 5 kutsal alan kartları (sacred minimalism)
+  - Bilinç: "Metinler & farkındalık"
+  - Frekans: "Enerji kartları & titreşim"
+  - Sanrı'ya Sor: ANA ÖZELLİK (vurgulu, mor parıltı)
+  - Ritüel: Premium rozeti
+  - Profil: "Yolculuğun"
+- ✅ **Dil Desteği**: TR | EN toggle (sağ üst köşe)
+- ✅ **Responsive**: Mobil ve masaüstü uyumlu
+- ✅ **Karanlık Tema**: Gece mavisi, derin siyah tonları
+- ✅ **Navigasyon**: Kartlara tıklayınca ilgili sayfalara yönlendirme
+
+### Android Build & Google Play Deployment
+- ✅ Capacitor 6 entegrasyonu (com.caelinus.ai)
+- ✅ Release keystore (SHA256: F6:3F:43:26...)
+- ✅ assetlinks.json hazır
+- ✅ Build script ve dokümantasyon
