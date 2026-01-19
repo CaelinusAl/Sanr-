@@ -18,7 +18,8 @@ import {
   ChevronRight,
   Wand2,
   FileText,
-  Layers
+  Layers,
+  Image as ImageIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAdmin } from "../../contexts/AdminContext";
