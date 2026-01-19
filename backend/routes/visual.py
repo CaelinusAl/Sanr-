@@ -349,6 +349,79 @@ def get_size_from_aspect(aspect: str) -> str:
     }
     return mapping.get(aspect, "1024x1024")
 
+def add_watermark_to_image(image_bytes: bytes, subtle: bool = False) -> bytes:
+    """Add CAELINUS AI watermark to image"""
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+        
+        # Open image
+        img = Image.open(io.BytesIO(image_bytes))
+        draw = ImageDraw.Draw(img)
+        
+        # Get image dimensions
+        width, height = img.size
+        
+        # Watermark text
+        watermark_text = "CAELINUS AI • SANRI"
+        
+        # Try to use a font, fallback to default
+        try:
+            font_size = max(16, width // 50)  # Responsive font size
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size)
+        except:
+            font = ImageFont.load_default()
+        
+        # Get text size
+        bbox = draw.textbbox((0, 0), watermark_text, font=font)
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+        
+        # Position: bottom right corner with padding
+        padding = 20
+        x = width - text_width - padding
+        y = height - text_height - padding
+        
+        # Opacity based on subtle mode
+        if subtle:
+            # Very subtle - almost invisible
+            alpha = 80
+        else:
+            # Visible but elegant
+            alpha = 150
+        
+        # Create a semi-transparent overlay for the text
+        overlay = Image.new('RGBA', img.size, (0, 0, 0, 0))
+        overlay_draw = ImageDraw.Draw(overlay)
+        
+        # Draw watermark with gold color
+        gold_color = (212, 175, 55, alpha)  # Gold with transparency
+        overlay_draw.text((x, y), watermark_text, font=font, fill=gold_color)
+        
+        # Convert original image to RGBA if needed
+        if img.mode != 'RGBA':
+            img = img.convert('RGBA')
+        
+        # Composite
+        img = Image.alpha_composite(img, overlay)
+        
+        # Convert back to RGB for JPEG/PNG
+        img = img.convert('RGB')
+        
+        # Save to bytes
+        output = io.BytesIO()
+        img.save(output, format='PNG', quality=95)
+        output.seek(0)
+        
+        return output.read()
+    except Exception as e:
+        logger.error(f"Watermark error: {str(e)}")
+        # Return original if watermarking fails
+        return image_bytes
+
+# Caption for generated images
+CAELINUS_CAPTION = "Bu görsel bir cevap değildir. Bir hatırlatmadır."
+CAELINUS_CAPTION_EN = "This image is not an answer. It is a reminder."
+
 async def ensure_presets_exist():
     """Ensure default presets exist in database"""
     if db is None:
