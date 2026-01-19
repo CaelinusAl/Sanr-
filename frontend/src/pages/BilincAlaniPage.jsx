@@ -17,7 +17,8 @@ import {
   X,
   RotateCcw,
   Crown,
-  AlertCircle
+  AlertCircle,
+  Volume2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,6 +33,7 @@ import {
   getBolumById,
   getPremiumRituelById
 } from "@/data/bilinc-alani-data";
+import PremiumRitualExperience from "@/components/PremiumRitualExperience";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
