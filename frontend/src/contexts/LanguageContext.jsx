@@ -21,6 +21,10 @@ const translations = {
         title: "Sanrı'ya Sor",
         subtitle: 'Rüya • Sembol • Doğum • Matrix'
       },
+      gorselin: {
+        title: 'Görselin',
+        subtitle: 'Hologram • Sembolik Okuma'
+      },
       rituel: {
         title: 'Ritüel',
         subtitle: 'Başlat • Nefes • Hatırlama'
