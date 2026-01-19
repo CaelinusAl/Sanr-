@@ -469,18 +469,18 @@ async def generate_hologram(request: GenerateRequest):
         if request.preset_id:
             preset = await db.visual_presets.find_one({"id": request.preset_id}, {"_id": 0})
         
-        # Build the final prompt
+        # Build the final prompt with MASTER PROMPT
         if preset:
-            # Combine user intention with preset style
-            full_prompt = f"{request.intention}, {preset['style_prompt']}, {CAELINUS_GLOBAL_STYLE}"
+            # Combine: Master + User intention + Preset style
+            full_prompt = f"{CAELINUS_MASTER_PROMPT}\n\nUser intention: {request.intention}\n\nStyle: {preset['style_prompt']}"
             negative = preset.get('negative_prompt', CAELINUS_NEGATIVE)
         else:
-            # Use global style with user intention
-            full_prompt = f"{request.intention}, {CAELINUS_GLOBAL_STYLE}"
+            # Use master prompt with user intention
+            full_prompt = f"{CAELINUS_MASTER_PROMPT}\n\nUser intention: {request.intention}"
             negative = CAELINUS_NEGATIVE
         
         # Add negative prompt context
-        full_prompt = f"{full_prompt}. Avoid: {negative}"
+        full_prompt = f"{full_prompt}\n\nAvoid: {negative}"
         
         # Initialize image generator
         image_gen = OpenAIImageGeneration(api_key=api_key)
@@ -488,8 +488,11 @@ async def generate_hologram(request: GenerateRequest):
         # Get size from aspect ratio
         size = get_size_from_aspect(request.aspect_ratio)
         
-        # Limit images based on request (will be gated by frontend for premium)
-        num_images = min(request.num_images, 4)
+        # Limit images based on premium status
+        if request.is_premium:
+            num_images = min(request.num_images, 4)
+        else:
+            num_images = 1  # Free users get 1 image only
         
         # Generate images
         images = await image_gen.generate_images(
@@ -498,10 +501,23 @@ async def generate_hologram(request: GenerateRequest):
             number_of_images=num_images
         )
         
-        # Convert to base64
+        # Process images (add watermark for free users or if requested)
         images_base64 = []
         for img_bytes in images:
-            img_b64 = base64.b64encode(img_bytes).decode('utf-8')
+            # Watermark logic:
+            # - Free users: ALWAYS add watermark
+            # - Premium users: can disable (add_watermark=False) or get subtle watermark
+            if request.is_premium and not request.add_watermark:
+                # Premium user chose to disable watermark
+                processed_bytes = img_bytes
+            elif request.is_premium and request.add_watermark:
+                # Premium user with subtle watermark
+                processed_bytes = add_watermark_to_image(img_bytes, subtle=True)
+            else:
+                # Free user - mandatory visible watermark
+                processed_bytes = add_watermark_to_image(img_bytes, subtle=False)
+            
+            img_b64 = base64.b64encode(processed_bytes).decode('utf-8')
             images_base64.append(img_b64)
         
         generation_id = str(uuid.uuid4())
@@ -514,6 +530,7 @@ async def generate_hologram(request: GenerateRequest):
             "preset_id": request.preset_id,
             "aspect_ratio": request.aspect_ratio,
             "num_images": len(images_base64),
+            "is_premium": request.is_premium,
             "timestamp": timestamp
         })
         
@@ -522,7 +539,8 @@ async def generate_hologram(request: GenerateRequest):
             preset_used=preset['name_tr'] if preset else None,
             prompt_used=full_prompt if request.show_prompt else None,
             generation_id=generation_id,
-            timestamp=timestamp
+            timestamp=timestamp,
+            caption=CAELINUS_CAPTION
         )
         
     except Exception as e:
