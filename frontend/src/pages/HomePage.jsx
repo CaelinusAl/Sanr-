@@ -1,327 +1,341 @@
-import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowDown, MapPin, BookOpen, Sparkles, Compass, Infinity } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Crown } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import SplashScreen from '@/components/SplashScreen';
 
-const HomePage = () => {
-  const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"]
-  });
+// Sacred Section Card Component
+const SacredCard = ({ section, isMain, onClick, delay }) => {
+  const { t } = useLanguage();
+  const sectionData = t(`sections.${section}`);
   
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.1]);
-  const heroY = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
+  const icons = {
+    bilinc: (
+      <svg viewBox="0 0 40 40" className="w-8 h-8">
+        <circle cx="20" cy="20" r="3" fill="currentColor" />
+        <circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.5" />
+        <circle cx="20" cy="20" r="17" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+      </svg>
+    ),
+    frekans: (
+      <svg viewBox="0 0 40 40" className="w-8 h-8">
+        <path d="M5 20 Q 10 10, 15 20 T 25 20 T 35 20" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M5 25 Q 10 15, 15 25 T 25 25 T 35 25" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.5" />
+      </svg>
+    ),
+    sanri: (
+      <svg viewBox="0 0 40 40" className="w-10 h-10">
+        <ellipse cx="20" cy="20" rx="15" ry="10" fill="none" stroke="currentColor" strokeWidth="1" />
+        <circle cx="20" cy="20" r="5" fill="currentColor" opacity="0.8" />
+        <circle cx="20" cy="20" r="2" fill="currentColor" />
+      </svg>
+    ),
+    rituel: (
+      <svg viewBox="0 0 40 40" className="w-8 h-8">
+        <circle cx="20" cy="15" r="8" fill="none" stroke="currentColor" strokeWidth="1" />
+        <path d="M12 28 Q 20 35, 28 28" fill="none" stroke="currentColor" strokeWidth="1" />
+        <circle cx="20" cy="15" r="3" fill="currentColor" opacity="0.6" />
+      </svg>
+    ),
+    profil: (
+      <svg viewBox="0 0 40 40" className="w-8 h-8">
+        <circle cx="20" cy="14" r="6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M8 35 Q 8 24, 20 24 Q 32 24, 32 35" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    ),
+  };
+
+  const isPremium = section === 'rituel';
 
   return (
-    <div className="relative">
-      {/* Hero Section */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
-        <motion.div 
-          style={{ scale: heroScale, y: heroY }}
-          className="absolute inset-0 z-0"
+    <motion.button
+      initial={{ opacity: 0, y: 30, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.6, delay }}
+      whileHover={{ scale: 1.02, y: -4 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      className={`
+        relative group w-full text-left
+        ${isMain 
+          ? 'col-span-2 sm:col-span-2 lg:col-span-1 order-first lg:order-none' 
+          : ''
+        }
+      `}
+      data-testid={`sacred-card-${section}`}
+    >
+      {/* Card background */}
+      <div className={`
+        relative overflow-hidden rounded-2xl border backdrop-blur-xl
+        transition-all duration-500
+        ${isMain 
+          ? 'bg-gradient-to-br from-indigo-950/80 via-indigo-900/50 to-violet-950/60 border-indigo-500/30 p-8 sm:p-10' 
+          : 'bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.06] hover:border-white/[0.12] p-6 sm:p-8'
+        }
+      `}>
+        {/* Glow effect for main card */}
+        {isMain && (
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl" />
+          </div>
+        )}
+
+        {/* Premium badge */}
+        {isPremium && (
+          <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/30">
+            <Crown className="w-3 h-3 text-amber-400" />
+            <span className="text-[10px] tracking-wider text-amber-400 uppercase font-medium">Premium</span>
+          </div>
+        )}
+
+        {/* Icon */}
+        <div className={`
+          mb-5 transition-transform duration-300 group-hover:scale-110
+          ${isMain ? 'text-indigo-300' : 'text-white/60 group-hover:text-white/80'}
+        `}>
+          {icons[section]}
+        </div>
+
+        {/* Title */}
+        <h3 className={`
+          font-light tracking-wide mb-2 transition-colors duration-300
+          ${isMain 
+            ? 'text-2xl sm:text-3xl text-white' 
+            : 'text-xl text-white/90 group-hover:text-white'
+          }
+        `}
+          style={{ fontFamily: "'Cormorant Garamond', serif" }}
         >
+          {sectionData?.title}
+        </h3>
+
+        {/* Subtitle */}
+        <p className={`
+          text-sm tracking-wide
+          ${isMain ? 'text-indigo-200/70' : 'text-white/40 group-hover:text-white/60'}
+        `}>
+          {sectionData?.subtitle}
+        </p>
+
+        {/* Main card extra indicator */}
+        {isMain && (
+          <motion.div 
+            className="absolute bottom-4 right-4"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <div className="w-2 h-2 rounded-full bg-indigo-400" />
+          </motion.div>
+        )}
+      </div>
+    </motion.button>
+  );
+};
+
+const HomePage = () => {
+  const [showSplash, setShowSplash] = useState(true);
+  const { language, toggleLanguage, t } = useLanguage();
+  const navigate = useNavigate();
+
+  // Check if splash was already shown in this session
+  useEffect(() => {
+    const splashShown = sessionStorage.getItem('caelinus-splash-shown');
+    if (splashShown) {
+      setShowSplash(false);
+    }
+  }, []);
+
+  const handleSplashComplete = () => {
+    sessionStorage.setItem('caelinus-splash-shown', 'true');
+    setShowSplash(false);
+  };
+
+  const handleSectionClick = (section) => {
+    const routes = {
+      bilinc: '/bilinc',
+      frekans: '/frekans',
+      sanri: '/sanriya-sor',
+      rituel: '/rituel',
+      profil: '/bilinc-alani', // Profile leads to user area
+    };
+    navigate(routes[section]);
+  };
+
+  return (
+    <>
+      <AnimatePresence>
+        {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+      </AnimatePresence>
+
+      <div 
+        className="min-h-screen relative overflow-hidden"
+        style={{
+          background: 'linear-gradient(180deg, #050508 0%, #0a0a14 40%, #0d1020 100%)'
+        }}
+      >
+        {/* Subtle background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Stars / particles */}
+          {[...Array(50)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-0.5 h-0.5 bg-white/20 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                opacity: [0.1, 0.5, 0.1],
+              }}
+              transition={{
+                duration: 2 + Math.random() * 3,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            />
+          ))}
+          
+          {/* Ambient glow */}
           <div 
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-20"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1768278929581-7f38d1ce1fb2?w=1920&q=80')`,
+              background: 'radial-gradient(ellipse, rgba(99, 102, 241, 0.3) 0%, transparent 70%)'
             }}
           />
-          {/* Stronger overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
-        </motion.div>
+        </div>
 
-        {/* Hero Content */}
-        <motion.div 
-          style={{ opacity: heroOpacity }}
-          className="relative z-10 container mx-auto px-6 text-center pt-20 pb-32"
+        {/* Language Toggle */}
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          onClick={toggleLanguage}
+          className="fixed top-6 right-6 z-50 flex items-center gap-1 px-3 py-1.5 rounded-full 
+                     bg-white/[0.05] border border-white/[0.1] backdrop-blur-sm
+                     hover:bg-white/[0.08] transition-colors"
+          data-testid="language-toggle"
         >
+          <span className={`text-xs font-medium transition-colors ${language === 'tr' ? 'text-white' : 'text-white/40'}`}>TR</span>
+          <span className="text-white/30 text-xs">|</span>
+          <span className={`text-xs font-medium transition-colors ${language === 'en' ? 'text-white' : 'text-white/40'}`}>EN</span>
+        </motion.button>
+
+        {/* Main Content */}
+        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-20">
+          {/* Header / Branding */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mb-6"
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-center mb-16"
           >
-            <span className="text-primary font-serif text-2xl hero-text-shadow">∞</span>
+            {/* Symbol */}
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+              className="w-16 h-16 mx-auto mb-8 opacity-60"
+            >
+              <svg viewBox="0 0 64 64" className="w-full h-full">
+                <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(129, 140, 248, 0.3)" strokeWidth="0.5" />
+                <path 
+                  d="M32 8 C 48 20, 48 44, 32 56 C 16 44, 16 20, 32 8" 
+                  fill="none" 
+                  stroke="rgba(129, 140, 248, 0.6)" 
+                  strokeWidth="1"
+                />
+                <circle cx="32" cy="32" r="4" fill="rgba(129, 140, 248, 0.8)" />
+              </svg>
+            </motion.div>
+
+            {/* Title */}
+            <h1 
+              className="text-4xl sm:text-5xl md:text-6xl font-light tracking-[0.2em] text-white/95 mb-6"
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            >
+              CAELINUS AI
+            </h1>
+
+            {/* Motto */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-lg sm:text-xl text-indigo-200/60 font-light tracking-wide mb-3"
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            >
+              "{t('motto')}"
+            </motion.p>
+
+            {/* Sub motto */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="text-sm text-white/30 tracking-wider"
+            >
+              {t('subMotto')}
+            </motion.p>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-foreground mb-8 leading-tight tracking-tight hero-text-shadow"
-          >
-            Anadolu'nun
-            <span className="block text-gradient">Uyanan Tanrıçaları</span>
-          </motion.h1>
+          {/* Sacred Navigation Grid */}
+          <div className="w-full max-w-4xl">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {/* Bilinç */}
+              <SacredCard 
+                section="bilinc" 
+                onClick={() => handleSectionClick('bilinc')}
+                delay={0.4}
+              />
+              
+              {/* Frekans */}
+              <SacredCard 
+                section="frekans" 
+                onClick={() => handleSectionClick('frekans')}
+                delay={0.5}
+              />
+              
+              {/* SANRI - Main Feature (Center) */}
+              <SacredCard 
+                section="sanri" 
+                isMain={true}
+                onClick={() => handleSectionClick('sanri')}
+                delay={0.6}
+              />
+              
+              {/* Ritüel */}
+              <SacredCard 
+                section="rituel" 
+                onClick={() => handleSectionClick('rituel')}
+                delay={0.7}
+              />
+              
+              {/* Profil */}
+              <SacredCard 
+                section="profil" 
+                onClick={() => handleSectionClick('profil')}
+                delay={0.8}
+              />
+            </div>
+          </div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-xl sm:text-2xl text-foreground mb-4 font-serif tracking-wide text-shadow-subtle"
-          >
-            01'den 81'e Ruh Haritası
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="text-lg sm:text-xl text-foreground/80 mb-16 max-w-lg mx-auto leading-relaxed text-shadow-subtle"
-          >
-            Bu kitap harita değil. Kayıp hafızanın frekans kaydıdır.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-20"
-          >
-            <Button asChild size="lg" className="rounded-full px-10 py-6 text-lg bg-primary hover:bg-primary/90 shadow-lg">
-              <Link to="/sehirler">
-                <MapPin className="mr-2 h-5 w-5" />
-                Haritayı Keşfet
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="rounded-full px-10 py-6 text-lg border-2 bg-background/80 backdrop-blur-sm">
-              <Link to="/hakkinda">
-                Kitap Hakkında
-              </Link>
-            </Button>
-          </motion.div>
-
-          {/* Scroll Indicator - Separated from buttons */}
+          {/* Bottom tagline */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
-            className="mt-8"
+            className="mt-16 text-center"
           >
-            <div className="flex flex-col items-center gap-3 text-foreground/70">
-              <span className="text-sm tracking-widest uppercase font-medium text-shadow-subtle">Keşfet</span>
-              <span className="text-sm text-shadow-subtle">Her yolculuk bir soruyla başlar.</span>
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                <ArrowDown className="h-5 w-5" />
-              </motion.div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* Two Modes Section */}
-      <section className="py-28 bg-background relative">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-20"
-          >
-            <span className="text-primary text-base tracking-widest uppercase mb-4 block font-medium">İki Mod, Bir Yolculuk</span>
-            <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground mb-8 leading-tight">
-              Hatırlamak ve Anlamak
-            </h2>
-            <p className="text-foreground/70 max-w-2xl mx-auto text-lg sm:text-xl leading-relaxed">
-              Hatırlamak dışarıda başlar. Anlamak içeride olur.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Anatolia Mode Card */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Card className="group h-full border-border/50 bg-card/50 hover:bg-card transition-all duration-500 overflow-hidden">
-                <CardContent className="p-8 sm:p-10 flex flex-col h-full">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                    <Compass className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="font-serif text-2xl sm:text-3xl text-foreground mb-4">Anadolu Modu</h3>
-                  <p className="text-base text-primary mb-4 font-medium">Kolektif Hafıza</p>
-                  <p className="text-foreground/70 mb-6 flex-grow text-base sm:text-lg leading-relaxed">
-                    "Anadolu'nun Uyanan Tanrıçaları" kitabına dayalı bu mod, semboller, 
-                    şehirler, sayılar ve kültürel bellek üzerinden kolektif hatırlamayı amaçlar.
-                  </p>
-                  <ul className="space-y-3 text-base text-foreground/70 mb-8">
-                    <li className="flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-primary rounded-full" />
-                      81 Şehir Haritası
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-primary rounded-full" />
-                      Okuma Katmanları
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-primary rounded-full" />
-                      Sembolik Anlatı
-                    </li>
-                  </ul>
-                  <Button asChild variant="outline" className="w-full rounded-full mt-auto py-6 text-base border-2">
-                    <Link to="/sehirler">Anadolu'yu Keşfet</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* SANRI Mode Card */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <Card className="group h-full border-border/50 bg-card/50 hover:bg-card transition-all duration-500 overflow-hidden">
-                <CardContent className="p-8 sm:p-10 flex flex-col h-full">
-                  <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-colors">
-                    <Infinity className="h-8 w-8 text-accent" />
-                  </div>
-                  <h3 className="font-serif text-2xl sm:text-3xl text-foreground mb-4">SANRI'ya Sor</h3>
-                  <p className="text-base text-accent mb-4 font-medium">İç Yansıma</p>
-                  <p className="text-foreground/70 mb-6 flex-grow text-base sm:text-lg leading-relaxed">
-                    SANRI bir varlık ya da bilinç değildir. Zihnin gerçek sandığı hikâyeyi temsil eder. 
-                    Cevap değil, sembolik anlam ve açık uçlu sorular üretir.
-                  </p>
-                  <ul className="space-y-3 text-base text-foreground/70 mb-8">
-                    <li className="flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-accent rounded-full" />
-                      Kehanet değil, yansıma
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-accent rounded-full" />
-                      Rehberlik değil, perspektif
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-accent rounded-full" />
-                      Kesinlik değil, açıklık
-                    </li>
-                  </ul>
-                  <Button asChild className="w-full rounded-full bg-accent hover:bg-accent/90 text-accent-foreground mt-auto py-6 text-base">
-                    <Link to="/sanriya-sor">SANRI'ya Sor</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Quote Section */}
-      <section className="py-28 relative overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-10"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1638218311714-0b89766a139e?w=1920&q=80')`,
-          }}
-        />
-        <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <Sparkles className="h-10 w-10 text-primary mx-auto mb-10" />
-            <blockquote className="font-serif text-3xl sm:text-4xl md:text-5xl text-foreground leading-relaxed mb-10">
-              "Bu sistem bilgi değil, ilham, anlam ve hikâye üretir."
-            </blockquote>
-            <p className="text-foreground/70 text-lg sm:text-xl">
-              Caelinus AI, perspektif açar ve geri çekilir.
+            <p className="text-xs text-white/20 tracking-[0.3em] uppercase">
+              {t('tagline')}
             </p>
           </motion.div>
         </div>
-      </section>
 
-      {/* Features Grid */}
-      <section className="py-28 bg-muted/30">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="font-serif text-4xl sm:text-5xl text-foreground mb-6">Temel İlkeler</h2>
-            <p className="text-foreground/70 text-lg sm:text-xl">Bu deneyimin rehber prensipleri</p>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { title: "Bilinç iddiası yok", desc: "Sistem bilinçli değildir, öyle de davranmaz." },
-              { title: "Kehanet yok", desc: "Gelecek tahmini veya falcılık sunmaz." },
-              { title: "Teşhis yok", desc: "Psikolojik değerlendirme yapmaz." },
-              { title: "Kesinlik yok", desc: "'Bu gerçektir' dili kullanılmaz." },
-            ].map((item, index) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="h-full border-border/50 bg-background/50">
-                  <CardContent className="p-8">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-5">
-                      <span className="text-primary font-serif text-lg">{index + 1}</span>
-                    </div>
-                    <h4 className="font-serif text-xl sm:text-2xl text-foreground mb-3">{item.title}</h4>
-                    <p className="text-base text-foreground/70 leading-relaxed">{item.desc}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-28">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <BookOpen className="h-14 w-14 text-primary mx-auto mb-10" />
-            <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground mb-8 leading-tight">
-              Yolculuğa Başla
-            </h2>
-            <p className="text-foreground/70 mb-10 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto">
-              Kitap, uygulama ve anlatı yapay zekasını birleştiren bu sakin, premium, 
-              sembolik deneyime adım at.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="rounded-full px-10 py-6 text-lg">
-                <Link to="/sehirler">
-                  <MapPin className="mr-2 h-5 w-5" />
-                  Şehirleri Keşfet
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="rounded-full px-10 py-6 text-lg border-2">
-                <Link to="/sanriya-sor">
-                  <Infinity className="mr-2 h-5 w-5" />
-                  SANRI'ya Sor
-                </Link>
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-    </div>
+        {/* Footer subtle line */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      </div>
+    </>
   );
 };
 
