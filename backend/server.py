@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 
 # Import routes
 from routes.sanri import router as sanri_router
+from routes.bilinc_alani import router as bilinc_alani_router
 
 
 ROOT_DIR = Path(__file__).parent
