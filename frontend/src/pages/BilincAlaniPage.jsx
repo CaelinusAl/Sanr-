@@ -112,14 +112,22 @@ const CaelinusResponseText = ({ text }) => {
 };
 
 // Premium Gate Component
-const PremiumGate = () => {
+const PremiumGate = ({ onClose }) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-[60vh] flex items-center justify-center px-6"
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center px-6"
+      onClick={onClose}
     >
-      <div className="max-w-md text-center">
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="max-w-md text-center bg-card rounded-2xl p-8 border border-border/50 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-8">
           <Lock className="h-10 w-10 text-accent" />
         </div>
@@ -144,15 +152,20 @@ const PremiumGate = () => {
           </CardContent>
         </Card>
 
-        <Button className="rounded-full px-8" disabled>
-          <Lock className="h-4 w-4 mr-2" />
-          Premium ile Aç
-        </Button>
+        <div className="flex gap-3 justify-center">
+          <Button variant="outline" onClick={onClose} className="rounded-full px-6">
+            Kapat
+          </Button>
+          <Button className="rounded-full px-8" disabled>
+            <Crown className="h-4 w-4 mr-2" />
+            Premium'a Geç
+          </Button>
+        </div>
         
         <p className="text-xs text-foreground/40 mt-6">
           "Hazır olana açılır."
         </p>
-      </div>
+      </motion.div>
     </motion.div>
   );
 };
