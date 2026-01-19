@@ -332,7 +332,32 @@ const GorselinPage = () => {
                       Detay göster
                     </Label>
                   </div>
+
+                  {/* Watermark Toggle (Premium only) */}
+                  {IS_PREMIUM && (
+                    <div className="flex items-center gap-3 pt-6">
+                      <Switch 
+                        checked={addWatermark} 
+                        onCheckedChange={setAddWatermark}
+                        id="add-watermark"
+                      />
+                      <Label htmlFor="add-watermark" className="text-white/70 text-sm">
+                        İmza ekle
+                      </Label>
+                    </div>
+                  )}
                 </div>
+
+                {/* Free user watermark notice */}
+                {!IS_PREMIUM && (
+                  <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                    <p className="text-xs text-amber-300/80">
+                      <Crown className="w-3 h-3 inline mr-1" />
+                      Free kullanıcılarda "CAELINUS AI • SANRI" imzası eklenir. 
+                      Premium ile kaldırabilirsiniz.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
