@@ -128,12 +128,13 @@ export const Navbar = ({ isDark, toggleTheme }) => {
                       <Link
                         to={link.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`text-xl font-serif transition-colors block py-2 ${
+                        className={`text-xl font-serif transition-colors block py-2 flex items-center gap-2 ${
                           location.pathname === link.href
                             ? "text-primary border-l-2 border-primary pl-4"
                             : "text-foreground/70 hover:text-foreground pl-4"
                         }`}
                       >
+                        {link.isPremium && <Crown className="h-4 w-4 text-accent" />}
                         {link.label}
                       </Link>
                     </motion.div>
