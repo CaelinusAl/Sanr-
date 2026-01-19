@@ -66,6 +66,7 @@ function App() {
               <Route path="/bilinc" element={<BilincPage />} />
               <Route path="/frekans" element={<FrekansPage />} />
               <Route path="/rituel" element={<RituelAlaniPage />} />
+              <Route path="/bilinc-alani" element={<BilincAlaniPage />} />
               <Route path="/hakkinda" element={<AboutPage />} />
             </Routes>
           </Suspense>
