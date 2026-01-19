@@ -478,7 +478,7 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
               className="text-xs text-foreground/30 mt-8 flex items-center justify-center gap-2"
             >
               <Volume2 className="h-3 w-3" />
-              {isAvailable ? "Sesli rehberlik aktif" : "Sesli rehberlik mevcut"}
+              {isAvailable ? "Sesli rehberlik aktif (HD)" : "Sesli rehberlik mevcut"}
             </motion.p>
           </div>
         </div>
