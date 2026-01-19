@@ -1,95 +1,102 @@
-# ElevenLabs TTS Integration for Caelinus Rituals
+# OpenAI TTS Integration for Caelinus Rituals
 # Voice: Feminine, warm, slow, poetic Turkish
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
-from elevenlabs import ElevenLabs, VoiceSettings
+from emergentintegrations.llm.openai import OpenAITextToSpeech
 import os
 import logging
-import io
 import base64
+from dotenv import load_dotenv
 
+load_dotenv()
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/tts", tags=["tts"])
 
-# ElevenLabs Client
-def get_eleven_client():
-    api_key = os.environ.get("ELEVENLABS_API_KEY")
+# OpenAI TTS Client
+def get_tts_client():
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
     if not api_key:
         return None
-    return ElevenLabs(api_key=api_key)
+    return OpenAITextToSpeech(api_key=api_key)
 
-# Turkish feminine voices in ElevenLabs
-# You can find voice IDs at https://elevenlabs.io/voice-library
-TURKISH_FEMININE_VOICES = {
-    "default": "EXAVITQu4vr4xnSDxMaL",  # Bella - warm feminine
-    "sarah": "EXAVITQu4vr4xnSDxMaL",    # Sarah - soft
-    "rachel": "21m00Tcm4TlvDq8ikWAM",   # Rachel - calm
-}
+# Voice options for Caelinus
+# nova: Energetic but can be calming with slow speed
+# shimmer: Bright, cheerful - good for gentle guidance
+# For Turkish feminine warm voice, shimmer or nova work best
+CAELINUS_VOICE = "nova"  # Warm, can be soft with low speed
+CAELINUS_MODEL = "tts-1-hd"  # High quality for rituals
+CAELINUS_SPEED = 0.85  # Slower for meditation
 
 class TTSRequest(BaseModel):
     text: str
-    voice_id: Optional[str] = None
-    stability: float = 0.7  # Higher = more stable, calmer
-    similarity_boost: float = 0.8
-    style: float = 0.5
-    speed: float = 0.85  # Slower for ritual
+    voice: Optional[str] = None  # nova, shimmer, alloy, etc.
+    model: Optional[str] = None  # tts-1 or tts-1-hd
+    speed: Optional[float] = None  # 0.25 to 4.0
+    format: Optional[str] = "mp3"
 
 class TTSResponse(BaseModel):
     audio_url: str
     text: str
-    voice_id: str
+    voice: str
+    model: str
 
 @router.post("/generate", response_model=TTSResponse)
 async def generate_tts(request: TTSRequest):
     """
     Generate text-to-speech audio for ritual narration
-    Voice characteristics: Feminine, warm, slow, Turkish
+    Voice: Feminine, warm, slow for consciousness guidance
     """
     try:
-        client = get_eleven_client()
+        client = get_tts_client()
         
         if not client:
             raise HTTPException(
                 status_code=503, 
-                detail="Ses servisi şu an aktif değil. Lütfen daha sonra tekrar deneyin."
+                detail="Ses servisi yapılandırılmamış. EMERGENT_LLM_KEY gerekli."
             )
         
-        voice_id = request.voice_id or TURKISH_FEMININE_VOICES["default"]
+        # Use Caelinus defaults or request overrides
+        voice = request.voice or CAELINUS_VOICE
+        model = request.model or CAELINUS_MODEL
+        speed = request.speed or CAELINUS_SPEED
         
-        # Voice settings for calm, slow ritual narration
-        voice_settings = VoiceSettings(
-            stability=request.stability,
-            similarity_boost=request.similarity_boost,
-            style=request.style,
-            use_speaker_boost=True
-        )
+        # Validate text length (OpenAI limit: 4096 chars)
+        if len(request.text) > 4096:
+            raise HTTPException(
+                status_code=400,
+                detail="Metin çok uzun. Maksimum 4096 karakter."
+            )
         
-        # Generate audio
-        audio_generator = client.text_to_speech.convert(
+        # Generate speech with base64 output
+        audio_base64 = await client.generate_speech_base64(
             text=request.text,
-            voice_id=voice_id,
-            model_id="eleven_multilingual_v2",  # Best for Turkish
-            voice_settings=voice_settings
+            model=model,
+            voice=voice,
+            speed=speed,
+            response_format=request.format or "mp3"
         )
         
-        # Collect audio data
-        audio_data = b""
-        for chunk in audio_generator:
-            audio_data += chunk
+        # Create data URL for audio
+        audio_url = f"data:audio/mpeg;base64,{audio_base64}"
         
-        # Convert to base64
-        audio_b64 = base64.b64encode(audio_data).decode()
+        logger.info(f"TTS generated: {len(request.text)} chars, voice={voice}, model={model}")
         
         return TTSResponse(
-            audio_url=f"data:audio/mpeg;base64,{audio_b64}",
+            audio_url=audio_url,
             text=request.text,
-            voice_id=voice_id
+            voice=voice,
+            model=model
         )
         
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.error(f"TTS validation error: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Geçersiz istek: {str(e)}")
     except Exception as e:
         logger.error(f"TTS generation error: {str(e)}")
         raise HTTPException(
@@ -100,40 +107,32 @@ async def generate_tts(request: TTSRequest):
 @router.post("/stream")
 async def stream_tts(request: TTSRequest):
     """
-    Stream text-to-speech audio for real-time playback
+    Stream text-to-speech audio (returns raw audio bytes)
     """
     try:
-        client = get_eleven_client()
+        client = get_tts_client()
         
         if not client:
             raise HTTPException(
                 status_code=503, 
-                detail="Ses servisi şu an aktif değil."
+                detail="Ses servisi yapılandırılmamış."
             )
         
-        voice_id = request.voice_id or TURKISH_FEMININE_VOICES["default"]
+        voice = request.voice or CAELINUS_VOICE
+        model = request.model or CAELINUS_MODEL
+        speed = request.speed or CAELINUS_SPEED
         
-        voice_settings = VoiceSettings(
-            stability=request.stability,
-            similarity_boost=request.similarity_boost,
-            style=request.style,
-            use_speaker_boost=True
-        )
-        
-        # Stream audio
-        audio_stream = client.text_to_speech.convert(
+        # Generate audio bytes
+        audio_bytes = await client.generate_speech(
             text=request.text,
-            voice_id=voice_id,
-            model_id="eleven_multilingual_v2",
-            voice_settings=voice_settings
+            model=model,
+            voice=voice,
+            speed=speed,
+            response_format=request.format or "mp3"
         )
-        
-        def generate():
-            for chunk in audio_stream:
-                yield chunk
         
         return StreamingResponse(
-            generate(),
+            iter([audio_bytes]),
             media_type="audio/mpeg",
             headers={
                 "Content-Disposition": "inline",
@@ -151,68 +150,94 @@ async def stream_tts(request: TTSRequest):
 @router.get("/voices")
 async def list_voices():
     """
-    List available voices
+    List available OpenAI TTS voices
     """
-    try:
-        client = get_eleven_client()
-        
-        if not client:
-            # Return default voices if no API key
-            return {
-                "voices": [
-                    {"voice_id": "default", "name": "Varsayılan", "available": False}
-                ],
-                "status": "api_key_required"
-            }
-        
-        voices_response = client.voices.get_all()
-        
-        return {
-            "voices": [
-                {
-                    "voice_id": voice.voice_id,
-                    "name": voice.name,
-                    "category": getattr(voice, 'category', 'custom'),
-                    "labels": getattr(voice, 'labels', {})
-                }
-                for voice in voices_response.voices
-            ],
-            "status": "active"
-        }
-        
-    except Exception as e:
-        logger.error(f"Voice list error: {str(e)}")
-        return {
-            "voices": [],
-            "status": "error",
-            "message": str(e)
-        }
+    return {
+        "voices": [
+            {"id": "nova", "name": "Nova", "description": "Sıcak, enerjik - Caelinus varsayılanı", "recommended": True},
+            {"id": "shimmer", "name": "Shimmer", "description": "Parlak, neşeli - nazik rehberlik için"},
+            {"id": "alloy", "name": "Alloy", "description": "Nötr, dengeli"},
+            {"id": "echo", "name": "Echo", "description": "Pürüzsüz, sakin"},
+            {"id": "fable", "name": "Fable", "description": "İfadeli, hikaye anlatıcı"},
+            {"id": "onyx", "name": "Onyx", "description": "Derin, otoriter"},
+            {"id": "sage", "name": "Sage", "description": "Bilge, ölçülü"},
+            {"id": "coral", "name": "Coral", "description": "Sıcak, arkadaşça"},
+            {"id": "ash", "name": "Ash", "description": "Net, açık"}
+        ],
+        "models": [
+            {"id": "tts-1", "name": "Standart", "description": "Hızlı, ekonomik"},
+            {"id": "tts-1-hd", "name": "HD Kalite", "description": "Yüksek kalite - ritüeller için önerilen", "recommended": True}
+        ],
+        "default": {
+            "voice": CAELINUS_VOICE,
+            "model": CAELINUS_MODEL,
+            "speed": CAELINUS_SPEED
+        },
+        "status": "active",
+        "provider": "openai"
+    }
 
 @router.get("/status")
 async def tts_status():
     """
     Check TTS service status
     """
-    client = get_eleven_client()
+    client = get_tts_client()
     
     if not client:
         return {
             "status": "inactive",
-            "message": "ElevenLabs API anahtarı yapılandırılmamış",
+            "message": "EMERGENT_LLM_KEY yapılandırılmamış",
             "fallback": "web_speech_api"
         }
     
-    try:
-        # Test API connection
-        client.voices.get_all()
-        return {
-            "status": "active",
-            "provider": "elevenlabs",
-            "model": "eleven_multilingual_v2"
+    return {
+        "status": "active",
+        "provider": "openai",
+        "model": CAELINUS_MODEL,
+        "voice": CAELINUS_VOICE,
+        "speed": CAELINUS_SPEED,
+        "features": {
+            "turkish_support": True,
+            "hd_quality": True,
+            "streaming": True
         }
+    }
+
+@router.post("/test")
+async def test_tts():
+    """
+    Test TTS with a sample Caelinus ritual text
+    """
+    sample_text = "Şimdi... kendinle temas etmek için... küçük bir alan açıyoruz..."
+    
+    try:
+        client = get_tts_client()
+        
+        if not client:
+            return {
+                "status": "error",
+                "message": "TTS servisi yapılandırılmamış"
+            }
+        
+        audio_base64 = await client.generate_speech_base64(
+            text=sample_text,
+            model=CAELINUS_MODEL,
+            voice=CAELINUS_VOICE,
+            speed=CAELINUS_SPEED
+        )
+        
+        return {
+            "status": "success",
+            "message": "TTS çalışıyor",
+            "sample_text": sample_text,
+            "audio_url": f"data:audio/mpeg;base64,{audio_base64}",
+            "voice": CAELINUS_VOICE,
+            "model": CAELINUS_MODEL
+        }
+        
     except Exception as e:
         return {
             "status": "error",
-            "message": str(e),
-            "fallback": "web_speech_api"
+            "message": str(e)
         }
