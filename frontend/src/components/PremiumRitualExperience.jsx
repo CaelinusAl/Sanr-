@@ -183,6 +183,19 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
   // Ritüel akışını yükle
   useEffect(() => {
     const loadRitualFlow = async () => {
+      // Önce ritüel'in kendi steps'ini kullan (hızlı başlangıç)
+      if (ritual.steps && ritual.steps.length > 0) {
+        const formattedSteps = ritual.steps.map(s => ({
+          phase: s.phase || "ana",
+          text: s.text,
+          duration: s.duration || 6
+        }));
+        setSteps(formattedSteps);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Eğer ritüel'in kendi steps'i yoksa, API'den al
       try {
         // Map ritual type
         const typeMap = {
@@ -193,6 +206,17 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
           "premium-5": "epifiz",
         };
         
+        // Önce varsayılan akışı hızlıca yükle
+        const fallbackResponse = await fetch(`${API_URL}/api/ritual/default/${typeMap[ritual.id] || "his"}`);
+        if (fallbackResponse.ok) {
+          const data = await fallbackResponse.json();
+          setSteps(data.steps);
+          setIsLoading(false);
+        }
+        
+        // LLM tabanlı özel akış için arka planda deneme yap (opsiyonel)
+        // Bu, gelecekte daha kişiselleştirilmiş ritüeller için kullanılabilir
+        /*
         const response = await fetch(`${API_URL}/api/ritual/start`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
