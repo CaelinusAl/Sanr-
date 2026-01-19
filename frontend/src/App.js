@@ -1,5 +1,5 @@
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useState, useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -15,9 +15,17 @@ const FrekansPage = lazy(() => import("@/pages/FrekansPage"));
 const RituelAlaniPage = lazy(() => import("@/pages/RituelAlaniPage"));
 const BilincAlaniPage = lazy(() => import("@/pages/BilincAlaniPage"));
 
+// Admin Pages
+const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLoginPage"));
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
+const RitualsList = lazy(() => import("@/pages/admin/RitualsList"));
+const RitualBuilder = lazy(() => import("@/pages/admin/RitualBuilder"));
+
 // Components
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { AdminProvider, useAdmin } from "@/contexts/AdminContext";
 
 // Loading component
 const PageLoader = () => (
