@@ -70,6 +70,7 @@ export const Navbar = ({ isDark, toggleTheme }) => {
               }`}
             >
               {link.isPremium && <Crown className="h-3.5 w-3.5 text-accent" />}
+              {link.isNew && <span className="text-[9px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-500 rounded-full uppercase tracking-wider font-semibold">Yeni</span>}
               {link.label}
             </Link>
           ))}
