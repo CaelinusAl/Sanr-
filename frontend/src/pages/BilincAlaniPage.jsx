@@ -435,6 +435,14 @@ const BilincAlaniPage = () => {
     setView("chat");
   };
 
+  const handleStartRitual = (ritual) => {
+    setActiveRitual(ritual);
+  };
+
+  const handleCloseRitual = () => {
+    setActiveRitual(null);
+  };
+
   const handleBack = () => {
     if (view === "chat") {
       setView("detail");
