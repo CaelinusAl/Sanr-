@@ -14,63 +14,125 @@ import { Button } from "@/components/ui/button";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Text-to-Speech Hook
-const useSpeechSynthesis = () => {
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isSupported, setIsSupported] = useState(false);
-  const utteranceRef = useRef(null);
+// ElevenLabs TTS Hook
+const useElevenLabsTTS = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(false);
+  const audioRef = useRef(null);
+  const audioContextRef = useRef(null);
 
+  // Check TTS availability on mount
   useEffect(() => {
-    setIsSupported('speechSynthesis' in window);
+    const checkStatus = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/tts/status`);
+        const data = await response.json();
+        setIsAvailable(data.status === "active");
+      } catch {
+        setIsAvailable(false);
+      }
+    };
+    checkStatus();
   }, []);
 
-  const speak = useCallback((text, onEnd) => {
-    if (!isSupported) {
+  const speak = useCallback(async (text, onEnd) => {
+    if (!isAvailable) {
+      // Fallback to Web Speech API
+      return speakFallback(text, onEnd);
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/tts/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text,
+          stability: 0.75,
+          similarity_boost: 0.8,
+          style: 0.4,
+          speed: 0.85
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("TTS failed");
+      }
+
+      const data = await response.json();
+      
+      // Play audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      
+      const audio = new Audio(data.audio_url);
+      audioRef.current = audio;
+      
+      audio.onplay = () => setIsPlaying(true);
+      audio.onended = () => {
+        setIsPlaying(false);
+        onEnd?.();
+      };
+      audio.onerror = () => {
+        setIsPlaying(false);
+        onEnd?.();
+      };
+      
+      await audio.play();
+      
+    } catch (error) {
+      console.error("ElevenLabs TTS error:", error);
+      // Fallback to Web Speech API
+      speakFallback(text, onEnd);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAvailable]);
+
+  // Web Speech API Fallback
+  const speakFallback = useCallback((text, onEnd) => {
+    if (!('speechSynthesis' in window)) {
       onEnd?.();
       return;
     }
 
-    // Cancel any ongoing speech
     window.speechSynthesis.cancel();
-
+    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'tr-TR';
-    utterance.rate = 0.75; // Yavaş
+    utterance.rate = 0.75;
     utterance.pitch = 1.0;
-    utterance.volume = 1.0;
-
-    // Try to find a Turkish female voice
-    const voices = window.speechSynthesis.getVoices();
-    const turkishVoice = voices.find(v => v.lang.startsWith('tr') && v.name.toLowerCase().includes('female')) ||
-                         voices.find(v => v.lang.startsWith('tr')) ||
-                         voices.find(v => v.name.toLowerCase().includes('female'));
     
-    if (turkishVoice) {
-      utterance.voice = turkishVoice;
-    }
-
-    utterance.onstart = () => setIsSpeaking(true);
+    const voices = window.speechSynthesis.getVoices();
+    const turkishVoice = voices.find(v => v.lang.startsWith('tr'));
+    if (turkishVoice) utterance.voice = turkishVoice;
+    
+    utterance.onstart = () => setIsPlaying(true);
     utterance.onend = () => {
-      setIsSpeaking(false);
+      setIsPlaying(false);
       onEnd?.();
     };
     utterance.onerror = () => {
-      setIsSpeaking(false);
+      setIsPlaying(false);
       onEnd?.();
     };
-
-    utteranceRef.current = utterance;
+    
     window.speechSynthesis.speak(utterance);
-  }, [isSupported]);
+  }, []);
 
   const stop = useCallback(() => {
-    if (isSupported) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
     }
-  }, [isSupported]);
+    window.speechSynthesis?.cancel();
+    setIsPlaying(false);
+  }, []);
 
-  return { speak, stop, isSpeaking, isSupported };
+  return { speak, stop, isLoading, isPlaying, isAvailable };
 };
 
 // Nefes Animasyonu Component
@@ -115,7 +177,7 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   
-  const { speak, stop, isSpeaking, isSupported } = useSpeechSynthesis();
+  const { speak, stop, isLoading: ttsLoading, isPlaying, isAvailable } = useElevenLabsTTS();
   const timerRef = useRef(null);
 
   // Ritüel akışını yükle
@@ -201,7 +263,7 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
     setTimeLeft(currentStep.duration);
 
     // Sesli okuma
-    if (!isMuted && isSupported) {
+    if (!isMuted) {
       speak(currentStep.text, () => {
         // Ses bittikten sonra bekleme
         timerRef.current = setTimeout(proceedToNextStep, 2000);
@@ -216,7 +278,7 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
         clearTimeout(timerRef.current);
       }
     };
-  }, [currentStepIndex, isLoading, isPaused, isCompleted, isMuted, isSupported, speak, proceedToNextStep, steps]);
+  }, [currentStepIndex, isLoading, isPaused, isCompleted, isMuted, speak, proceedToNextStep, steps]);
 
   // Countdown timer
   useEffect(() => {
@@ -309,7 +371,7 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
       >
         {/* Close Button */}
         <div className="absolute top-4 right-4">
-          <Button variant="ghost" size="icon" onClick={handleClose}>
+          <Button variant="ghost" size="icon" onClick={handleClose} data-testid="ritual-close-btn">
             <X className="h-6 w-6" />
           </Button>
         </div>
@@ -363,16 +425,30 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
               {ritual.duration} • {steps.length} adım
             </motion.p>
 
+            {/* Hazırlık Cümlesi */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.0 }}
+              className="bg-primary/5 rounded-2xl p-6 mb-8 border border-primary/10"
+            >
+              <p className="font-serif text-base text-foreground/70 italic leading-relaxed">
+                "Bu ritüel bir şey yapmak için değil,<br />
+                bir şeyi hatırlamak için tasarlandı."
+              </p>
+            </motion.div>
+
             {/* Start Button */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.1 }}
+              transition={{ delay: 1.2 }}
             >
               <Button
                 onClick={handleStart}
                 size="lg"
                 className="rounded-full px-12 py-6 text-lg"
+                data-testid="ritual-start-btn"
               >
                 <Play className="h-5 w-5 mr-3" />
                 Başla
@@ -380,17 +456,15 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
             </motion.div>
 
             {/* Voice Info */}
-            {isSupported && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.3 }}
-                className="text-xs text-foreground/30 mt-8"
-              >
-                <Volume2 className="h-3 w-3 inline mr-1" />
-                Sesli rehberlik aktif
-              </motion.p>
-            )}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.4 }}
+              className="text-xs text-foreground/30 mt-8 flex items-center justify-center gap-2"
+            >
+              <Volume2 className="h-3 w-3" />
+              {isAvailable ? "Sesli rehberlik aktif" : "Sesli rehberlik mevcut"}
+            </motion.p>
           </div>
         </div>
       </motion.div>
@@ -443,17 +517,26 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
             </p>
           </motion.div>
 
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
+            className="text-sm text-foreground/50 mb-8"
+          >
+            Şimdi bir an dur. Bu anı hisset.
+          </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ delay: 1.1 }}
             className="flex gap-4 justify-center"
           >
-            <Button variant="outline" onClick={handleRestart} className="rounded-full">
+            <Button variant="outline" onClick={handleRestart} className="rounded-full" data-testid="ritual-restart-btn">
               <RotateCcw className="h-4 w-4 mr-2" />
               Tekrarla
             </Button>
-            <Button onClick={onComplete || handleClose} className="rounded-full">
+            <Button onClick={onComplete || handleClose} className="rounded-full" data-testid="ritual-finish-btn">
               Bitir
             </Button>
           </motion.div>
@@ -471,7 +554,7 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
     >
       {/* Header */}
       <div className="p-4 flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={handleClose}>
+        <Button variant="ghost" size="sm" onClick={handleClose} data-testid="ritual-exit-btn">
           <X className="h-5 w-5" />
         </Button>
         <span className="text-sm text-foreground/50 font-serif">{ritual.title}</span>
@@ -517,13 +600,14 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
               exit={{ opacity: 0, y: -30 }}
               transition={{ duration: 0.8 }}
               className="font-serif text-2xl sm:text-3xl md:text-4xl text-foreground leading-relaxed"
+              data-testid="ritual-step-text"
             >
               {currentStep?.text}
             </motion.p>
           </AnimatePresence>
 
-          {/* Speaking Indicator */}
-          {isSpeaking && !isMuted && (
+          {/* Speaking/Loading Indicator */}
+          {(isPlaying || ttsLoading) && !isMuted && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -542,16 +626,15 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
       {/* Controls */}
       <div className="p-6 flex justify-center gap-4">
         {/* Mute Button */}
-        {isSupported && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full h-12 w-12"
-            onClick={toggleMute}
-          >
-            {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-          </Button>
-        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full h-12 w-12"
+          onClick={toggleMute}
+          data-testid="ritual-mute-btn"
+        >
+          {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+        </Button>
 
         {/* Pause/Play Button */}
         <Button
@@ -559,6 +642,7 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
           size="icon"
           className="rounded-full h-14 w-14"
           onClick={togglePause}
+          data-testid="ritual-pause-btn"
         >
           {isPaused ? <Play className="h-6 w-6" /> : <Pause className="h-6 w-6" />}
         </Button>
@@ -576,7 +660,7 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
             <div className="text-center">
               <Pause className="h-12 w-12 text-foreground/30 mx-auto mb-4" />
               <p className="text-foreground/60 font-serif mb-6">Duraklatıldı</p>
-              <Button onClick={togglePause} className="rounded-full">
+              <Button onClick={togglePause} className="rounded-full" data-testid="ritual-resume-btn">
                 <Play className="h-4 w-4 mr-2" />
                 Devam Et
               </Button>
