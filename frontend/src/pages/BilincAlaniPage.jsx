@@ -538,7 +538,12 @@ const BilincAlaniPage = () => {
                             <p className="text-sm text-foreground/50">{rituel.subtitle} • {rituel.duration}</p>
                           </div>
                         </div>
-                        <Button className="rounded-full" size="sm">
+                        <Button 
+                          className="rounded-full" 
+                          size="sm"
+                          onClick={() => handleStartRitual(rituel)}
+                          data-testid={`start-ritual-${rituel.id}`}
+                        >
                           <Play className="h-4 w-4 mr-2" />
                           Başlat
                         </Button>
