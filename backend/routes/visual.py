@@ -379,9 +379,9 @@ async def analyze_image(
         # Create message with image
         user_message = UserMessage(
             text=user_text,
-            image_urls=[ImageUrl(
-                url=f"data:{content_type};base64,{image_base64}",
-                detail="high"
+            file_contents=[FileContent(
+                content_type=content_type,
+                file_content_base64=image_base64
             )]
         )
         
