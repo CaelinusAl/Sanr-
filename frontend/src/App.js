@@ -13,6 +13,7 @@ const AboutPage = lazy(() => import("@/pages/AboutPage"));
 const BilincPage = lazy(() => import("@/pages/BilincPage"));
 const FrekansPage = lazy(() => import("@/pages/FrekansPage"));
 const RituelAlaniPage = lazy(() => import("@/pages/RituelAlaniPage"));
+const BilincAlaniPage = lazy(() => import("@/pages/BilincAlaniPage"));
 
 // Components
 import { Navbar } from "@/components/layout/Navbar";
