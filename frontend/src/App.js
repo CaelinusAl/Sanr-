@@ -98,33 +98,35 @@ function App() {
   return (
     <div className="min-h-screen bg-background">
       <BrowserRouter>
-        <AdminProvider>
-          <LayoutWrapper isDark={isDark} toggleTheme={toggleTheme}>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/sehirler" element={<CitiesPage />} />
-                <Route path="/sehir/:cityId" element={<CityDetailPage />} />
-                <Route path="/okuma-katmanlari" element={<ReadingLayersPage />} />
-                <Route path="/sanriya-sor" element={<SanriyaSorPage />} />
-                <Route path="/bilinc" element={<BilincPage />} />
-                <Route path="/frekans" element={<FrekansPage />} />
-                <Route path="/rituel" element={<RituelAlaniPage />} />
-                <Route path="/bilinc-alani" element={<BilincAlaniPage />} />
-                <Route path="/hakkinda" element={<AboutPage />} />
-                
-                {/* Admin Routes */}
-                <Route path="/admin/login" element={<AdminLoginPage />} />
-                <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-                <Route path="/admin/rituals" element={<AdminRoute><RitualsList /></AdminRoute>} />
-                <Route path="/admin/rituals/new" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
-                <Route path="/admin/rituals/:id" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
-              </Routes>
-            </Suspense>
-          </LayoutWrapper>
-          <Toaster position="bottom-right" />
-        </AdminProvider>
+        <LanguageProvider>
+          <AdminProvider>
+            <LayoutWrapper isDark={isDark} toggleTheme={toggleTheme}>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/sehirler" element={<CitiesPage />} />
+                  <Route path="/sehir/:cityId" element={<CityDetailPage />} />
+                  <Route path="/okuma-katmanlari" element={<ReadingLayersPage />} />
+                  <Route path="/sanriya-sor" element={<SanriyaSorPage />} />
+                  <Route path="/bilinc" element={<BilincPage />} />
+                  <Route path="/frekans" element={<FrekansPage />} />
+                  <Route path="/rituel" element={<RituelAlaniPage />} />
+                  <Route path="/bilinc-alani" element={<BilincAlaniPage />} />
+                  <Route path="/hakkinda" element={<AboutPage />} />
+                  
+                  {/* Admin Routes */}
+                  <Route path="/admin/login" element={<AdminLoginPage />} />
+                  <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                  <Route path="/admin/rituals" element={<AdminRoute><RitualsList /></AdminRoute>} />
+                  <Route path="/admin/rituals/new" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
+                  <Route path="/admin/rituals/:id" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
+                </Routes>
+              </Suspense>
+            </LayoutWrapper>
+            <Toaster position="bottom-right" />
+          </AdminProvider>
+        </LanguageProvider>
       </BrowserRouter>
     </div>
   );
