@@ -14,13 +14,13 @@ import { Button } from "@/components/ui/button";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// ElevenLabs TTS Hook
-const useElevenLabsTTS = () => {
+// OpenAI TTS Hook (via Emergent LLM Key)
+const useOpenAITTS = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isAvailable, setIsAvailable] = useState(false);
+  const [error, setError] = useState(null);
   const audioRef = useRef(null);
-  const audioContextRef = useRef(null);
 
   // Check TTS availability on mount
   useEffect(() => {
@@ -37,12 +37,18 @@ const useElevenLabsTTS = () => {
   }, []);
 
   const speak = useCallback(async (text, onEnd) => {
+    if (!text || text.trim().length === 0) {
+      onEnd?.();
+      return;
+    }
+
+    // If TTS not available, use fallback
     if (!isAvailable) {
-      // Fallback to Web Speech API
       return speakFallback(text, onEnd);
     }
 
     setIsLoading(true);
+    setError(null);
     
     try {
       const response = await fetch(`${API_URL}/api/tts/generate`, {
@@ -50,10 +56,7 @@ const useElevenLabsTTS = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           text,
-          stability: 0.75,
-          similarity_boost: 0.8,
-          style: 0.4,
-          speed: 0.85
+          speed: 0.85  // Slow for ritual
         }),
       });
 
@@ -63,32 +66,39 @@ const useElevenLabsTTS = () => {
 
       const data = await response.json();
       
-      // Play audio
+      // Stop any previous audio
       if (audioRef.current) {
         audioRef.current.pause();
+        audioRef.current = null;
       }
       
       const audio = new Audio(data.audio_url);
       audioRef.current = audio;
       
-      audio.onplay = () => setIsPlaying(true);
+      audio.onplay = () => {
+        setIsPlaying(true);
+        setIsLoading(false);
+      };
       audio.onended = () => {
         setIsPlaying(false);
         onEnd?.();
       };
-      audio.onerror = () => {
+      audio.onerror = (e) => {
+        console.error("Audio playback error:", e);
         setIsPlaying(false);
-        onEnd?.();
+        setIsLoading(false);
+        // Fallback to Web Speech API
+        speakFallback(text, onEnd);
       };
       
       await audio.play();
       
     } catch (error) {
-      console.error("ElevenLabs TTS error:", error);
+      console.error("OpenAI TTS error:", error);
+      setError(error.message);
+      setIsLoading(false);
       // Fallback to Web Speech API
       speakFallback(text, onEnd);
-    } finally {
-      setIsLoading(false);
     }
   }, [isAvailable]);
 
@@ -130,9 +140,10 @@ const useElevenLabsTTS = () => {
     }
     window.speechSynthesis?.cancel();
     setIsPlaying(false);
+    setIsLoading(false);
   }, []);
 
-  return { speak, stop, isLoading, isPlaying, isAvailable };
+  return { speak, stop, isLoading, isPlaying, isAvailable, error };
 };
 
 // Nefes Animasyonu Component
