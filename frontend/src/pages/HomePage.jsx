@@ -294,7 +294,7 @@ const HomePage = () => {
           </motion.div>
 
           {/* Sacred Navigation Grid */}
-          <div className="w-full max-w-4xl">
+          <div className="w-full max-w-5xl">
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Bilinç */}
               <SacredCard 
@@ -316,6 +316,14 @@ const HomePage = () => {
                 isMain={true}
                 onClick={() => handleSectionClick('sanri')}
                 delay={0.6}
+              />
+              
+              {/* GÖRSELİN - NEW */}
+              <SacredCard 
+                section="gorselin"
+                isNew={true}
+                onClick={() => handleSectionClick('gorselin')}
+                delay={0.65}
               />
               
               {/* Ritüel */}
