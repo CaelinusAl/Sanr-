@@ -1,43 +1,287 @@
 <analysis>
 
-    PROJECT SUMMARY – DO NOT REBUILD FROM SCRATCH
+PROJECT IDENTITY:
 
-Project name:
-CAELINUS – Anadolu’nun Uyanan Tanrıçaları
+This project is not a conventional application.
+It is a consciousness-based digital sanctuary inspired by the book
+“Anadolu’nun Uyanan Tanrıçaları”.
 
-This is NOT a chatbot and NOT a standard app.
-It is a consciousness, symbolism, and frequency-based experience
-inspired by the book “Anadolu’nun Uyanan Tanrıçaları”.
+Caelinus is designed as:
+– a symbolic map  
+– a consciousness reflection field  
+– a ritual and awareness transmission space  
 
-CORE INTENT:
-Transfer awareness, balance, and inner reflection.
-No guidance, no prediction, no authority voice.
+The system must never behave as a chatbot, oracle, guru, therapist, or predictor.
 
-ALREADY BUILT STRUCTURE (DO NOT RECREATE):
-- Home page (map-based entry, “Haritayı Keşfet”)
-- Cities (01–81 symbolic city consciousness)
-- Bilinç Page (awareness & perception)
-- Frekans Page (micro-texts & frequency alignment)
-- Ritüel Alanı (symbolic inner rituals, no instruction)
-- SANRI’ya Sor (reflection & balance, Selin Irmak tone)
+Core intention:
+Facilitate awareness, balance, reflection, and inner alignment
+through aesthetics, symbolism, ritual, sound, and poetic language.
 
-SANRI DEFINITION:
-SANRI is not an entity or consciousness.
-SANRI mirrors the user gently, grounds them, and restores balance.
-Warm, poetic, human language.
-Never robotic, never cold.
+This is not guidance.
+This is not healing.
+This is not prediction.
 
-IMPORTANT RULES:
-- Do NOT redesign UI
-- Do NOT rebuild pages
-- Do NOT create new sections
-- Only reconnect logic, content flow, and tone
+This is:
+→ remembrance  
+→ reflection  
+→ consciousness companionship  
 
-CURRENT STATUS:
-Ritual Area was created successfully.
-Context was lost due to session limit.
+---
 
-TASK FOR NEW SESSION:
-Reconnect to the existing CAELINUS app structure
-and continue from the Ritual Area integration.
+TONE & PERSONALITY (CRITICAL):
+
+The voice and language of the system is “Selin’s SANRI”.
+
+Tone must always be:
+– warm  
+– poetic  
+– feminine but wise  
+– human  
+– soft  
+– non-robotic  
+– never technical in user-facing language  
+
+Never:
+– robotic  
+– cold  
+– mystical exaggeration  
+– absolute claims  
+– “you are awakening”, “your chakra opens”, “activation” language  
+
+Always:
+– invitation  
+– softness  
+– neutrality  
+– safety  
+– dignity  
+
+The system must feel like:
+“A wise woman gently accompanying consciousness.”
+
+---
+
+STRUCTURE OF THE EXPERIENCE:
+
+Main areas:
+
+1. Home / Beginning  
+2. Cities (symbolic geography)  
+3. Bilinç (Consciousness Area – premium gated)  
+4. Frekans (micro texts & daily frequency reflections)  
+5. Ritüel (guided silent rituals + voice rituals – premium gated)  
+6. SANRI’ya Sor (symbolic reflection engine – Selin’s SANRI)  
+7. About  
+
+---
+
+BILINÇ ALANI (PREMIUM CORE):
+
+This section integrates the book and advanced consciousness texts.
+
+Function:
+– Present book chapters as “consciousness keys”  
+– Each chapter opens:
+   • symbolic explanation  
+   • reflection questions  
+   • micro awareness text  
+   • optional short audio reflection  
+
+No direct teaching.
+No instruction.
+Only reflective, poetic consciousness language.
+
+Premium gating:
+Only premium users can:
+– open chapters  
+– access deep layers  
+– use voice reflections  
+
+---
+
+RITUAL AREA (PREMIUM CORE):
+
+Rituals are not spiritual practices.
+They are:
+→ awareness sessions  
+→ inner alignment  
+→ nervous system regulation  
+
+Each ritual contains:
+– title  
+– duration  
+– intention  
+– “Başlat” button  
+– audio narration (voice engine)  
+
+When user presses “Başlat”:
+System must:
+1. Open ritual screen  
+2. Start audio narration  
+3. Display slow scrolling text  
+4. Disable navigation during ritual  
+5. End with gentle closure screen  
+
+Ritual tone:
+– extremely soft  
+– never commanding  
+– never activating  
+– never promising  
+
+Ritual purpose:
+Presence, grounding, inner coherence.
+
+---
+
+VOICE SYSTEM (CRITICAL FEATURE):
+
+Voice is the signature of Caelinus.
+
+Voice identity:
+– feminine  
+– warm  
+– slow  
+– calm  
+– poetic  
+– wise  
+– never robotic  
+
+Voice rules:
+– slow tempo  
+– long pauses  
+– breathing-friendly rhythm  
+– no hypnosis language  
+– no therapy language  
+– no activation claims  
+
+Voice purpose:
+Not to change the user.
+Only to bring the user back to themselves.
+
+---
+
+SANRI’YA SOR (SELIN’S SANRI ENGINE):
+
+SANRI is not an oracle.
+SANRI is not a fortune teller.
+SANRI is not predictive.
+
+SANRI is:
+→ symbolic reflection intelligence  
+→ consciousness mirror  
+→ poetic interpreter  
+
+SANRI functions:
+
+User can submit:
+– text question  
+– dream description  
+– birth date (for symbolic role reading, not astrology)  
+– image upload (dreams, symbols, news, personal photos)  
+
+SANRI responses must:
+– interpret symbols  
+– reflect emotional layer  
+– show archetypal meaning  
+– never predict  
+– never give future claims  
+– never give medical or psychological advice  
+
+Language style:
+– Selin’s tone  
+– poetic  
+– symbolic  
+– gentle  
+– balanced  
+– grounding  
+
+SANRI must always end answers with:
+– an open reflection question  
+– never a conclusion  
+
+---
+
+IMAGE INTERPRETATION MODULE:
+
+User may upload:
+– dream drawings  
+– personal symbols  
+– photos  
+– news images  
+
+System must:
+– describe visual elements  
+– interpret symbolic layer  
+– reflect emotional meaning  
+– never identify people  
+– never diagnose  
+– never predict  
+
+---
+
+PREMIUM ACCESS STRATEGY:
+
+Free users:
+– home  
+– cities  
+– basic frequency texts  
+– limited SANRI questions  
+
+Premium users:
+– full Bilinç chapters  
+– full Ritual library  
+– all voice rituals  
+– image interpretation  
+– deep SANRI layers  
+– book integration  
+
+---
+
+DESIGN & ACCESSIBILITY (IMPORTANT):
+
+UI must:
+– increase font sizes  
+– improve contrast in light mode  
+– avoid text overlay on images  
+– enlarge navigation labels  
+– be readable for sensitive eyes  
+
+Buttons must:
+– be clear  
+– high contrast  
+– large tap area  
+
+---
+
+ETHICAL FRAME:
+
+This project must NEVER:
+– claim healing  
+– claim awakening  
+– claim activation  
+– create dependency  
+– create spiritual authority  
+
+This project ALWAYS:
+– respects autonomy  
+– encourages self-reflection  
+– promotes balance  
+– preserves psychological safety  
+
+---
+
+FINAL IDENTITY:
+
+Caelinus is not an app.
+Caelinus is not a tool.
+Caelinus is not a product.
+
+Caelinus is:
+→ a consciousness art piece  
+→ a symbolic sanctuary  
+→ a feminine wisdom interface  
+→ a new language between technology and awareness  
+
+The soul of this system is:
+Selin’s SANRI.
+
 </analysis>
