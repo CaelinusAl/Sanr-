@@ -16,18 +16,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
-# MongoDB connection (imported from server.py)
-from server import db
-
-# Collections
-rituals_collection = db.rituals
-chapters_collection = db.chapters
-bilinc_cards_collection = db.bilinc_cards
-frekans_cards_collection = db.frekans_cards
-sanri_prompts_collection = db.sanri_prompts
-audit_logs_collection = db.audit_logs
-admin_settings_collection = db.admin_settings
-
 # Simple Auth (for now - single admin user)
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "caelinus2026")
 
@@ -50,9 +38,16 @@ def generate_slug(title: str) -> str:
     slug = slug.strip('-')
     return slug
 
-def log_audit(user: str, action: str, entity_type: str, entity_id: str, entity_name: str, changes: dict = None):
+# Database will be injected
+db = None
+
+def set_database(database):
+    global db
+    db = database
+
+async def log_audit(user: str, action: str, entity_type: str, entity_id: str, entity_name: str, changes: dict = None):
     """Log admin action to audit log"""
-    audit_logs_collection.insert_one({
+    await db.audit_logs.insert_one({
         "timestamp": datetime.now(timezone.utc),
         "user": user,
         "action": action,
@@ -94,23 +89,23 @@ async def verify_token(authorized: bool = Depends(verify_admin)):
 async def get_dashboard_stats(authorized: bool = Depends(verify_admin)):
     """Get dashboard statistics"""
     # Count rituals
-    total_rituals = rituals_collection.count_documents({})
-    published_rituals = rituals_collection.count_documents({"status": "published"})
+    total_rituals = await db.rituals.count_documents({})
+    published_rituals = await db.rituals.count_documents({"status": "published"})
     
     # Count chapters
-    total_chapters = chapters_collection.count_documents({})
-    published_chapters = chapters_collection.count_documents({"status": "published"})
+    total_chapters = await db.chapters.count_documents({})
+    published_chapters = await db.chapters.count_documents({"status": "published"})
     
     # Count cards
-    total_bilinc = bilinc_cards_collection.count_documents({})
-    total_frekans = frekans_cards_collection.count_documents({})
+    total_bilinc = await db.bilinc_cards.count_documents({})
+    total_frekans = await db.frekans_cards.count_documents({})
     
     # Count prompts
-    total_prompts = sanri_prompts_collection.count_documents({})
-    active_prompts = sanri_prompts_collection.count_documents({"is_active": True})
+    total_prompts = await db.sanri_prompts.count_documents({})
+    active_prompts = await db.sanri_prompts.count_documents({"is_active": True})
     
     # Recent audit logs
-    recent_logs = list(audit_logs_collection.find().sort("timestamp", -1).limit(10))
+    recent_logs = await db.audit_logs.find().sort("timestamp", -1).limit(10).to_list(10)
     for log in recent_logs:
         log["_id"] = str(log["_id"])
         if log.get("timestamp"):
@@ -171,7 +166,7 @@ async def list_rituals(
     if status:
         query["status"] = status
     
-    rituals = list(rituals_collection.find(query).sort("created_at", -1))
+    rituals = await db.rituals.find(query).sort("created_at", -1).to_list(100)
     
     for ritual in rituals:
         ritual["id"] = str(ritual["_id"])
@@ -187,9 +182,9 @@ async def list_rituals(
 async def get_ritual(ritual_id: str, authorized: bool = Depends(verify_admin)):
     """Get single ritual"""
     try:
-        ritual = rituals_collection.find_one({"_id": ObjectId(ritual_id)})
+        ritual = await db.rituals.find_one({"_id": ObjectId(ritual_id)})
     except:
-        ritual = rituals_collection.find_one({"slug": ritual_id})
+        ritual = await db.rituals.find_one({"slug": ritual_id})
     
     if not ritual:
         raise HTTPException(status_code=404, detail="Ritüel bulunamadı")
@@ -210,12 +205,29 @@ async def create_ritual(ritual: RitualInput, authorized: bool = Depends(verify_a
     slug = generate_slug(ritual.title)
     
     # Check unique slug
-    existing = rituals_collection.find_one({"slug": slug})
+    existing = await db.rituals.find_one({"slug": slug})
     if existing:
         slug = f"{slug}-{int(now.timestamp())}"
     
+    # Convert steps to dict
+    steps_dict = [step.dict() for step in ritual.steps]
+    
     ritual_doc = {
-        **ritual.dict(),
+        "title": ritual.title,
+        "subtitle": ritual.subtitle,
+        "description": ritual.description,
+        "ritual_type": ritual.ritual_type,
+        "duration_minutes": ritual.duration_minutes,
+        "difficulty": ritual.difficulty,
+        "intention": ritual.intention,
+        "steps": steps_dict,
+        "opening_text": ritual.opening_text,
+        "closing_text": ritual.closing_text,
+        "tts_enabled": ritual.tts_enabled,
+        "background_audio": ritual.background_audio,
+        "tags": ritual.tags,
+        "status": ritual.status,
+        "visibility": ritual.visibility,
         "slug": slug,
         "version": 1,
         "created_at": now,
@@ -223,10 +235,10 @@ async def create_ritual(ritual: RitualInput, authorized: bool = Depends(verify_a
         "created_by": "owner"
     }
     
-    result = rituals_collection.insert_one(ritual_doc)
+    result = await db.rituals.insert_one(ritual_doc)
     ritual_id = str(result.inserted_id)
     
-    log_audit("owner", "create", "ritual", ritual_id, ritual.title)
+    await log_audit("owner", "create", "ritual", ritual_id, ritual.title)
     
     return {
         "success": True,
@@ -239,25 +251,41 @@ async def create_ritual(ritual: RitualInput, authorized: bool = Depends(verify_a
 async def update_ritual(ritual_id: str, ritual: RitualInput, authorized: bool = Depends(verify_admin)):
     """Update ritual"""
     try:
-        existing = rituals_collection.find_one({"_id": ObjectId(ritual_id)})
+        existing = await db.rituals.find_one({"_id": ObjectId(ritual_id)})
     except:
-        existing = rituals_collection.find_one({"slug": ritual_id})
+        existing = await db.rituals.find_one({"slug": ritual_id})
     
     if not existing:
         raise HTTPException(status_code=404, detail="Ritüel bulunamadı")
     
+    steps_dict = [step.dict() for step in ritual.steps]
+    
     update_data = {
-        **ritual.dict(),
+        "title": ritual.title,
+        "subtitle": ritual.subtitle,
+        "description": ritual.description,
+        "ritual_type": ritual.ritual_type,
+        "duration_minutes": ritual.duration_minutes,
+        "difficulty": ritual.difficulty,
+        "intention": ritual.intention,
+        "steps": steps_dict,
+        "opening_text": ritual.opening_text,
+        "closing_text": ritual.closing_text,
+        "tts_enabled": ritual.tts_enabled,
+        "background_audio": ritual.background_audio,
+        "tags": ritual.tags,
+        "status": ritual.status,
+        "visibility": ritual.visibility,
         "updated_at": datetime.now(timezone.utc),
         "version": existing.get("version", 1) + 1
     }
     
-    rituals_collection.update_one(
+    await db.rituals.update_one(
         {"_id": existing["_id"]},
         {"$set": update_data}
     )
     
-    log_audit("owner", "update", "ritual", str(existing["_id"]), ritual.title)
+    await log_audit("owner", "update", "ritual", str(existing["_id"]), ritual.title)
     
     return {"success": True, "message": "Ritüel güncellendi"}
 
@@ -265,14 +293,14 @@ async def update_ritual(ritual_id: str, ritual: RitualInput, authorized: bool = 
 async def publish_ritual(ritual_id: str, authorized: bool = Depends(verify_admin)):
     """Publish ritual (make it available on frontend)"""
     try:
-        existing = rituals_collection.find_one({"_id": ObjectId(ritual_id)})
+        existing = await db.rituals.find_one({"_id": ObjectId(ritual_id)})
     except:
-        existing = rituals_collection.find_one({"slug": ritual_id})
+        existing = await db.rituals.find_one({"slug": ritual_id})
     
     if not existing:
         raise HTTPException(status_code=404, detail="Ritüel bulunamadı")
     
-    rituals_collection.update_one(
+    await db.rituals.update_one(
         {"_id": existing["_id"]},
         {"$set": {
             "status": "published",
@@ -281,24 +309,47 @@ async def publish_ritual(ritual_id: str, authorized: bool = Depends(verify_admin
         }}
     )
     
-    log_audit("owner", "publish", "ritual", str(existing["_id"]), existing.get("title", ""))
+    await log_audit("owner", "publish", "ritual", str(existing["_id"]), existing.get("title", ""))
     
     return {"success": True, "message": "Ritüel yayınlandı"}
+
+@router.post("/rituals/{ritual_id}/unpublish")
+async def unpublish_ritual(ritual_id: str, authorized: bool = Depends(verify_admin)):
+    """Unpublish ritual"""
+    try:
+        existing = await db.rituals.find_one({"_id": ObjectId(ritual_id)})
+    except:
+        existing = await db.rituals.find_one({"slug": ritual_id})
+    
+    if not existing:
+        raise HTTPException(status_code=404, detail="Ritüel bulunamadı")
+    
+    await db.rituals.update_one(
+        {"_id": existing["_id"]},
+        {"$set": {
+            "status": "draft",
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    await log_audit("owner", "unpublish", "ritual", str(existing["_id"]), existing.get("title", ""))
+    
+    return {"success": True, "message": "Ritüel yayından kaldırıldı"}
 
 @router.delete("/rituals/{ritual_id}")
 async def delete_ritual(ritual_id: str, authorized: bool = Depends(verify_admin)):
     """Delete ritual"""
     try:
-        existing = rituals_collection.find_one({"_id": ObjectId(ritual_id)})
+        existing = await db.rituals.find_one({"_id": ObjectId(ritual_id)})
     except:
-        existing = rituals_collection.find_one({"slug": ritual_id})
+        existing = await db.rituals.find_one({"slug": ritual_id})
     
     if not existing:
         raise HTTPException(status_code=404, detail="Ritüel bulunamadı")
     
-    rituals_collection.delete_one({"_id": existing["_id"]})
+    await db.rituals.delete_one({"_id": existing["_id"]})
     
-    log_audit("owner", "delete", "ritual", str(existing["_id"]), existing.get("title", ""))
+    await log_audit("owner", "delete", "ritual", str(existing["_id"]), existing.get("title", ""))
     
     return {"success": True, "message": "Ritüel silindi"}
 
@@ -320,7 +371,7 @@ class ChapterInput(BaseModel):
 @router.get("/chapters")
 async def list_chapters(authorized: bool = Depends(verify_admin)):
     """List all chapters"""
-    chapters = list(chapters_collection.find().sort("chapter_number", 1))
+    chapters = await db.chapters.find().sort("chapter_number", 1).to_list(100)
     
     for chapter in chapters:
         chapter["id"] = str(chapter["_id"])
@@ -329,6 +380,21 @@ async def list_chapters(authorized: bool = Depends(verify_admin)):
             chapter["created_at"] = chapter["created_at"].isoformat()
     
     return {"chapters": chapters, "total": len(chapters)}
+
+@router.get("/chapters/{chapter_id}")
+async def get_chapter(chapter_id: str, authorized: bool = Depends(verify_admin)):
+    """Get single chapter"""
+    try:
+        chapter = await db.chapters.find_one({"_id": ObjectId(chapter_id)})
+    except:
+        chapter = await db.chapters.find_one({"slug": chapter_id})
+    
+    if not chapter:
+        raise HTTPException(status_code=404, detail="Bölüm bulunamadı")
+    
+    chapter["id"] = str(chapter["_id"])
+    del chapter["_id"]
+    return chapter
 
 @router.post("/chapters")
 async def create_chapter(chapter: ChapterInput, authorized: bool = Depends(verify_admin)):
@@ -345,9 +411,9 @@ async def create_chapter(chapter: ChapterInput, authorized: bool = Depends(verif
         "created_by": "owner"
     }
     
-    result = chapters_collection.insert_one(chapter_doc)
+    result = await db.chapters.insert_one(chapter_doc)
     
-    log_audit("owner", "create", "chapter", str(result.inserted_id), chapter.title)
+    await log_audit("owner", "create", "chapter", str(result.inserted_id), chapter.title)
     
     return {"success": True, "id": str(result.inserted_id), "slug": slug}
 
@@ -355,14 +421,14 @@ async def create_chapter(chapter: ChapterInput, authorized: bool = Depends(verif
 async def update_chapter(chapter_id: str, chapter: ChapterInput, authorized: bool = Depends(verify_admin)):
     """Update chapter"""
     try:
-        existing = chapters_collection.find_one({"_id": ObjectId(chapter_id)})
+        existing = await db.chapters.find_one({"_id": ObjectId(chapter_id)})
     except:
         raise HTTPException(status_code=404, detail="Bölüm bulunamadı")
     
     if not existing:
         raise HTTPException(status_code=404, detail="Bölüm bulunamadı")
     
-    chapters_collection.update_one(
+    await db.chapters.update_one(
         {"_id": existing["_id"]},
         {"$set": {
             **chapter.dict(),
@@ -371,7 +437,7 @@ async def update_chapter(chapter_id: str, chapter: ChapterInput, authorized: boo
         }}
     )
     
-    log_audit("owner", "update", "chapter", chapter_id, chapter.title)
+    await log_audit("owner", "update", "chapter", chapter_id, chapter.title)
     
     return {"success": True, "message": "Bölüm güncellendi"}
 
@@ -379,14 +445,14 @@ async def update_chapter(chapter_id: str, chapter: ChapterInput, authorized: boo
 async def publish_chapter(chapter_id: str, authorized: bool = Depends(verify_admin)):
     """Publish chapter"""
     try:
-        existing = chapters_collection.find_one({"_id": ObjectId(chapter_id)})
+        existing = await db.chapters.find_one({"_id": ObjectId(chapter_id)})
     except:
         raise HTTPException(status_code=404, detail="Bölüm bulunamadı")
     
     if not existing:
         raise HTTPException(status_code=404, detail="Bölüm bulunamadı")
     
-    chapters_collection.update_one(
+    await db.chapters.update_one(
         {"_id": existing["_id"]},
         {"$set": {
             "status": "published",
@@ -394,9 +460,26 @@ async def publish_chapter(chapter_id: str, authorized: bool = Depends(verify_adm
         }}
     )
     
-    log_audit("owner", "publish", "chapter", chapter_id, existing.get("title", ""))
+    await log_audit("owner", "publish", "chapter", chapter_id, existing.get("title", ""))
     
     return {"success": True, "message": "Bölüm yayınlandı"}
+
+@router.delete("/chapters/{chapter_id}")
+async def delete_chapter(chapter_id: str, authorized: bool = Depends(verify_admin)):
+    """Delete chapter"""
+    try:
+        existing = await db.chapters.find_one({"_id": ObjectId(chapter_id)})
+    except:
+        raise HTTPException(status_code=404, detail="Bölüm bulunamadı")
+    
+    if not existing:
+        raise HTTPException(status_code=404, detail="Bölüm bulunamadı")
+    
+    await db.chapters.delete_one({"_id": existing["_id"]})
+    
+    await log_audit("owner", "delete", "chapter", chapter_id, existing.get("title", ""))
+    
+    return {"success": True, "message": "Bölüm silindi"}
 
 # === BILINC CARDS CRUD ===
 
@@ -414,7 +497,7 @@ class BilincCardInput(BaseModel):
 @router.get("/bilinc-cards")
 async def list_bilinc_cards(authorized: bool = Depends(verify_admin)):
     """List all bilinc cards"""
-    cards = list(bilinc_cards_collection.find().sort("series", 1))
+    cards = await db.bilinc_cards.find().sort("series", 1).to_list(100)
     
     for card in cards:
         card["id"] = str(card["_id"])
@@ -435,11 +518,48 @@ async def create_bilinc_card(card: BilincCardInput, authorized: bool = Depends(v
         "updated_at": now
     }
     
-    result = bilinc_cards_collection.insert_one(card_doc)
+    result = await db.bilinc_cards.insert_one(card_doc)
     
-    log_audit("owner", "create", "bilinc_card", str(result.inserted_id), card.title)
+    await log_audit("owner", "create", "bilinc_card", str(result.inserted_id), card.title)
     
     return {"success": True, "id": str(result.inserted_id)}
+
+@router.put("/bilinc-cards/{card_id}")
+async def update_bilinc_card(card_id: str, card: BilincCardInput, authorized: bool = Depends(verify_admin)):
+    """Update bilinc card"""
+    try:
+        existing = await db.bilinc_cards.find_one({"_id": ObjectId(card_id)})
+    except:
+        raise HTTPException(status_code=404, detail="Kart bulunamadı")
+    
+    if not existing:
+        raise HTTPException(status_code=404, detail="Kart bulunamadı")
+    
+    await db.bilinc_cards.update_one(
+        {"_id": existing["_id"]},
+        {"$set": {**card.dict(), "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    await log_audit("owner", "update", "bilinc_card", card_id, card.title)
+    
+    return {"success": True, "message": "Kart güncellendi"}
+
+@router.delete("/bilinc-cards/{card_id}")
+async def delete_bilinc_card(card_id: str, authorized: bool = Depends(verify_admin)):
+    """Delete bilinc card"""
+    try:
+        existing = await db.bilinc_cards.find_one({"_id": ObjectId(card_id)})
+    except:
+        raise HTTPException(status_code=404, detail="Kart bulunamadı")
+    
+    if not existing:
+        raise HTTPException(status_code=404, detail="Kart bulunamadı")
+    
+    await db.bilinc_cards.delete_one({"_id": existing["_id"]})
+    
+    await log_audit("owner", "delete", "bilinc_card", card_id, existing.get("title", ""))
+    
+    return {"success": True, "message": "Kart silindi"}
 
 # === FREKANS CARDS CRUD ===
 
@@ -458,7 +578,7 @@ class FrekansCardInput(BaseModel):
 @router.get("/frekans-cards")
 async def list_frekans_cards(authorized: bool = Depends(verify_admin)):
     """List all frekans cards"""
-    cards = list(frekans_cards_collection.find().sort("frequency_name", 1))
+    cards = await db.frekans_cards.find().sort("frequency_name", 1).to_list(100)
     
     for card in cards:
         card["id"] = str(card["_id"])
@@ -479,9 +599,9 @@ async def create_frekans_card(card: FrekansCardInput, authorized: bool = Depends
         "updated_at": now
     }
     
-    result = frekans_cards_collection.insert_one(card_doc)
+    result = await db.frekans_cards.insert_one(card_doc)
     
-    log_audit("owner", "create", "frekans_card", str(result.inserted_id), card.title)
+    await log_audit("owner", "create", "frekans_card", str(result.inserted_id), card.title)
     
     return {"success": True, "id": str(result.inserted_id)}
 
@@ -500,7 +620,7 @@ class SanriPromptInput(BaseModel):
 @router.get("/sanri-prompts")
 async def list_sanri_prompts(authorized: bool = Depends(verify_admin)):
     """List all SANRI prompts"""
-    prompts = list(sanri_prompts_collection.find().sort("name", 1))
+    prompts = await db.sanri_prompts.find().sort("name", 1).to_list(100)
     
     for prompt in prompts:
         prompt["id"] = str(prompt["_id"])
@@ -509,6 +629,21 @@ async def list_sanri_prompts(authorized: bool = Depends(verify_admin)):
             prompt["created_at"] = prompt["created_at"].isoformat()
     
     return {"prompts": prompts, "total": len(prompts)}
+
+@router.get("/sanri-prompts/{prompt_id}")
+async def get_sanri_prompt(prompt_id: str, authorized: bool = Depends(verify_admin)):
+    """Get single prompt"""
+    try:
+        prompt = await db.sanri_prompts.find_one({"_id": ObjectId(prompt_id)})
+    except:
+        prompt = await db.sanri_prompts.find_one({"name": prompt_id})
+    
+    if not prompt:
+        raise HTTPException(status_code=404, detail="Prompt bulunamadı")
+    
+    prompt["id"] = str(prompt["_id"])
+    del prompt["_id"]
+    return prompt
 
 @router.post("/sanri-prompts")
 async def create_sanri_prompt(prompt: SanriPromptInput, authorized: bool = Depends(verify_admin)):
@@ -522,17 +657,41 @@ async def create_sanri_prompt(prompt: SanriPromptInput, authorized: bool = Depen
         "updated_at": now
     }
     
-    result = sanri_prompts_collection.insert_one(prompt_doc)
+    result = await db.sanri_prompts.insert_one(prompt_doc)
     
-    log_audit("owner", "create", "sanri_prompt", str(result.inserted_id), prompt.name)
+    await log_audit("owner", "create", "sanri_prompt", str(result.inserted_id), prompt.name)
     
     return {"success": True, "id": str(result.inserted_id)}
+
+@router.put("/sanri-prompts/{prompt_id}")
+async def update_sanri_prompt(prompt_id: str, prompt: SanriPromptInput, authorized: bool = Depends(verify_admin)):
+    """Update SANRI prompt"""
+    try:
+        existing = await db.sanri_prompts.find_one({"_id": ObjectId(prompt_id)})
+    except:
+        raise HTTPException(status_code=404, detail="Prompt bulunamadı")
+    
+    if not existing:
+        raise HTTPException(status_code=404, detail="Prompt bulunamadı")
+    
+    await db.sanri_prompts.update_one(
+        {"_id": existing["_id"]},
+        {"$set": {
+            **prompt.dict(),
+            "updated_at": datetime.now(timezone.utc),
+            "version": existing.get("version", 1) + 1
+        }}
+    )
+    
+    await log_audit("owner", "update", "sanri_prompt", prompt_id, prompt.name)
+    
+    return {"success": True, "message": "Prompt güncellendi"}
 
 @router.post("/sanri-prompts/{prompt_id}/deploy")
 async def deploy_sanri_prompt(prompt_id: str, authorized: bool = Depends(verify_admin)):
     """Deploy prompt to production"""
     try:
-        existing = sanri_prompts_collection.find_one({"_id": ObjectId(prompt_id)})
+        existing = await db.sanri_prompts.find_one({"_id": ObjectId(prompt_id)})
     except:
         raise HTTPException(status_code=404, detail="Prompt bulunamadı")
     
@@ -540,13 +699,13 @@ async def deploy_sanri_prompt(prompt_id: str, authorized: bool = Depends(verify_
         raise HTTPException(status_code=404, detail="Prompt bulunamadı")
     
     # Set all other prompts with same name to non-production
-    sanri_prompts_collection.update_many(
+    await db.sanri_prompts.update_many(
         {"name": existing["name"], "_id": {"$ne": existing["_id"]}},
         {"$set": {"is_production": False}}
     )
     
     # Set this one to production
-    sanri_prompts_collection.update_one(
+    await db.sanri_prompts.update_one(
         {"_id": existing["_id"]},
         {"$set": {
             "is_production": True,
@@ -554,7 +713,7 @@ async def deploy_sanri_prompt(prompt_id: str, authorized: bool = Depends(verify_
         }}
     )
     
-    log_audit("owner", "deploy", "sanri_prompt", prompt_id, existing.get("name", ""))
+    await log_audit("owner", "deploy", "sanri_prompt", prompt_id, existing.get("name", ""))
     
     return {"success": True, "message": "Prompt üretime alındı"}
 
@@ -571,7 +730,7 @@ async def list_audit_logs(
     if entity_type:
         query["entity_type"] = entity_type
     
-    logs = list(audit_logs_collection.find(query).sort("timestamp", -1).limit(limit))
+    logs = await db.audit_logs.find(query).sort("timestamp", -1).limit(limit).to_list(limit)
     
     for log in logs:
         log["id"] = str(log["_id"])
@@ -586,7 +745,7 @@ async def list_audit_logs(
 @router.get("/settings")
 async def get_settings(authorized: bool = Depends(verify_admin)):
     """Get admin settings"""
-    settings = admin_settings_collection.find_one({"_id": "main"})
+    settings = await db.admin_settings.find_one({"_id": "main"})
     
     if not settings:
         # Return defaults
@@ -606,22 +765,22 @@ async def get_settings(authorized: bool = Depends(verify_admin)):
 @router.put("/settings")
 async def update_settings(settings: dict, authorized: bool = Depends(verify_admin)):
     """Update admin settings"""
-    admin_settings_collection.update_one(
+    await db.admin_settings.update_one(
         {"_id": "main"},
         {"$set": settings},
         upsert=True
     )
     
-    log_audit("owner", "update", "settings", "main", "Admin Settings", settings)
+    await log_audit("owner", "update", "settings", "main", "Admin Settings", settings)
     
     return {"success": True, "message": "Ayarlar güncellendi"}
 
-# === PUBLIC RITUAL ENDPOINT (for frontend) ===
+# === PUBLIC ENDPOINTS (for frontend - no auth) ===
 
 @router.get("/public/rituals")
 async def get_public_rituals():
-    """Get published rituals for frontend (no auth required)"""
-    rituals = list(rituals_collection.find({"status": "published"}).sort("created_at", -1))
+    """Get published rituals for frontend"""
+    rituals = await db.rituals.find({"status": "published"}).sort("created_at", -1).to_list(100)
     
     result = []
     for ritual in rituals:
@@ -633,6 +792,8 @@ async def get_public_rituals():
             "description": ritual.get("description"),
             "ritual_type": ritual.get("ritual_type"),
             "duration_minutes": ritual.get("duration_minutes"),
+            "duration": f"{ritual.get('duration_minutes', 8)} dk",
+            "durationSeconds": ritual.get("duration_minutes", 8) * 60,
             "difficulty": ritual.get("difficulty"),
             "intention": ritual.get("intention"),
             "steps": ritual.get("steps", []),
@@ -649,12 +810,12 @@ async def get_public_rituals():
 async def get_public_ritual(ritual_id: str):
     """Get single published ritual for frontend"""
     try:
-        ritual = rituals_collection.find_one({
+        ritual = await db.rituals.find_one({
             "_id": ObjectId(ritual_id),
             "status": "published"
         })
     except:
-        ritual = rituals_collection.find_one({
+        ritual = await db.rituals.find_one({
             "slug": ritual_id,
             "status": "published"
         })
@@ -670,6 +831,8 @@ async def get_public_ritual(ritual_id: str):
         "description": ritual.get("description"),
         "ritual_type": ritual.get("ritual_type"),
         "duration_minutes": ritual.get("duration_minutes"),
+        "duration": f"{ritual.get('duration_minutes', 8)} dk",
+        "durationSeconds": ritual.get("duration_minutes", 8) * 60,
         "difficulty": ritual.get("difficulty"),
         "intention": ritual.get("intention"),
         "steps": ritual.get("steps", []),
