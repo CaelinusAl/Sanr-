@@ -12,6 +12,7 @@ const navLinks = [
   { href: "/frekans", label: "Frekans" },
   { href: "/rituel", label: "Ritüel" },
   { href: "/sanriya-sor", label: "SANRI'ya Sor" },
+  { href: "/bilinc-alani", label: "Bilinç Alanı", isPremium: true },
   { href: "/hakkinda", label: "Hakkında" },
 ];
 
