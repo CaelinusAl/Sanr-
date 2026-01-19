@@ -115,6 +115,15 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - "Görsel Prompt" sekmesi (AI prompt üretici)
 - Mod bazlı context ekleme
 
+**5. PREMIUM Bilinç Alanı (YENİ):**
+- "Beyin Orgazmı – Bilinç, His ve Yaratım Kodları" kitabı entegrasyonu
+- 10 kitap bölümü: Zihin-Gönül Portalı, His Kodları, Sezgi Alanı, vb.
+- 5 premium ritüel: Beyin-Kalp Yaratım, His Tanışma, Kundalini, Tanrısal Yaratım, Epifiz Aktivasyonu
+- CAELINUS AI: Bilinç alanı için özel AI (ayna rolünde, Selin tonu)
+- Premium gate (paywall) sistemi
+- Backend: `/api/bilinc-alani/ask` endpoint
+- Navbar'da taç ikonu ile "Bilinç Alanı" linki
+
 ## Gelecek Görevler (Backlog)
 - [ ] Görsel yükleme ve sembolik yorum özelliği
 - [ ] Kullanıcı deneyim kaydı (localStorage veya MongoDB)
