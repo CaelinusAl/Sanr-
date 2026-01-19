@@ -115,7 +115,37 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - [ ] Mobil optimizasyon
 - [ ] Çoklu dil desteği (İngilizce)
 
+## Android Build & Google Play Deployment
+
+### Tamamlanan (19 Ocak 2026)
+- ✅ Capacitor 6 entegrasyonu (com.caelinus.ai)
+- ✅ AndroidManifest.xml - App Links & Deep Links yapılandırması
+- ✅ Release keystore oluşturuldu (release.keystore)
+- ✅ SHA256 Fingerprint: `F6:3F:43:26:66:23:A1:0E:D7:08:09:C7:06:10:40:A2:2E:D6:9C:32:C5:56:9C:61:52:EB:B8:4D:2E:E2:4F:35`
+- ✅ assetlinks.json hazırlandı (.well-known/assetlinks.json)
+- ✅ gradle.properties signing config eklendi
+- ✅ Build script (build-android.sh)
+- ✅ ANDROID_BUILD_GUIDE.md detaylı dokümantasyon
+
+### Android Build Bilgileri
+| Özellik | Değer |
+|---------|-------|
+| Package Name | com.caelinus.ai |
+| Version | 1.0.0 |
+| Min SDK | 22 (Android 5.1) |
+| Target SDK | 34 (Android 14) |
+| Keystore Alias | caelinus |
+| Keystore Password | Caelinus2026Secure! |
+
+### Google Play Yükleme İçin Gereken
+- [ ] App Icon (512x512)
+- [ ] Feature Graphic (1024x500)
+- [ ] Screenshots (min 2)
+- [ ] Privacy Policy URL
+- [ ] Local makinede AAB build
+
 ## Son Güncelleme: 19 Ocak 2026
-- Admin'den oluşturulan ritüeller frontend'e bağlandı
-- Publish/unpublish anında frontend güncelleniyor
-- Premium gating eklendi (demo modda bypass)
+- Android deployment pipeline tamamlandı
+- Keystore ve signing config hazır
+- assetlinks.json domain doğrulama için hazır
+- Build script ve detaylı dokümantasyon oluşturuldu
