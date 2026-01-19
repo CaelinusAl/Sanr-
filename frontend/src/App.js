@@ -124,6 +124,7 @@ function App() {
                   <Route path="/admin/rituals" element={<AdminRoute><RitualsList /></AdminRoute>} />
                   <Route path="/admin/rituals/new" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
                   <Route path="/admin/rituals/:id" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
+                  <Route path="/admin/visual-presets" element={<AdminRoute><VisualPresetsPage /></AdminRoute>} />
                 </Routes>
               </Suspense>
             </LayoutWrapper>
