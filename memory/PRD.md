@@ -146,21 +146,38 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 
 ## Son Güncelleme: 19 Ocak 2026
 
-### Yeni Ana Sayfa Tasarımı (Tapınak Deneyimi)
-- ✅ **Splash Screen**: CAELINUS AI logosu, spiral sembol, "Bilinç ve Anlam Zekâsı" tagline
-- ✅ **Home Page**: 5 kutsal alan kartları (sacred minimalism)
-  - Bilinç: "Metinler & farkındalık"
-  - Frekans: "Enerji kartları & titreşim"
-  - Sanrı'ya Sor: ANA ÖZELLİK (vurgulu, mor parıltı)
-  - Ritüel: Premium rozeti
-  - Profil: "Yolculuğun"
-- ✅ **Dil Desteği**: TR | EN toggle (sağ üst köşe)
-- ✅ **Responsive**: Mobil ve masaüstü uyumlu
-- ✅ **Karanlık Tema**: Gece mavisi, derin siyah tonları
-- ✅ **Navigasyon**: Kartlara tıklayınca ilgili sayfalara yönlendirme
+### GÖRSELİN Modülü (YENİ) ✅
+CAELINUS AI'ın ana imza özelliklerinden biri:
 
-### Android Build & Google Play Deployment
-- ✅ Capacitor 6 entegrasyonu (com.caelinus.ai)
-- ✅ Release keystore (SHA256: F6:3F:43:26...)
-- ✅ assetlinks.json hazır
-- ✅ Build script ve dokümantasyon
+**Hologram Üret (Text → Image):**
+- OpenAI GPT Image 1 entegrasyonu (Emergent LLM Key)
+- 6 kutsal preset stil:
+  - 🌙 Moon Jellyfish – Bilinç Işığı
+  - 🏛 Temple Water – Bilinç Tapınağı
+  - 🪞 Hologram Mirror – İçsel Yansıma
+  - 👁 Tanrıça Silüeti – İlahi Hatırlayış
+  - 🔺 Kutsal Geometri – Frekans Haritası
+  - 🖤 Black Gold – İlahi Zarafet (Premium)
+- Aspect ratio seçimi (1:1, 4:5, 9:16, 16:9)
+- Premium: 4 görsel batch, günlük 20 üretim
+
+**Görsel Yorumla (Image → Analysis):**
+- Claude Sonnet 4.5 ile sembolik okuma
+- 4 blok: Gördüğüm, Sembolik Okuma, Yansıma Soruları, Mini Ritüel
+- Premium: derin analiz + Frekans Kartı export
+
+**Admin Panel:**
+- Visual Preset Manager (CRUD)
+- Analytics: üretim/analiz sayıları
+
+**API Endpoints:**
+- POST /api/visual/generate
+- POST /api/visual/analyze
+- GET /api/visual/presets
+- Admin CRUD endpoints
+
+### Yeni Ana Sayfa Tasarımı (Tapınak Deneyimi)
+- ✅ Splash Screen + Home Page
+- ✅ 6 kutsal alan kartı (Bilinç, Frekans, Sanrı, GÖRSELİN, Ritüel, Profil)
+- ✅ TR | EN dil desteği
+- ✅ Responsive tasarım
