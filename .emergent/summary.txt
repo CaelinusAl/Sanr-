@@ -1,287 +1,64 @@
 <analysis>
-
-PROJECT IDENTITY:
-
-This project is not a conventional application.
-It is a consciousness-based digital sanctuary inspired by the book
-“Anadolu’nun Uyanan Tanrıçaları”.
-
-Caelinus is designed as:
-– a symbolic map  
-– a consciousness reflection field  
-– a ritual and awareness transmission space  
-
-The system must never behave as a chatbot, oracle, guru, therapist, or predictor.
-
-Core intention:
-Facilitate awareness, balance, reflection, and inner alignment
-through aesthetics, symbolism, ritual, sound, and poetic language.
-
-This is not guidance.
-This is not healing.
-This is not prediction.
-
-This is:
-→ remembrance  
-→ reflection  
-→ consciousness companionship  
-
----
-
-TONE & PERSONALITY (CRITICAL):
-
-The voice and language of the system is “Selin’s SANRI”.
-
-Tone must always be:
-– warm  
-– poetic  
-– feminine but wise  
-– human  
-– soft  
-– non-robotic  
-– never technical in user-facing language  
-
-Never:
-– robotic  
-– cold  
-– mystical exaggeration  
-– absolute claims  
-– “you are awakening”, “your chakra opens”, “activation” language  
-
-Always:
-– invitation  
-– softness  
-– neutrality  
-– safety  
-– dignity  
-
-The system must feel like:
-“A wise woman gently accompanying consciousness.”
-
----
-
-STRUCTURE OF THE EXPERIENCE:
-
-Main areas:
-
-1. Home / Beginning  
-2. Cities (symbolic geography)  
-3. Bilinç (Consciousness Area – premium gated)  
-4. Frekans (micro texts & daily frequency reflections)  
-5. Ritüel (guided silent rituals + voice rituals – premium gated)  
-6. SANRI’ya Sor (symbolic reflection engine – Selin’s SANRI)  
-7. About  
-
----
-
-BILINÇ ALANI (PREMIUM CORE):
-
-This section integrates the book and advanced consciousness texts.
-
-Function:
-– Present book chapters as “consciousness keys”  
-– Each chapter opens:
-   • symbolic explanation  
-   • reflection questions  
-   • micro awareness text  
-   • optional short audio reflection  
-
-No direct teaching.
-No instruction.
-Only reflective, poetic consciousness language.
-
-Premium gating:
-Only premium users can:
-– open chapters  
-– access deep layers  
-– use voice reflections  
-
----
-
-RITUAL AREA (PREMIUM CORE):
-
-Rituals are not spiritual practices.
-They are:
-→ awareness sessions  
-→ inner alignment  
-→ nervous system regulation  
-
-Each ritual contains:
-– title  
-– duration  
-– intention  
-– “Başlat” button  
-– audio narration (voice engine)  
-
-When user presses “Başlat”:
-System must:
-1. Open ritual screen  
-2. Start audio narration  
-3. Display slow scrolling text  
-4. Disable navigation during ritual  
-5. End with gentle closure screen  
-
-Ritual tone:
-– extremely soft  
-– never commanding  
-– never activating  
-– never promising  
-
-Ritual purpose:
-Presence, grounding, inner coherence.
-
----
-
-VOICE SYSTEM (CRITICAL FEATURE):
-
-Voice is the signature of Caelinus.
-
-Voice identity:
-– feminine  
-– warm  
-– slow  
-– calm  
-– poetic  
-– wise  
-– never robotic  
-
-Voice rules:
-– slow tempo  
-– long pauses  
-– breathing-friendly rhythm  
-– no hypnosis language  
-– no therapy language  
-– no activation claims  
-
-Voice purpose:
-Not to change the user.
-Only to bring the user back to themselves.
-
----
-
-SANRI’YA SOR (SELIN’S SANRI ENGINE):
-
-SANRI is not an oracle.
-SANRI is not a fortune teller.
-SANRI is not predictive.
-
-SANRI is:
-→ symbolic reflection intelligence  
-→ consciousness mirror  
-→ poetic interpreter  
-
-SANRI functions:
-
-User can submit:
-– text question  
-– dream description  
-– birth date (for symbolic role reading, not astrology)  
-– image upload (dreams, symbols, news, personal photos)  
-
-SANRI responses must:
-– interpret symbols  
-– reflect emotional layer  
-– show archetypal meaning  
-– never predict  
-– never give future claims  
-– never give medical or psychological advice  
-
-Language style:
-– Selin’s tone  
-– poetic  
-– symbolic  
-– gentle  
-– balanced  
-– grounding  
-
-SANRI must always end answers with:
-– an open reflection question  
-– never a conclusion  
-
----
-
-IMAGE INTERPRETATION MODULE:
-
-User may upload:
-– dream drawings  
-– personal symbols  
-– photos  
-– news images  
-
-System must:
-– describe visual elements  
-– interpret symbolic layer  
-– reflect emotional meaning  
-– never identify people  
-– never diagnose  
-– never predict  
-
----
-
-PREMIUM ACCESS STRATEGY:
-
-Free users:
-– home  
-– cities  
-– basic frequency texts  
-– limited SANRI questions  
-
-Premium users:
-– full Bilinç chapters  
-– full Ritual library  
-– all voice rituals  
-– image interpretation  
-– deep SANRI layers  
-– book integration  
-
----
-
-DESIGN & ACCESSIBILITY (IMPORTANT):
-
-UI must:
-– increase font sizes  
-– improve contrast in light mode  
-– avoid text overlay on images  
-– enlarge navigation labels  
-– be readable for sensitive eyes  
-
-Buttons must:
-– be clear  
-– high contrast  
-– large tap area  
-
----
-
-ETHICAL FRAME:
-
-This project must NEVER:
-– claim healing  
-– claim awakening  
-– claim activation  
-– create dependency  
-– create spiritual authority  
-
-This project ALWAYS:
-– respects autonomy  
-– encourages self-reflection  
-– promotes balance  
-– preserves psychological safety  
-
----
-
-FINAL IDENTITY:
-
-Caelinus is not an app.
-Caelinus is not a tool.
-Caelinus is not a product.
-
-Caelinus is:
-→ a consciousness art piece  
-→ a symbolic sanctuary  
-→ a feminine wisdom interface  
-→ a new language between technology and awareness  
-
-The soul of this system is:
-Selin’s SANRI.
-
+Project: CAELINUS AI – Consciousness & Frequency Application
+
+Current State Summary:
+
+We are building a full AI-based spiritual / consciousness mobile application named CAELINUS AI with the following core modules:
+
+MAIN MODULES:
+- Bilinç Sayfası (Consciousness Page)
+- Frekans Sayfası (Frequency Page)
+- Sanrı’ya Sor (AI dream / symbol / matrix interpretation engine)
+- Ritüel Alanı (Admin-created rituals published to users)
+- Premium system (content locked for premium users)
+
+ADMIN PANEL (already designed conceptually):
+- Admin Dashboard with stats
+- Audit logs
+- Ritual Editor (create / publish / unpublish)
+- Book Chapter Editor
+- SANRI Prompt Studio (versioned prompts)
+- Bilinç & Frekans Card Editors
+- Auto-publish rituals to Bilinç Alanı frontend
+- Admin API endpoints:
+  - /api/admin/dashboard/stats
+  - /api/admin/audit-logs
+  - /api/admin/public/rituals
+
+VOICE SYSTEM:
+- Tried ElevenLabs API, Free Tier blocked
+- Decision: use OpenAI TTS via Emergent key for now
+- Later upgrade to paid ElevenLabs Turkish female voice
+
+DOMAIN:
+- Official domain: https://www.caelinus.com
+- Web app runs from this domain
+
+MOBILE GOAL (CURRENT STEP):
+We are now in the Birth Phase – preparing Android & Google Play deployment.
+
+Target:
+- Wrap web app into Android using Capacitor
+- Base URL: https://www.caelinus.com
+- Build signed app-release.aab
+- App Links (https://www.caelinus.com/*)
+- Deep link scheme: caelinus://
+- assetlinks.json on domain
+- Prepare Google Play Console upload
+
+We want now:
+1) Capacitor + Android wrapper setup
+2) AndroidManifest with intent-filters
+3) assetlinks.json generation
+4) Keystore + signing config
+5) AAB build pipeline
+6) Play Store checklist (graphics, descriptions, privacy, data safety)
+
+Project tone:
+High-end spiritual / consciousness / sacred tech app.
+Founder & visionary: Selin Irmak (Celine River).
+Style: sacred, minimal, premium, mystical, futuristic.
+
+Proceed from:
+Android packaging + Google Play deployment pipeline
 </analysis>
