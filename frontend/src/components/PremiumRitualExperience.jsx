@@ -216,7 +216,6 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
         
         // LLM tabanlı özel akış için arka planda deneme yap (opsiyonel)
         // Bu, gelecekte daha kişiselleştirilmiş ritüeller için kullanılabilir
-        */
         
       } catch (error) {
         console.error("Ritual load error:", error);
