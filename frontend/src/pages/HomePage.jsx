@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import SplashScreen from '@/components/SplashScreen';
 
 // Sacred Section Card Component
-const SacredCard = ({ section, isMain, onClick, delay }) => {
+const SacredCard = ({ section, isMain, isNew, onClick, delay }) => {
   const { t } = useLanguage();
   const sectionData = t(`sections.${section}`);
   
@@ -29,6 +29,13 @@ const SacredCard = ({ section, isMain, onClick, delay }) => {
         <ellipse cx="20" cy="20" rx="15" ry="10" fill="none" stroke="currentColor" strokeWidth="1" />
         <circle cx="20" cy="20" r="5" fill="currentColor" opacity="0.8" />
         <circle cx="20" cy="20" r="2" fill="currentColor" />
+      </svg>
+    ),
+    gorselin: (
+      <svg viewBox="0 0 40 40" className="w-8 h-8">
+        <rect x="8" y="10" width="24" height="20" rx="2" fill="none" stroke="currentColor" strokeWidth="1" />
+        <circle cx="15" cy="18" r="3" fill="currentColor" opacity="0.6" />
+        <path d="M10 26 L 18 20 L 24 24 L 30 18" fill="none" stroke="currentColor" strokeWidth="1" />
       </svg>
     ),
     rituel: (
