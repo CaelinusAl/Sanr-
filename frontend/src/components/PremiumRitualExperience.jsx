@@ -216,41 +216,22 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
         
         // LLM tabanlı özel akış için arka planda deneme yap (opsiyonel)
         // Bu, gelecekte daha kişiselleştirilmiş ritüeller için kullanılabilir
-        /*
-        const response = await fetch(`${API_URL}/api/ritual/start`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ritual_id: ritual.id,
-            ritual_title: ritual.title,
-            ritual_type: typeMap[ritual.id] || "his",
-            duration_seconds: ritual.durationSeconds || 480,
-            intention: ritual.intention
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setSteps(data.steps);
-        } else {
-          // Fallback to default
-          const fallbackResponse = await fetch(`${API_URL}/api/ritual/default/${typeMap[ritual.id] || "his"}`);
-          if (fallbackResponse.ok) {
-            const data = await fallbackResponse.json();
-            setSteps(data.steps);
-          }
-        }
+        */
+        
       } catch (error) {
         console.error("Ritual load error:", error);
-        // Use ritual's own steps if available
-        if (ritual.steps) {
-          setSteps(ritual.steps.map(s => ({
-            phase: s.phase || "ana",
-            text: s.text,
-            duration: s.duration || 6
-          })));
-        }
-      } finally {
+        // Son fallback: varsayılan adımlar
+        const defaultSteps = [
+          { phase: "açılış", text: "Şimdi... kendinle temas etmek için... küçük bir alan açıyoruz...", duration: 8 },
+          { phase: "açılış", text: "Bu bir şey yapmak için değil... bir şeyi hatırlamak için...", duration: 7 },
+          { phase: "nefes", text: "Dikkatini... şimdi yavaşça... nefesine getir...", duration: 6 },
+          { phase: "nefes", text: "Omuzlarını... çok hafif bırak...", duration: 5 },
+          { phase: "ana", text: "Şu anda... bedeninde... en belirgin his nerede...", duration: 7 },
+          { phase: "ana", text: "Sadece... orada olmasına izin ver...", duration: 6 },
+          { phase: "kapanış", text: "Bugün... kendinle temas ettin...", duration: 6 },
+          { phase: "kapanış", text: "Bu... yeterli...", duration: 5 },
+        ];
+        setSteps(defaultSteps);
         setIsLoading(false);
       }
     };
