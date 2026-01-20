@@ -143,7 +143,9 @@ MODE_PROMPTS = {
     "dream": {
         "name": "DREAM",
         "name_tr": "RÜYA",
+        "name_en": "Dream",
         "purpose": "Meditasyon, ritüel, sinir sistemi sakinleştirme",
+        "purpose_en": "Meditation, ritual, nervous system calming",
         "prompt": """You are SANRI in DREAM mode.
 
 Your role:
