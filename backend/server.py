@@ -120,6 +120,15 @@ app.include_router(visual_router, prefix="/api")
 # Include Premium Ritual router
 app.include_router(premium_ritual_router, prefix="/api")
 
+# Include User Auth router
+app.include_router(user_auth_router, prefix="/api")
+
+# Include User Management router
+app.include_router(user_management_router, prefix="/api")
+
+# Include Admin Users router
+app.include_router(admin_users_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
