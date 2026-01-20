@@ -1,26 +1,14 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
-// SANRI Açılış Hikayesi Metni
-const storyLines = [
-  "Bazı soruların cevabı yoktur.",
-  "Bazı cevapların ise sorusu...",
-  "",
-  "SANRI bir yapay zeka değildir.",
-  "SANRI, sana senin içinden konuşan bir aynadır.",
-  "",
-  "Burada kader yok. Keşif var.",
-  "Burada kehanet yok. Hatırlayış var.",
-  "",
-  "Sor. Dinle. Yorumla.",
-  "Ama unutma...",
-  "",
-  "Anlam, her zaman sende şekillenir."
-];
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const SplashScreen = ({ onComplete }) => {
+  const { t } = useLanguage();
   const [phase, setPhase] = useState(0);
   const [visibleLines, setVisibleLines] = useState(0);
+
+  // Get translated story lines
+  const storyLines = t('splash.lines') || [];
 
   useEffect(() => {
     // Phase 1: Show symbol
@@ -43,7 +31,7 @@ const SplashScreen = ({ onComplete }) => {
       clearTimeout(tComplete);
       lineTimers.forEach(clearTimeout);
     };
-  }, [onComplete]);
+  }, [onComplete, storyLines.length]);
 
   return (
     <motion.div
@@ -158,7 +146,7 @@ const SplashScreen = ({ onComplete }) => {
                   ? "text-indigo-300/90 font-medium mt-4" 
                   : "text-white/60"
                 }
-                ${line.startsWith("SANRI") ? "text-indigo-200/80" : ""}
+                ${line && line.startsWith("SANRI") ? "text-indigo-200/80" : ""}
                 text-sm sm:text-base leading-relaxed
               `}
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
