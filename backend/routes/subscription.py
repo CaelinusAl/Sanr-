@@ -432,26 +432,26 @@ async def calculate_upgrade_prompt(user_id: str, user_data: dict, language: str 
         if days_since_signup >= flow_config.get("main_offer_day", 7):
             return {
                 "type": "main_offer",
-                "target_plan": "initiate",
+                "target_plan": "initiation",
                 "message": messages.get(language, messages["tr"]).get("main_offer"),
                 "blocking": False  # Non-blocking by default
             }
         elif days_since_signup >= flow_config.get("soft_teaser_day", 3):
             return {
                 "type": "soft_teaser",
-                "target_plan": "initiate",
+                "target_plan": "initiation",
                 "message": messages.get(language, messages["tr"]).get("soft_teaser"),
                 "blocking": False  # Soft hint only
             }
     
-    # Initiate user -> Soul preview
-    elif plan_type == "initiate":
-        initiate_started = user_data.get("plan_upgraded_at")
-        if initiate_started:
+    # Initiation user -> Soul preview
+    elif plan_type == "initiation":
+        initiation_started = user_data.get("plan_upgraded_at")
+        if initiation_started:
             try:
-                start_date = datetime.fromisoformat(initiate_started.replace("Z", "+00:00"))
-                days_as_initiate = (datetime.now(timezone.utc) - start_date).days
-                if days_as_initiate >= flow_config.get("soul_preview_day", 10):
+                start_date = datetime.fromisoformat(initiation_started.replace("Z", "+00:00"))
+                days_as_initiation = (datetime.now(timezone.utc) - start_date).days
+                if days_as_initiation >= flow_config.get("soul_preview_day", 10):
                     return {
                         "type": "soul_preview",
                         "target_plan": "soul",
