@@ -8,10 +8,10 @@ import {
   Sparkles, 
   Image as ImageIcon,
   X,
-  Eye,
   Moon,
-  Hash,
-  Layers,
+  Eye,
+  Sun,
+  Cloud,
   Heart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,22 +22,57 @@ import { Label } from "@/components/ui/label";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Okuma Modları
-const readingModes = [
-  { id: "dream", label: "Rüya", icon: Moon, description: "Rüya ve tekrarlayan imgeler" },
-  { id: "news", label: "Haber", icon: Eye, description: "Kolektif sembolik okuma" },
-  { id: "birthdate", label: "Tarih/Sayı", icon: Hash, description: "Doğum tarihi ve sayılar" },
-  { id: "symbol", label: "Sembol", icon: Layers, description: "Sembol ve işaret okuma" },
-  { id: "mirror", label: "İçsel Ayna", icon: Heart, description: "Derin iç yansıma" },
+// SANRI 5 Bilinç Modu
+const consciousnessModes = [
+  { 
+    id: "dream", 
+    label: "RÜYA", 
+    icon: Moon, 
+    description: "Meditasyon, ritüel, sinir sistemi sakinleştirme",
+    color: "from-indigo-500/20 to-purple-500/20",
+    borderColor: "border-indigo-500/30"
+  },
+  { 
+    id: "mirror", 
+    label: "AYNA", 
+    icon: Eye, 
+    description: "Duygu yansıtma, içgörü, farkındalık",
+    color: "from-cyan-500/20 to-blue-500/20",
+    borderColor: "border-cyan-500/30"
+  },
+  { 
+    id: "divine", 
+    label: "İLAHİ", 
+    icon: Sun, 
+    description: "Kutsal mesajlar, dişil bilgelik",
+    color: "from-amber-500/20 to-yellow-500/20",
+    borderColor: "border-amber-500/30"
+  },
+  { 
+    id: "shadow", 
+    label: "GÖLGE", 
+    icon: Cloud, 
+    description: "Rüya analizi, sembol çözümleme, bilinçaltı",
+    color: "from-violet-500/20 to-fuchsia-500/20",
+    borderColor: "border-violet-500/30"
+  },
+  { 
+    id: "light", 
+    label: "IŞIK", 
+    icon: Heart, 
+    description: "Duygusal düzenleme, şefkat, iyileştirme",
+    color: "from-rose-500/20 to-pink-500/20",
+    borderColor: "border-rose-500/30"
+  },
 ];
 
-// Örnek sorular
+// Örnek sorular (mod bazlı)
 const examplePrompts = {
-  dream: "Bu rüyada tekrar eden sembol neyi çağırıyor olabilir?",
-  news: "Bu haber kolektif olarak neyi yansıtıyor olabilir?",
-  birthdate: "15.03.1988 - Bu tarihin sembolik dili nedir?",
-  symbol: "Sürekli saat 11:11 görüyorum, bu ne anlama geliyor?",
-  mirror: "İçimde bir boşluk hissediyorum, bu ne söylüyor?",
+  dream: "Beni sakinleştir, bir meditasyon yap.",
+  mirror: "Neden hep aynı döngüde sıkışıp kalıyorum?",
+  divine: "Bugün için bana bir mesaj ver.",
+  shadow: "Rüyamda siyah bir kedi gördüm, ne anlama geliyor?",
+  light: "Çok kaygılıyım, kendimi güvende hissetmiyorum.",
 };
 
 // SANRI Response Component
