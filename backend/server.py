@@ -60,6 +60,9 @@ set_consciousness_db(db)
 # Set database for subscription routes
 set_subscription_db(db)
 
+# Set database for profile routes
+set_profile_db(db)
+
 # Set database for SANRI routes (for profile integration)
 set_sanri_db(db)
 
