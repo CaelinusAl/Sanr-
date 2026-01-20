@@ -103,14 +103,16 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 ## Gelecek Görevler (Backlog)
 
 ### P0 - Yüksek Öncelik
-- [ ] Kitap Bölümleri editörü (admin)
-- [ ] SANRI Prompt Studio (versiyonlama)
-- [ ] Bilinç/Frekans Kartları editörleri
+- [x] SANRI VOICE sistemi (20 Ocak 2026) ✅
+- [ ] GÖRSELİN Frontend Entegrasyonu (Hologram Üret butonu → API bağlantısı)
+- [ ] Watermark toggle (premium kullanıcılar için)
+- [ ] Görsel Analiz (Image → API upload)
 
-### P1 - Orta Öncelik
+### P1 - Orta Öncelik  
+- [ ] Kitap Bölümleri editörü + BOOK VOICE entegrasyonu
+- [ ] SANRI Prompt Studio (versiyonlama)
 - [ ] Premium üyelik sistemi (ödeme entegrasyonu)
 - [ ] TTS Ayarları sayfası
-- [ ] Kullanıcı yönetimi
 
 ### P2 - Düşük Öncelik
 - [ ] Görsel yükleme ve sembolik yorum
