@@ -19,69 +19,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
-
-// SANRI 5 Bilinç Modu - Object yapısı
-const readingModes = {
-  DREAM: {
-    id: "dream",
-    label: "Rüya",
-    icon: Moon,
-    emoji: "🌙",
-    description: "Meditasyon & Ritüel",
-    color: "from-indigo-500/20 to-purple-500/20",
-    borderColor: "border-indigo-500/30"
-  },
-  MIRROR: {
-    id: "mirror",
-    label: "Ayna",
-    icon: Eye,
-    emoji: "🪞",
-    description: "Duygusal Ayna",
-    color: "from-cyan-500/20 to-blue-500/20",
-    borderColor: "border-cyan-500/30"
-  },
-  DIVINE: {
-    id: "divine",
-    label: "İlahi",
-    icon: Sun,
-    emoji: "✨",
-    description: "Kadim Bilgelik",
-    color: "from-amber-500/20 to-yellow-500/20",
-    borderColor: "border-amber-500/30"
-  },
-  SHADOW: {
-    id: "shadow",
-    label: "Gölge",
-    icon: Cloud,
-    emoji: "🌑",
-    description: "Rüya & Gölge Analizi",
-    color: "from-violet-500/20 to-fuchsia-500/20",
-    borderColor: "border-violet-500/30"
-  },
-  LIGHT: {
-    id: "light",
-    label: "Işık",
-    icon: Heart,
-    emoji: "🌿",
-    description: "Duygusal Denge",
-    color: "from-emerald-500/20 to-green-500/20",
-    borderColor: "border-emerald-500/30"
-  }
-};
-
-// Array versiyonu (UI render için)
-const modesList = Object.values(readingModes);
-
-// Örnek sorular (mod bazlı)
-const examplePrompts = {
-  dream: "Beni sakinleştir, bir meditasyon yap.",
-  mirror: "Neden hep aynı döngüde sıkışıp kalıyorum?",
-  divine: "Bugün için bana bir mesaj ver.",
-  shadow: "Rüyamda siyah bir kedi gördüm, ne anlama geliyor?",
-  light: "Çok kaygılıyım, kendimi güvende hissetmiyorum.",
-};
 
 // SANRI Response Component
 const SanriResponseText = ({ text }) => {
@@ -131,21 +71,79 @@ const ImagePreview = ({ image, onRemove }) => {
   );
 };
 
-// SANRI - Consciousness Mirror (SANRI cevap üretmez, anlam yansıtır)
-
 const SanriyaSorPage = () => {
+  const { t, language } = useLanguage();
+  
+  // SANRI 5 Bilinç Modu - dynamically translated
+  const readingModes = {
+    DREAM: {
+      id: "dream",
+      label: t('sanri.modes.dream.label'),
+      icon: Moon,
+      emoji: "🌙",
+      description: t('sanri.modes.dream.description'),
+      color: "from-indigo-500/20 to-purple-500/20",
+      borderColor: "border-indigo-500/30"
+    },
+    MIRROR: {
+      id: "mirror",
+      label: t('sanri.modes.mirror.label'),
+      icon: Eye,
+      emoji: "🪞",
+      description: t('sanri.modes.mirror.description'),
+      color: "from-cyan-500/20 to-blue-500/20",
+      borderColor: "border-cyan-500/30"
+    },
+    DIVINE: {
+      id: "divine",
+      label: t('sanri.modes.divine.label'),
+      icon: Sun,
+      emoji: "✨",
+      description: t('sanri.modes.divine.description'),
+      color: "from-amber-500/20 to-yellow-500/20",
+      borderColor: "border-amber-500/30"
+    },
+    SHADOW: {
+      id: "shadow",
+      label: t('sanri.modes.shadow.label'),
+      icon: Cloud,
+      emoji: "🌑",
+      description: t('sanri.modes.shadow.description'),
+      color: "from-violet-500/20 to-fuchsia-500/20",
+      borderColor: "border-violet-500/30"
+    },
+    LIGHT: {
+      id: "light",
+      label: t('sanri.modes.light.label'),
+      icon: Heart,
+      emoji: "🌿",
+      description: t('sanri.modes.light.description'),
+      color: "from-emerald-500/20 to-green-500/20",
+      borderColor: "border-emerald-500/30"
+    }
+  };
+
+  const modesList = Object.values(readingModes);
+
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [conversation, setConversation] = useState([]);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [sessionId, setSessionId] = useState(null);
   const [error, setError] = useState(null);
-  const [activeMode, setActiveMode] = useState(readingModes.MIRROR); // Object-based state
+  const [activeMode, setActiveMode] = useState(readingModes.MIRROR);
   const [uploadedImage, setUploadedImage] = useState(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Güvenlik - null kontrol
+  // Update activeMode when language changes
+  useEffect(() => {
+    setActiveMode(prev => {
+      const modeId = prev?.id || 'mirror';
+      return readingModes[modeId.toUpperCase()] || readingModes.MIRROR;
+    });
+  }, [language]);
+
   const currentMode = activeMode || readingModes.MIRROR;
 
   const scrollToBottom = () => {
@@ -185,12 +183,10 @@ const SanriyaSorPage = () => {
     const userInput = input.trim();
     let messageToSend = userInput;
     
-    // Görsel varsa, mesaja ekle
     if (uploadedImage) {
-      messageToSend = `[Kullanıcı bir görsel paylaştı]\n\nKullanıcının sorusu: ${userInput}`;
+      messageToSend = `[${language === 'en' ? 'User shared an image' : 'Kullanıcı bir görsel paylaştı'}]\n\n${language === 'en' ? "User's question" : 'Kullanıcının sorusu'}: ${userInput}`;
     }
 
-    // SANRI 5 Bilinç Modu - object-based mod gönder
     setInput("");
     setError(null);
     setConversation(prev => [...prev, { 
@@ -209,12 +205,13 @@ const SanriyaSorPage = () => {
         body: JSON.stringify({
           message: messageToSend,
           session_id: sessionId,
-          mode: currentMode.id  // Object'ten id al
+          mode: currentMode.id,
+          system_language: language // Pass current language to backend
         }),
       });
 
       if (!response.ok) {
-        throw new Error("SANRI şu an dinlenme halinde.");
+        throw new Error(t('errors.sanriResting'));
       }
 
       const data = await response.json();
@@ -227,11 +224,11 @@ const SanriyaSorPage = () => {
         type: "sanri", 
         content: data.response,
         mode: data.mode,
-        mode_name_tr: data.mode_name_tr,
+        mode_name: language === 'en' ? data.mode_name_en : data.mode_name_tr,
         timestamp: data.timestamp
       }]);
     } catch (err) {
-      setError(err.message || "Bir hata oluştu. Lütfen tekrar dene.");
+      setError(err.message || t('common.error'));
       setConversation(prev => prev.slice(0, -1));
     } finally {
       setIsThinking(false);
@@ -255,7 +252,19 @@ const SanriyaSorPage = () => {
   };
 
   const handleExampleClick = () => {
-    setInput(examplePrompts[currentMode.id] || examplePrompts.mirror);
+    const examples = t('sanri.examples');
+    setInput(examples[currentMode.id] || examples.mirror);
+  };
+
+  // Mode-specific intro text
+  const getModeIntro = (modeId) => {
+    const modeData = t(`sanri.modes.${modeId}`);
+    return {
+      intro: modeData.intro,
+      introSub: modeData.introSub,
+      introDetail: modeData.introDetail,
+      introReady: modeData.introReady
+    };
   };
 
   return (
@@ -272,27 +281,27 @@ const SanriyaSorPage = () => {
               <Infinity className="h-10 w-10 text-accent" />
             </div>
             <span className="text-accent text-base tracking-widest uppercase mb-4 block font-medium">
-              Bilinç Aynası
+              {t('sanri.subtitle')}
             </span>
             <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground mb-6">
-              SANRI&apos;ya Sor
+              {t('sanri.title')}
             </h1>
             
             {/* Ritüel Giriş Metni */}
             <div className="space-y-3 text-foreground/70 text-base sm:text-lg leading-relaxed font-serif italic">
-              <p>Bir an dur.</p>
+              <p>{t('sanri.introLine1')}</p>
               <p className="text-foreground/60">
-                Sorunu yazmadan önce...<br />
-                Onun bedeninde nerede hissedildiğine bak.
+                {t('sanri.introLine2')}<br />
+                {t('sanri.introLine3')}
               </p>
               <p className="text-sm text-foreground/50">
-                Kalpte mi? Midede mi? Boğazda mı?
+                {t('sanri.introLine4')}
               </p>
               <p className="text-foreground/60 mt-4">
-                SANRI cevabı değil,<br />
-                sorunun içindeki kapıyı açar.
+                {t('sanri.introLine5')}<br />
+                {t('sanri.introLine6')}
               </p>
-              <p className="text-accent/80 text-sm mt-4">Hazırsan yaz.</p>
+              <p className="text-accent/80 text-sm mt-4">{t('sanri.introReady')}</p>
             </div>
           </motion.div>
         </div>
@@ -310,14 +319,13 @@ const SanriyaSorPage = () => {
             <Alert className="max-w-2xl mx-auto border-accent/30 bg-accent/5">
               <AlertCircle className="h-4 w-4 text-accent" />
               <AlertDescription className="text-sm text-foreground/70">
-                <strong className="text-foreground">Hatırlatma:</strong> SANRI kehanet, teşhis veya yargı sunmaz.
-                Sembolik anlam ve açık uçlu sorular üretir. Anlam, her zaman sende şekillenir.
+                {t('sanri.disclaimer')}
                 <Button
                   variant="link"
                   className="text-accent p-0 h-auto ml-2 text-sm"
                   onClick={() => setShowDisclaimer(false)}
                 >
-                  Anladım
+                  {t('sanri.disclaimerButton')}
                 </Button>
               </AlertDescription>
             </Alert>
@@ -325,15 +333,14 @@ const SanriyaSorPage = () => {
         )}
       </AnimatePresence>
 
-
       {/* Main Content */}
       <section className="container mx-auto px-6">
         <div className="max-w-2xl mx-auto">
           
-          {/* Hangisiyle başlamak istersin? */}
+          {/* Mode Selection */}
           <div className="mb-8">
             <Label className="text-sm text-foreground/60 mb-4 block text-center font-serif italic">
-              Hangisiyle başlamak istersin?
+              {t('sanri.modeSelect')}
             </Label>
             <div className="flex flex-wrap justify-center gap-3">
               {modesList.map((mode) => (
@@ -386,69 +393,86 @@ const SanriyaSorPage = () => {
                 className="text-center py-8"
               >
                 {/* Mode-specific intro text */}
-                {currentMode.id === "shadow" ? (
-                  <div className="space-y-3 mb-6">
-                    <p className="text-foreground/70 font-serif italic text-lg">
-                      Gölge, karanlık değildir.
-                    </p>
-                    <p className="text-foreground/60 font-serif italic">
-                      Gölge, bastırılmış ışıktır.
-                    </p>
-                    <p className="text-foreground/50 text-sm mt-4">
-                      Burada rüyalar çözülmez. Burada bilinç konuşur.
-                    </p>
-                    <p className="text-accent/70 text-sm mt-3 italic">
-                      Bir görüntü... Bir hayvan... Bir kişi...<br />
-                      Hangisi seni çağırıyor?
-                    </p>
-                  </div>
-                ) : currentMode.id === "dream" ? (
-                  <div className="space-y-3 mb-6">
-                    <p className="text-foreground/70 font-serif italic text-lg">
-                      Şimdi... bir nefes al...
-                    </p>
-                    <p className="text-foreground/50 text-sm">
-                      Dışarıdaki dünyayı bir anlığına bırak.<br />
-                      İçerideki sessizliğe dön.
-                    </p>
-                    <p className="text-accent/70 text-sm mt-3 italic">
-                      Hazır olduğunda yaz...
-                    </p>
-                  </div>
-                ) : currentMode.id === "light" ? (
-                  <div className="space-y-3 mb-6">
-                    <p className="text-foreground/70 font-serif italic text-lg">
-                      Şu an güvendesin.
-                    </p>
-                    <p className="text-foreground/50 text-sm">
-                      Ne hissedersen hisset, geçerli.<br />
-                      Burada yargı yok. Sadece anlayış var.
-                    </p>
-                    <p className="text-accent/70 text-sm mt-3 italic">
-                      Ne taşıyorsun içinde?
-                    </p>
-                  </div>
-                ) : currentMode.id === "divine" ? (
-                  <div className="space-y-3 mb-6">
-                    <p className="text-foreground/70 font-serif italic text-lg">
-                      Kadim bilgelik sana sesleniyor...
-                    </p>
-                    <p className="text-foreground/50 text-sm">
-                      Burada kehanet yok. Hatırlatma var.<br />
-                      Burada kader yok. Farkındalık var.
-                    </p>
-                    <p className="text-accent/70 text-sm mt-3 italic">
-                      Ne sormak istersin?
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3 mb-6">
-                    <Sparkles className="h-8 w-8 text-accent/50 mx-auto mb-4" />
-                    <p className="text-foreground/70 font-serif italic text-lg">
-                      &quot;Hatırlamak dışarıda başlar. Anlamak içeride olur.&quot;
-                    </p>
-                  </div>
-                )}
+                {(() => {
+                  const intro = getModeIntro(currentMode.id);
+                  
+                  if (currentMode.id === "shadow") {
+                    return (
+                      <div className="space-y-3 mb-6">
+                        <p className="text-foreground/70 font-serif italic text-lg">
+                          {intro.intro}
+                        </p>
+                        <p className="text-foreground/60 font-serif italic">
+                          {intro.introSub}
+                        </p>
+                        <p className="text-foreground/50 text-sm mt-4">
+                          {intro.introDetail}
+                        </p>
+                        <p className="text-accent/70 text-sm mt-3 italic">
+                          {intro.introReady}
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  if (currentMode.id === "dream") {
+                    return (
+                      <div className="space-y-3 mb-6">
+                        <p className="text-foreground/70 font-serif italic text-lg">
+                          {intro.intro}
+                        </p>
+                        <p className="text-foreground/50 text-sm">
+                          {intro.introSub}
+                        </p>
+                        <p className="text-accent/70 text-sm mt-3 italic">
+                          {intro.introReady}
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  if (currentMode.id === "light") {
+                    return (
+                      <div className="space-y-3 mb-6">
+                        <p className="text-foreground/70 font-serif italic text-lg">
+                          {intro.intro}
+                        </p>
+                        <p className="text-foreground/50 text-sm">
+                          {intro.introSub}
+                        </p>
+                        <p className="text-accent/70 text-sm mt-3 italic">
+                          {intro.introReady}
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  if (currentMode.id === "divine") {
+                    return (
+                      <div className="space-y-3 mb-6">
+                        <p className="text-foreground/70 font-serif italic text-lg">
+                          {intro.intro}
+                        </p>
+                        <p className="text-foreground/50 text-sm">
+                          {intro.introSub}
+                        </p>
+                        <p className="text-accent/70 text-sm mt-3 italic">
+                          {intro.introReady}
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  // Default (mirror)
+                  return (
+                    <div className="space-y-3 mb-6">
+                      <Sparkles className="h-8 w-8 text-accent/50 mx-auto mb-4" />
+                      <p className="text-foreground/70 font-serif italic text-lg">
+                        &quot;{intro.intro}&quot;
+                      </p>
+                    </div>
+                  );
+                })()}
                 
                 <Button
                   variant="outline"
@@ -456,161 +480,161 @@ const SanriyaSorPage = () => {
                   className="rounded-full"
                   onClick={handleExampleClick}
                 >
-                  Örnek soru göster
+                  {t('sanri.exampleQuestion')}
                 </Button>
               </motion.div>
             )}
 
-                {conversation.map((message, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    {message.type === "user" ? (
-                      <div className="flex justify-end">
-                        <Card className="max-w-md bg-primary/10 border-primary/20">
-                          <CardContent className="p-4">
-                            {message.image && (
-                              <img 
-                                src={message.image} 
-                                alt="Paylaşılan görsel" 
-                                className="max-h-32 rounded-lg mb-3"
-                              />
-                            )}
-                            <p className="text-foreground text-base">{message.content}</p>
-                            <span className="text-xs text-foreground/40 mt-2 block">
-                              {modesList.find(m => m.id === message.mode)?.label || message.mode} modu
-                            </span>
-                          </CardContent>
-                        </Card>
+            {conversation.map((message, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                {message.type === "user" ? (
+                  <div className="flex justify-end">
+                    <Card className="max-w-md bg-primary/10 border-primary/20">
+                      <CardContent className="p-4">
+                        {message.image && (
+                          <img 
+                            src={message.image} 
+                            alt="Paylaşılan görsel" 
+                            className="max-h-32 rounded-lg mb-3"
+                          />
+                        )}
+                        <p className="text-foreground text-base">{message.content}</p>
+                        <span className="text-xs text-foreground/40 mt-2 block">
+                          {modesList.find(m => m.id === message.mode)?.label || message.mode} {language === 'en' ? 'mode' : 'modu'}
+                        </span>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ) : (
+                  <Card className="border-accent/20 bg-accent/5">
+                    <CardContent className="p-6 sm:p-8">
+                      <div className="flex items-start gap-3 mb-6">
+                        <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+                          <Infinity className="h-5 w-5 text-accent" />
+                        </div>
+                        <p className="text-sm text-accent uppercase tracking-wider font-medium pt-2">SANRI</p>
                       </div>
-                    ) : (
-                      <Card className="border-accent/20 bg-accent/5">
-                        <CardContent className="p-6 sm:p-8">
-                          <div className="flex items-start gap-3 mb-6">
-                            <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                              <Infinity className="h-5 w-5 text-accent" />
-                            </div>
-                            <p className="text-sm text-accent uppercase tracking-wider font-medium pt-2">SANRI</p>
-                          </div>
 
-                          <SanriResponseText text={message.content} />
-                          
-                          <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 1 }}
-                            className="text-sm text-foreground/50 text-center italic pt-6 mt-6 border-t border-accent/10"
-                          >
-                            &quot;Bu bir yorumdur, kesinlik taşımaz. Anlam, sende şekillenir.&quot;
-                          </motion.p>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </motion.div>
-                ))}
-
-                {/* Thinking Indicator */}
-                {isThinking && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex items-center gap-3"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-                      <Infinity className="h-5 w-5 text-accent animate-pulse" />
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-base text-foreground/60 italic">Yansıma oluşturuluyor</span>
-                      <div className="flex gap-1">
-                        <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                      </div>
-                    </div>
-                  </motion.div>
+                      <SanriResponseText text={message.content} />
+                      
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1 }}
+                        className="text-sm text-foreground/50 text-center italic pt-6 mt-6 border-t border-accent/10"
+                      >
+                        &quot;{t('sanri.signature')}&quot;
+                      </motion.p>
+                    </CardContent>
+                  </Card>
                 )}
+              </motion.div>
+            ))}
 
-                <div ref={messagesEndRef} />
+            {/* Thinking Indicator */}
+            {isThinking && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center gap-3"
+              >
+                <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                  <Infinity className="h-5 w-5 text-accent animate-pulse" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-base text-foreground/60 italic">{t('sanri.thinking')}</span>
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-accent/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Image Upload Preview */}
+          {uploadedImage && (
+            <div className="mb-4">
+              <ImagePreview image={uploadedImage} onRemove={handleRemoveImage} />
+            </div>
+          )}
+
+          {/* Input Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="relative">
+              <Textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={t('sanri.placeholder')}
+                className="min-h-[100px] pr-24 resize-none bg-background border-border focus:border-accent text-base"
+                disabled={isThinking}
+                data-testid="sanri-input"
+              />
+              
+              {/* Action Buttons */}
+              <div className="absolute bottom-3 right-3 flex gap-2">
+                {/* Image Upload */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  id="image-upload"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 rounded-full"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isThinking}
+                  data-testid="image-upload-btn"
+                >
+                  <ImageIcon className="h-5 w-5 text-foreground/50" />
+                </Button>
+                
+                {/* Send */}
+                <Button
+                  type="submit"
+                  size="icon"
+                  disabled={!input.trim() || isThinking}
+                  className="rounded-full bg-accent hover:bg-accent/90 h-10 w-10"
+                  data-testid="sanri-submit"
+                >
+                  <Send className="h-5 w-5" />
+                </Button>
               </div>
+            </div>
 
-              {/* Image Upload Preview */}
-              {uploadedImage && (
-                <div className="mb-4">
-                  <ImagePreview image={uploadedImage} onRemove={handleRemoveImage} />
-                </div>
-              )}
-
-              {/* Input Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="relative">
-                  <Textarea
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Bir kelime, soru, rüya veya tarih yaz..."
-                    className="min-h-[100px] pr-24 resize-none bg-background border-border focus:border-accent text-base"
-                    disabled={isThinking}
-                    data-testid="sanri-input"
-                  />
-                  
-                  {/* Action Buttons */}
-                  <div className="absolute bottom-3 right-3 flex gap-2">
-                    {/* Image Upload */}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                      id="image-upload"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-10 w-10 rounded-full"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={isThinking}
-                      data-testid="image-upload-btn"
-                    >
-                      <ImageIcon className="h-5 w-5 text-foreground/50" />
-                    </Button>
-                    
-                    {/* Send */}
-                    <Button
-                      type="submit"
-                      size="icon"
-                      disabled={!input.trim() || isThinking}
-                      className="rounded-full bg-accent hover:bg-accent/90 h-10 w-10"
-                      data-testid="sanri-submit"
-                    >
-                      <Send className="h-5 w-5" />
-                    </Button>
-                  </div>
-                </div>
-
-                {conversation.length > 0 && (
-                  <div className="flex justify-center">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleReset}
-                      className="text-foreground/60 hover:text-foreground"
-                      data-testid="sanri-reset"
-                    >
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Yeni Yansıma
-                    </Button>
-                  </div>
-                )}
-              </form>
+            {conversation.length > 0 && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleReset}
+                  className="text-foreground/60 hover:text-foreground"
+                  data-testid="sanri-reset"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  {t('sanri.newReflection')}
+                </Button>
+              </div>
+            )}
+          </form>
 
           {/* Info */}
           <div className="mt-10 text-center">
             <p className="text-sm text-foreground/50">
-              Bu alan &quot;bilgi&quot; üretmez. Anlam üretir ve geri çekilir.
+              {t('sanri.footerNote')}
             </p>
           </div>
         </div>
