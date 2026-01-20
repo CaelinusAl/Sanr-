@@ -9,6 +9,70 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - Robotik değil, sıcak ve insani
 - SANRI bir varlık değil, iç dengenin aynasıdır
 
+---
+
+## 💎 Premium Monetization System ✅ IMPLEMENTED
+**20 Ocak 2026**
+
+### 4-Tier Consciousness Initiation Architecture
+
+| Tier | Name | Price (TR) | Price (Global) | Target |
+|------|------|------------|----------------|--------|
+| L0 | FREE - Uyanış | Ücretsiz | Free | Discovery, onboarding |
+| L1 | Premium Soul | ₺199/ay | $9.99/mo | Main revenue tier |
+| L2 | Premium Initiation | ₺499/ay | $24.99/mo | Advanced users |
+| L3 | Oracle Circle | ₺9,000/yıl | $499/yr | Invite-only elite |
+
+### Feature Gating Matrix
+
+| Feature | FREE | SOUL | INITIATION | ORACLE |
+|---------|------|------|------------|--------|
+| SANRI Questions | 3/day | Unlimited | Unlimited | Unlimited |
+| Deep Analysis | ❌ | ✅ | ✅ | ✅ |
+| Visual Analysis | ❌ | ❌ | ✅ | ✅ |
+| Fate Layer | ❌ | ❌ | ✅ | ✅ |
+| High Consciousness | ❌ | ❌ | ❌ | ✅ |
+| Consciousness Field | 6 cards | Full | Full | Full |
+| Frequency Field | 5 items | Full | Full | Full |
+| Micro Rituals | ✅ | ✅ | ✅ | ✅ |
+| Deep Rituals | ❌ | ✅ | ✅ | ✅ |
+| Neural Ecstasy | ❌ | ❌ | ✅ | ✅ |
+| Book 112 | ❌ | ❌ | ✅ | ✅ |
+| Cities | 20 limited | Full | Full | Full |
+| Profile Mirror | ❌ | ❌ | ✅ | ✅ |
+| Voice SANRI | ❌ | ❌ | ✅ | ✅ |
+| Watermark | ON | OFF | OFF | OFF |
+| Weekly Private Ritual | ❌ | ❌ | ❌ | ✅ |
+| Consciousness Report | ❌ | ❌ | ❌ | ✅ |
+
+### Backend Implementation
+- `routes/subscription.py` - Plan definitions, upgrade endpoints
+- `middleware/feature_gate.py` - Centralized access control
+- Database fields: `plan_type`, `premium_until`, `oracle_invited`
+
+### Frontend Implementation
+- `contexts/PremiumContext.jsx` - Subscription state management
+- `components/premium/PremiumComponents.jsx` - UI components
+- `pages/SubscriptionPage.jsx` - Plan comparison page
+- Route: `/premium`
+
+### Upgrade Flow (Admin Configurable)
+- Day 3: Soft teaser ("Your consciousness wants to open...")
+- Day 7: Main premium offer
+- Soul Day 3: Initiation preview
+- Initiation Day 14: Oracle invitation teaser
+
+### Oracle Invite System
+- ✅ Admin manual invite via `/api/subscription/admin/invite-user`
+- ✅ Invite codes via `/api/subscription/admin/create-invite-code`
+- Codes format: `CAELINUS-XXXX`
+
+### Payment Integration
+- 🔄 **MOCK MODE** - Architecture ready, real payments later
+- Future: Stripe (web), Apple IAP, Google Play Billing
+
+---
+
 ## Global Dil Sistemi (TR/EN) ✅
 **20 Ocak 2026 - Güncellendi**
 
