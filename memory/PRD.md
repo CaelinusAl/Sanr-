@@ -277,6 +277,59 @@ Kapsamlı kullanıcı sistemi:
 - `GET /api/auth/sanri-context` - SANRI context
 - `GET /api/auth/sanri-welcome` - Karşılama mesajı
 - `POST /api/auth/logout` - Çıkış
+### ElevenLabs SANRI Dream Voice Integration (DONE) ✅
+**20 Ocak 2026**
+
+**Entegrasyon Detayları:**
+- ✅ OpenAI TTS tamamen devre dışı bırakıldı
+- ✅ ElevenLabs SANRI Dream sesi tek TTS motoru olarak entegre edildi
+- ✅ Voice ID: `ekmPwJdXh9GTvPKuFaM9`
+- ✅ Model: `eleven_multilingual_v2`
+- ✅ Dil: Türkçe (Primary)
+
+**Voice Characteristics:**
+- Hypnotic & warm
+- Deep feminine tone  
+- Goddess-like whisper
+- Natural human micro-variations
+- Soft breath pauses
+- Ends with gentle silence
+
+**Voice Modes:**
+| Mode | Description |
+|------|-------------|
+| meditation | Deep pauses, consciousness-opening rhythm |
+| ritual | Dramatic pauses, ceremonial tone |
+| guidance | Gentle, supportive, nurturing |
+| general | Default SANRI voice style |
+
+**API Endpoints:**
+- `POST /api/sanri/voice` - Ana ses endpoint'i
+- `POST /api/sanri/voice/stream` - Streaming audio
+- `POST /api/sanri/voice/ritual` - Ritüel seslendirme
+- `POST /api/sanri/voice/meditation` - Meditasyon seslendirme
+- `POST /api/sanri/voice/guidance` - Rehberlik seslendirme
+- `GET /api/sanri/voice/info` - Ses bilgileri
+- `GET /api/sanri/voice/status` - Servis durumu
+- `POST /api/sanri/voice/test` - Test endpoint'i
+
+**Voice Settings:**
+```json
+{
+  "stability": 0.65,
+  "similarity_boost": 0.80,
+  "style": 0.45,
+  "use_speaker_boost": true
+}
+```
+
+**Frontend Updates:**
+- `RitualPlayer.jsx` - Yeni `/api/sanri/voice/ritual` endpoint'i kullanıyor
+- `PremiumRitualExperience.jsx` - `useSanriVoice` hook'u ile güncellendi
+
+**Note:** No fallback TTS engines. SANRI Dream is the sole voice for CAELINUS AI.
+
+### TTS Sistem Mimarisi (Legacy - Deprecated)
 CAELINUS AI'nin ses kimliğinin temel parçası. İki farklı ses profili:
 
 **SANRI_VOICE (Ritüel Rehberi):**
