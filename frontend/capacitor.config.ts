@@ -4,22 +4,21 @@ const config: CapacitorConfig = {
   appId: 'com.caelinus.ai',
   appName: 'CAELINUS AI',
   webDir: 'build',
+  // Internal Test: Local build kullan, production URL'ye yönlendirme
   server: {
-    // Production URL - web app'in hosted olduğu adres
-    url: 'https://www.caelinus.com',
-    cleartext: false,
-    androidScheme: 'https'
+    // Internal Test için: bundle edilmiş web assets kullan
+    // Production'da: 'https://www.caelinus.com' olarak değiştirilecek
+    androidScheme: 'https',
+    cleartext: true // Test için
   },
   android: {
     buildOptions: {
-      keystorePath: 'release.keystore',
-      keystoreAlias: 'caelinus',
+      keystorePath: undefined, // Debug build için keystore gerekmez
+      keystoreAlias: undefined,
     },
-    // App Links için hostname
-    hostname: 'www.caelinus.com',
     // Status bar ve navigation bar renkleri
     backgroundColor: '#0a0a0f',
-    allowMixedContent: false
+    allowMixedContent: true // Test için API calls
   },
   plugins: {
     SplashScreen: {
