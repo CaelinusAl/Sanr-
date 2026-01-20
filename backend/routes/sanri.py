@@ -520,6 +520,7 @@ SanriMode = Literal["dream", "mirror", "divine", "shadow", "light"]
 class SanriRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
+    user_id: Optional[str] = None  # For profile tracking
     mode: Optional[SanriMode] = None
     message_type: Optional[str] = "general"
 
@@ -529,6 +530,7 @@ class SanriResponse(BaseModel):
     mode: str
     mode_name_tr: str
     timestamp: str
+    profile_updated: bool = False  # Indicates if consciousness profile was updated
 
 class ConversationMessage(BaseModel):
     role: str
