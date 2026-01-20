@@ -619,13 +619,11 @@ async def analyze_image(
             system_message=system_prompt
         ).with_model("anthropic", model_name)
         
-        # Create message with image - use correct image type
+        # Create message with image - use ImageContent for vision
         user_message = UserMessage(
             text=user_text,
-            file_contents=[FileContent(
-                content_type=content_type,
-                file_content_base64=image_base64,
-                file_type="image"  # Explicitly set file type
+            file_contents=[ImageContent(
+                image_base64=image_base64
             )]
         )
         
