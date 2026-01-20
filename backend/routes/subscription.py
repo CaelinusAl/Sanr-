@@ -407,45 +407,49 @@ async def calculate_upgrade_prompt(user_id: str, user_data: dict, language: str 
         if days_since_signup >= flow_config.get("main_offer_day", 7):
             return {
                 "type": "main_offer",
-                "target_plan": "soul",
-                "message": messages.get(language, messages["tr"]).get("main_offer")
+                "target_plan": "initiate",
+                "message": messages.get(language, messages["tr"]).get("main_offer"),
+                "blocking": False  # Non-blocking by default
             }
         elif days_since_signup >= flow_config.get("soft_teaser_day", 3):
             return {
                 "type": "soft_teaser",
-                "target_plan": "soul",
-                "message": messages.get(language, messages["tr"]).get("soft_teaser")
+                "target_plan": "initiate",
+                "message": messages.get(language, messages["tr"]).get("soft_teaser"),
+                "blocking": False  # Soft hint only
             }
     
-    # Soul user -> Initiation preview
-    elif plan_type == "soul":
-        # Calculate days since becoming Soul
-        soul_started = user_data.get("plan_upgraded_at")
-        if soul_started:
+    # Initiate user -> Soul preview
+    elif plan_type == "initiate":
+        initiate_started = user_data.get("plan_upgraded_at")
+        if initiate_started:
             try:
-                soul_date = datetime.fromisoformat(soul_started.replace("Z", "+00:00"))
-                days_as_soul = (datetime.now(timezone.utc) - soul_date).days
-                if days_as_soul >= flow_config.get("initiation_preview_day", 3):
+                start_date = datetime.fromisoformat(initiate_started.replace("Z", "+00:00"))
+                days_as_initiate = (datetime.now(timezone.utc) - start_date).days
+                if days_as_initiate >= flow_config.get("soul_preview_day", 10):
                     return {
-                        "type": "initiation_preview",
-                        "target_plan": "initiation",
-                        "message": messages.get(language, messages["tr"]).get("initiation_preview")
+                        "type": "soul_preview",
+                        "target_plan": "soul",
+                        "message": messages.get(language, messages["tr"]).get("soul_preview"),
+                        "blocking": False
                     }
             except:
                 pass
     
-    # Initiation user -> Oracle teaser
-    elif plan_type == "initiation":
-        init_started = user_data.get("plan_upgraded_at")
-        if init_started:
+    # Soul user -> Oracle teaser (never auto-offered, just shown in UI)
+    elif plan_type == "soul":
+        soul_started = user_data.get("plan_upgraded_at")
+        if soul_started:
             try:
-                init_date = datetime.fromisoformat(init_started.replace("Z", "+00:00"))
-                days_as_init = (datetime.now(timezone.utc) - init_date).days
-                if days_as_init >= flow_config.get("oracle_teaser_day", 14):
+                start_date = datetime.fromisoformat(soul_started.replace("Z", "+00:00"))
+                days_as_soul = (datetime.now(timezone.utc) - start_date).days
+                if days_as_soul >= flow_config.get("oracle_teaser_day", 14):
                     return {
                         "type": "oracle_teaser",
                         "target_plan": "oracle",
-                        "message": messages.get(language, messages["tr"]).get("oracle_teaser")
+                        "message": messages.get(language, messages["tr"]).get("oracle_teaser"),
+                        "blocking": False,
+                        "invite_only": True  # Cannot upgrade without invite
                     }
             except:
                 pass
