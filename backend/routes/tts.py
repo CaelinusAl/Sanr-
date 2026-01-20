@@ -162,6 +162,7 @@ async def generate_tts(request: TTSRequest):
 async def stream_tts(request: TTSRequest):
     """
     Stream text-to-speech audio (returns raw audio bytes)
+    Supports both SANRI and BOOK voice profiles
     """
     try:
         client = get_tts_client()
@@ -172,9 +173,15 @@ async def stream_tts(request: TTSRequest):
                 detail="Ses servisi yapılandırılmamış."
             )
         
-        voice = request.voice or CAELINUS_VOICE
-        model = request.model or CAELINUS_MODEL
-        speed = request.speed or CAELINUS_SPEED
+        # Select voice profile
+        if request.voice_profile == "book":
+            config = CAELINUS_BOOK_VOICE_CONFIG
+        else:
+            config = SANRI_VOICE_CONFIG
+        
+        voice = request.voice or config["voice"]
+        model = request.model or config["model"]
+        speed = request.speed or config["speed"]
         
         # Generate audio bytes
         audio_bytes = await client.generate_speech(
@@ -200,6 +207,137 @@ async def stream_tts(request: TTSRequest):
             status_code=500, 
             detail=f"Ses akışı sırasında hata: {str(e)}"
         )
+
+# ============== SANRI VOICE - RITUAL ENDPOINT ==============
+
+@router.post("/ritual/play")
+async def play_ritual_voice(request: RitualVoiceRequest):
+    """
+    SANRI VOICE ile ritüel seslendir
+    - Hipnotik, derin, rehber ses
+    - Ritüel adımlarını tek sese birleştirir
+    - Premium özellik
+    """
+    try:
+        client = get_tts_client()
+        if not client:
+            raise HTTPException(status_code=503, detail="Ses servisi yapılandırılmamış")
+        
+        # Import here to avoid circular dependency
+        from routes.premium_ritual import db as ritual_db, get_full_ritual_text, PremiumRitual
+        
+        if ritual_db is None:
+            raise HTTPException(status_code=503, detail="Veritabanı bağlantısı yok")
+        
+        # Get ritual from database
+        ritual_data = await ritual_db.premium_rituals.find_one({"id": request.ritual_id}, {"_id": 0})
+        if not ritual_data:
+            raise HTTPException(status_code=404, detail="Ritüel bulunamadı")
+        
+        # Check if ritual has content
+        if not ritual_data.get("steps") or len(ritual_data.get("steps", [])) == 0:
+            raise HTTPException(status_code=400, detail="Bu ritüelin içeriği henüz eklenmemiş")
+        
+        ritual = PremiumRitual(**ritual_data)
+        
+        # Generate full text with proper pauses
+        full_text = get_full_ritual_text(ritual, request.language)
+        
+        # Truncate if too long
+        if len(full_text) > 4096:
+            full_text = full_text[:4000] + "\n\n... Ritüel devam ediyor..."
+        
+        # Generate with SANRI voice
+        audio_base64 = await client.generate_speech_base64(
+            text=full_text,
+            model=SANRI_VOICE_CONFIG["model"],
+            voice=SANRI_VOICE_CONFIG["voice"],
+            speed=SANRI_VOICE_CONFIG["speed"],
+            response_format="mp3"
+        )
+        
+        audio_url = f"data:audio/mpeg;base64,{audio_base64}"
+        name = ritual.name_tr if request.language == "tr" else ritual.name_en
+        
+        logger.info(f"SANRI VOICE ritual played: {ritual.id}, lang={request.language}")
+        
+        return {
+            "ritual_id": ritual.id,
+            "name": name,
+            "duration_minutes": ritual.duration_minutes,
+            "audio_url": audio_url,
+            "full_text": full_text,
+            "steps_count": len(ritual.steps),
+            "voice_profile": "sanri",
+            "voice_config": {
+                "voice": SANRI_VOICE_CONFIG["voice"],
+                "speed": SANRI_VOICE_CONFIG["speed"],
+                "description": SANRI_VOICE_CONFIG["description_tr"]
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ritual voice error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Ritüel ses hatası: {str(e)}")
+
+# ============== CAELINUS BOOK VOICE - BOOK/MEDITATION ENDPOINT ==============
+
+@router.post("/book/play")
+async def play_book_voice(request: BookVoiceRequest):
+    """
+    CAELINUS BOOK VOICE ile kitap/meditasyon seslendir
+    - Akıcı, sıcak anlatıcı ses
+    - Uzun dinlemelerde yormayan
+    """
+    try:
+        client = get_tts_client()
+        if not client:
+            raise HTTPException(status_code=503, detail="Ses servisi yapılandırılmamış")
+        
+        # For now, use sample content (can be connected to book database later)
+        # This is a placeholder that can be extended
+        sample_book_text = """
+        Bilinç, sadece düşüncelerden ibaret değildir.
+        O, varlığın kendisidir.
+        Her an, her nefes, bilinç alanının bir parçasıdır.
+        
+        Şimdi bu alana gir.
+        Zihin durulsun.
+        Beden gevşesin.
+        Ve hatırla...
+        Sen, bu deneyimin tanığısın.
+        """
+        
+        # Generate with BOOK voice
+        audio_base64 = await client.generate_speech_base64(
+            text=sample_book_text,
+            model=CAELINUS_BOOK_VOICE_CONFIG["model"],
+            voice=CAELINUS_BOOK_VOICE_CONFIG["voice"],
+            speed=CAELINUS_BOOK_VOICE_CONFIG["speed"],
+            response_format="mp3"
+        )
+        
+        audio_url = f"data:audio/mpeg;base64,{audio_base64}"
+        
+        logger.info(f"CAELINUS BOOK VOICE played: chapter={request.chapter_id}")
+        
+        return {
+            "chapter_id": request.chapter_id,
+            "audio_url": audio_url,
+            "text": sample_book_text,
+            "voice_profile": "book",
+            "voice_config": {
+                "voice": CAELINUS_BOOK_VOICE_CONFIG["voice"],
+                "speed": CAELINUS_BOOK_VOICE_CONFIG["speed"],
+                "description": CAELINUS_BOOK_VOICE_CONFIG["description_tr"]
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Book voice error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Kitap ses hatası: {str(e)}")
 
 @router.get("/voices")
 async def list_voices():
