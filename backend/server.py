@@ -56,6 +56,9 @@ set_admin_users_db(db)
 # Set database for consciousness profile routes
 set_consciousness_db(db)
 
+# Set database for subscription routes
+set_subscription_db(db)
+
 # Set database for SANRI routes (for profile integration)
 set_sanri_db(db)
 
