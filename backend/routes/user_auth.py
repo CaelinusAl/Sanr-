@@ -28,18 +28,27 @@ def set_database(database: AsyncIOMotorDatabase):
 
 # ============== MODELS ==============
 
-# Onboarding Enums
-ReasonType = Literal["dreams", "self_discovery", "turning_point", "curiosity"]
-EmotionType = Literal["seeking", "confused", "calm", "tired", "curious", "love"]
+# Onboarding Enums - NEW 4-question consciousness profile
+TimePerceptionType = Literal["present_aware", "past_affected", "non_linear", "time_worker"]
+IdentityType = Literal["seeker", "transforming", "pathmaker", "silence_finder"]
 StyleType = Literal["soft", "wise", "direct", "symbolic"]
 PurposeType = Literal["dreams", "rituals", "frequencies", "self_knowledge", "all"]
 
+# Legacy enums for backwards compatibility
+ReasonType = Literal["dreams", "self_discovery", "turning_point", "curiosity"]
+EmotionType = Literal["seeking", "confused", "calm", "tired", "curious", "love"]
+
 class UserProfile(BaseModel):
-    """Bilinç Profili - Onboarding sorularının cevapları"""
-    reason: Optional[ReasonType] = None
-    dominant_emotion: Optional[EmotionType] = None
+    """Bilinç Profili - Yeni 4 sorulu sistem"""
+    # New consciousness profile fields
+    time_perception: Optional[TimePerceptionType] = None  # Zaman algısı (bilinç seviyesi)
+    identity: Optional[IdentityType] = None               # Kimlik algısı (ego/öz ayrımı)
     style_preference: Optional[StyleType] = None
     purpose: Optional[PurposeType] = None
+    # Legacy fields for backwards compatibility
+    reason: Optional[ReasonType] = None
+    dominant_emotion: Optional[EmotionType] = None
+    # Common fields
     language: Literal["tr", "en"] = "tr"
     consent_given: bool = False
     consent_timestamp: Optional[str] = None
