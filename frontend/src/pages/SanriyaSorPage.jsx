@@ -316,17 +316,17 @@ const SanriyaSorPage = () => {
           <div className="mb-6">
             <Label className="text-sm text-foreground/60 mb-3 block">Bilinç Modu Seç:</Label>
             <div className="flex flex-wrap gap-2">
-              {consciousnessModes.map((mode) => (
+              {modesList.map((mode) => (
                 <Button
                   key={mode.id}
-                  variant={selectedMode === mode.id ? "default" : "outline"}
+                  variant={currentMode.id === mode.id ? "default" : "outline"}
                   size="sm"
                   className={`rounded-full gap-2 transition-all duration-300 ${
-                    selectedMode === mode.id 
+                    currentMode.id === mode.id 
                       ? `bg-gradient-to-r ${mode.color} ${mode.borderColor} border` 
                       : "border-border/50 hover:border-accent/50"
                   }`}
-                  onClick={() => setSelectedMode(mode.id)}
+                  onClick={() => setActiveMode(mode)}
                   data-testid={`mode-${mode.id}`}
                 >
                   <mode.icon className="h-4 w-4" />
@@ -335,7 +335,7 @@ const SanriyaSorPage = () => {
               ))}
             </div>
             <p className="text-xs text-foreground/40 mt-2">
-              {consciousnessModes.find(m => m.id === selectedMode)?.description}
+              {currentMode.description}
             </p>
           </div>
 
