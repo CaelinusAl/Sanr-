@@ -18,6 +18,7 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - Sayfa yenilemesi gerekmeden anlık geçiş
 - Tüm UI bileşenleri çift dilli (TR/EN)
 - Backend'de `system_language` parametresi ile SANRI dil desteği
+- **PARTIAL TRANSLATION FORBIDDEN** - Tamamen TR veya tamamen EN
 
 ### Çeviri Kapsamı
 - Tüm sayfa başlıkları ve açıklamaları
@@ -26,10 +27,35 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - Navigasyon menüsü
 - Hata mesajları ve bildirimler
 - Footer ve genel UI metinleri
+- **6 Content Domain isimleri ve açıklamaları**
 
-### API Entegrasyonu
-- `POST /api/sanri/ask` - `system_language: "tr"|"en"` parametresi
-- `GET /api/sanri/modes` - `name_tr`, `name_en`, `purpose_en` alanları
+## 6 Content Domains (Hybrid Routing) ✅
+**20 Ocak 2026**
+
+### Domain Listesi
+| Domain ID | EN Name | TR Name | Purpose |
+|-----------|---------|---------|---------|
+| awakened_cities | Awakened Cities | Uyanmış Şehirler | Cities as archetypal consciousness nodes |
+| consciousness_field | Consciousness Field | Bilinç Alanı | Awareness, perception, identity journey |
+| frequency_field | Frequency Field | Frekans Alanı | Emotional vibrations and energy |
+| ritual_space | Ritual Space | Ritüel Alanı | Breath, meditation, sacred practices |
+| neural_ecstasy | Neural Ecstasy | Beyin Orgazmı | Mental clarity and aesthetic pleasure |
+| book_112 | Book 112 | 112. Kitap | The Self-Creating Goddess |
+
+### Hybrid Routing System
+- **Priority 1**: Manuel domain seçimi (kullanıcı seçerse)
+- **Priority 2**: City context (şehir verisi varsa)
+- **Priority 3**: Otomatik algılama (mesaj içeriğinden)
+- **Priority 4**: Default fallback (Consciousness Field)
+
+### API Endpoints
+- `POST /api/sanri/ask` - `domain`, `city_data` parametreleri eklendi
+- `GET /api/sanri/domains` - Domain listesi endpoint'i
+
+### Frontend UI
+- Collapsible domain selector (opsiyonel)
+- Domain indicator in SANRI responses
+- Auto-detect default mode
 
 ## SANRI - Bilinç Aynası Sistemi ✅
 **20 Ocak 2026**
