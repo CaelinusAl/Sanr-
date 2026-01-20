@@ -137,13 +137,22 @@ const CitiesPage = () => {
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between mb-8">
             <p className="text-sm text-muted-foreground">
-              {filteredCities.length} {language === 'en' ? 'cities shown' : 'şehir gösteriliyor'}
+              {isPremium 
+                ? `${filteredCities.length} ${language === 'en' ? 'cities shown' : 'şehir gösteriliyor'}`
+                : `${displayCities.length}/${filteredCities.length} ${language === 'en' ? 'cities shown' : 'şehir gösteriliyor'}`
+              }
             </p>
+            {!isPremium && lockedCount > 0 && (
+              <Badge variant="outline" className="gap-1">
+                <Lock className="h-3 w-3" />
+                {lockedCount} {language === 'en' ? 'locked' : 'kilitli'}
+              </Badge>
+            )}
           </div>
 
           {viewMode === "grid" ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-              {filteredCities.map((city, index) => (
+              {displayCities.map((city, index) => (
                 <motion.div
                   key={city.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -167,6 +176,32 @@ const CitiesPage = () => {
                   </Link>
                 </motion.div>
               ))}
+              
+              {/* Locked Cities Preview */}
+              {!isPremium && lockedCount > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: displayCities.length * 0.02 }}
+                  className="col-span-2"
+                >
+                  <Card 
+                    className="h-full border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all cursor-pointer"
+                    onClick={() => showUpgradeModal(FEATURES.CITIES_FULL)}
+                    data-testid="unlock-cities-card"
+                  >
+                    <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full min-h-[140px]">
+                      <Lock className="h-8 w-8 text-primary mb-3" />
+                      <p className="text-sm text-foreground font-medium mb-1">
+                        +{lockedCount} {language === 'en' ? 'more cities' : 'şehir daha'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {language === 'en' ? 'Unlock full access' : 'Tam erişimi aç'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
             </div>
           ) : (
             <div className="space-y-3">
