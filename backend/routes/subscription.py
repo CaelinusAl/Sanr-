@@ -1141,3 +1141,101 @@ async def admin_get_subscription_stats(request: Request):
         },
         "recent_upgrades_7d": recent_upgrades
     }
+
+
+# ============== UPGRADE FLOW TRIGGERS ==============
+
+@router.get("/upgrade-trigger")
+async def check_upgrade_trigger(request: Request):
+    """
+    Check if user should see an upgrade prompt based on their journey.
+    Day 3: Soft reminder
+    Day 7: Main upgrade invitation
+    """
+    user_id = request.cookies.get("user_id")
+    
+    if not user_id:
+        return {"show_prompt": False, "trigger": None}
+    
+    # Get user data
+    user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not user:
+        return {"show_prompt": False, "trigger": None}
+    
+    # Already premium? No prompt
+    if user.get("is_premium") or user.get("plan_type", "free") != "free":
+        return {"show_prompt": False, "trigger": None, "is_premium": True}
+    
+    # Check dismissed prompts
+    dismissed = user.get("dismissed_prompts", [])
+    
+    # Calculate days since signup
+    created_at = user.get("created_at")
+    if not created_at:
+        return {"show_prompt": False, "trigger": None}
+    
+    try:
+        signup_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+        days_since_signup = (datetime.now(timezone.utc) - signup_date).days
+    except:
+        days_since_signup = 0
+    
+    # Determine which trigger to show
+    trigger = None
+    
+    if days_since_signup >= 7 and "day7" not in dismissed:
+        trigger = {
+            "type": "day7",
+            "style": "main",
+            "title": {
+                "tr": "Yolculuğunda 7. Gün",
+                "en": "Day 7 of Your Journey"
+            },
+            "message": {
+                "tr": "Derine inmeye hazırsın. Bu alan, daha fazlasını hatırlamayı seçtiğinde açılır.",
+                "en": "You are ready to go deeper. This field opens when you choose to remember more."
+            },
+            "cta": {
+                "tr": "Premium'u Keşfet",
+                "en": "Explore Premium"
+            }
+        }
+    elif days_since_signup >= 3 and "day3" not in dismissed:
+        trigger = {
+            "type": "day3",
+            "style": "soft",
+            "title": {
+                "tr": "İlk 3 Gün Tamamlandı",
+                "en": "First 3 Days Complete"
+            },
+            "message": {
+                "tr": "Yolculuğun güzel ilerliyor. Daha derin katmanlar seni bekliyor.",
+                "en": "Your journey is progressing beautifully. Deeper layers await you."
+            },
+            "cta": {
+                "tr": "Daha Fazlasını Gör",
+                "en": "See More"
+            }
+        }
+    
+    return {
+        "show_prompt": trigger is not None,
+        "trigger": trigger,
+        "days_since_signup": days_since_signup
+    }
+
+@router.post("/dismiss-prompt")
+async def dismiss_upgrade_prompt(request: Request, prompt_type: str):
+    """Dismiss an upgrade prompt (user clicked 'later' or closed it)"""
+    user_id = request.cookies.get("user_id")
+    
+    if not user_id:
+        return {"success": False}
+    
+    # Add to dismissed prompts
+    await db.users.update_one(
+        {"user_id": user_id},
+        {"$addToSet": {"dismissed_prompts": prompt_type}}
+    )
+    
+    return {"success": True, "dismissed": prompt_type}
