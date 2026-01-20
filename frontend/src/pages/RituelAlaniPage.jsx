@@ -825,12 +825,12 @@ const RituelAlaniPage = () => {
                   <Sparkles className="h-8 w-8 text-primary" />
                 </div>
                 <h1 className="font-serif text-4xl sm:text-5xl text-foreground mb-4">
-                  Ritüel Alanı
+                  {t('rituel.title')}
                 </h1>
                 <p className="text-foreground/60 max-w-lg mx-auto">
-                  Bilinçli anlar için küçük duraksama alanları.
+                  {t('rituel.subtitle')}
                   <br />
-                  <span className="text-sm">Terapi değil, farkındalık.</span>
+                  <span className="text-sm">{t('rituel.subNote')}</span>
                 </p>
               </motion.div>
             </div>
@@ -849,7 +849,7 @@ const RituelAlaniPage = () => {
                 data-testid="rituel-basla-ana-btn"
               >
                 <Infinity className="h-5 w-5 mr-3" />
-                7 Kapı Ritüeline Başla
+                {t('rituel.mainButton')}
               </Button>
             </motion.div>
 
@@ -860,10 +860,10 @@ const RituelAlaniPage = () => {
               <TabsList className="grid w-full grid-cols-3 mb-8">
                 <TabsTrigger value="premium" className="text-base flex items-center gap-2">
                   <Crown className="h-4 w-4" />
-                  Premium
+                  {t('rituel.tabs.premium')}
                 </TabsTrigger>
-                <TabsTrigger value="moduller" className="text-base">Hızlı</TabsTrigger>
-                <TabsTrigger value="112" className="text-base">112. Kitap</TabsTrigger>
+                <TabsTrigger value="moduller" className="text-base">{t('rituel.tabs.quick')}</TabsTrigger>
+                <TabsTrigger value="112" className="text-base">{t('rituel.tabs.book112')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="premium">
