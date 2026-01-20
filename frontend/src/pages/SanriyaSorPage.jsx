@@ -497,7 +497,7 @@ const SanriyaSorPage = () => {
           {/* Info */}
           <div className="mt-10 text-center">
             <p className="text-sm text-foreground/50">
-              Bu alan "bilgi" üretmez. Anlam üretir ve geri çekilir.
+              Bu alan &quot;bilgi&quot; üretmez. Anlam üretir ve geri çekilir.
             </p>
           </div>
         </div>
