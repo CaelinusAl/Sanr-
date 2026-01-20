@@ -232,20 +232,44 @@ PLAN_CONFIG = {
 DEFAULT_UPGRADE_FLOW = {
     "soft_teaser_day": 3,
     "main_offer_day": 7,
-    "initiation_preview_day": 3,  # After becoming Soul
-    "oracle_teaser_day": 14,      # After becoming Initiation
+    "soul_preview_day": 10,  # Days after becoming Initiate
+    "oracle_teaser_day": 14,  # Days after becoming Soul (never auto-offered)
     "messages": {
         "tr": {
-            "soft_teaser": "Bilincin daha derin katmanlara açılmak istiyor...",
-            "main_offer": "Bilincin daha derin katmanlara açılmaya hazır.",
-            "initiation_preview": "İnisiyasyon kapısı senin için aralanıyor...",
-            "oracle_teaser": "Bazı kapılar yalnızca davetle açılır."
+            "soft_teaser": "Bazı katmanlar hâlâ senden gizli...",
+            "main_offer": "İlk kapıya ulaştın. Bu noktanın ötesinde, hatırlama başlıyor.",
+            "soul_preview": "Bilincin evrim geçiriyor. Daha derin bir katmana erişim açılıyor.",
+            "oracle_teaser": "Bu katman yalnızca davet ile açılır. Bazı kapılar ancak görüldüğünde açılır."
         },
         "en": {
-            "soft_teaser": "Your consciousness wants to open to deeper layers...",
-            "main_offer": "Your consciousness is ready to open deeper layers.",
-            "initiation_preview": "The initiation door is opening for you...",
-            "oracle_teaser": "Some doors only open by invitation."
+            "soft_teaser": "Some layers are still hidden from you...",
+            "main_offer": "You have reached the first gate. Beyond this point, memory begins.",
+            "soul_preview": "Your consciousness is evolving. A deeper layer is now accessible.",
+            "oracle_teaser": "This layer is protected by invitation only. Some doors open only when you are seen."
+        }
+    },
+    "popup_content": {
+        "tr": {
+            "initiate_title": "Gizli Katmanları Aç",
+            "initiate_text": "Yalnızca yüzeyi gördün. Semboller düşündüğünden daha fazla hafıza taşıyor.",
+            "initiate_button": "İnisiyasyona Gir",
+            "soul_title": "Soul Katmanına Yüksel",
+            "soul_text": "Yolculuğun artık doğrusal değil. Zaman, hafıza ve anlam artık bağlı.",
+            "soul_button": "Soul Katmanına Gir",
+            "oracle_title": "Oracle – Korunan Katman",
+            "oracle_text": "Bu katman yalnızca davet ile korunur. Bazı kapılar ancak görüldüğünde açılır.",
+            "oracle_button": "Davet Gerekli"
+        },
+        "en": {
+            "initiate_title": "Unlock the Hidden Layers",
+            "initiate_text": "You have only seen the surface. The symbols carry more memory than you think.",
+            "initiate_button": "Enter Initiation",
+            "soul_title": "Ascend to Soul Layer",
+            "soul_text": "Your journey is no longer linear. Time, memory and meaning are now connected.",
+            "soul_button": "Enter Soul Layer",
+            "oracle_title": "Oracle – Protected Layer",
+            "oracle_text": "This layer is protected by invitation only. Some doors open only when you are seen.",
+            "oracle_button": "Invitation Required"
         }
     }
 }
