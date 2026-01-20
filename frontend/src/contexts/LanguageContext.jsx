@@ -181,31 +181,32 @@ const translations = {
       domains: {
         awakened_cities: {
           name: 'Uyanmış Şehirler',
-          description: 'Şehirler arketipik bilinç noktaları olarak'
+          subtitle: "Anadolu'nun yaşayan hafıza alanları"
         },
         consciousness_field: {
           name: 'Bilinç Alanı',
-          description: 'Farkındalık, algı, kimlik yolculuğu'
+          subtitle: 'Algının kendini yeniden düzenlediği yer'
         },
         frequency_field: {
           name: 'Frekans Alanı',
-          description: 'Duygusal titreşimler ve enerji'
+          subtitle: 'Duygunun ritimleri, rezonansın kodları'
         },
         ritual_space: {
           name: 'Ritüel Alanı',
-          description: 'Nefes, meditasyon, kutsal pratikler'
+          subtitle: 'Hatırlayışın kutsal protokolleri'
         },
         neural_ecstasy: {
           name: 'Beyin Orgazmı',
-          description: 'Zihinsel berraklık ve estetik haz'
+          subtitle: 'Hazzın, yaratımın ve farkındalığın kodları'
         },
         book_112: {
           name: '112. Kitap',
-          description: 'Kendini Yaratan Tanrıça'
+          subtitle: 'Kendini Yaratan Tanrıça Arşivi'
         }
       },
       domainAuto: 'Otomatik algılama',
-      domainSelect: 'Domain seç (opsiyonel)'
+      domainSelect: 'Domain seç (opsiyonel)',
+      realmQuestion: 'Bilinç alanının hangi boyutuna girmek istersin?'
     },
 
     // ==================== GORSELIN PAGE ====================
