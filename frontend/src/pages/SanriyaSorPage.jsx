@@ -362,7 +362,7 @@ const SanriyaSorPage = () => {
         <div className="max-w-2xl mx-auto">
           
           {/* Mode Selection */}
-          <div className="mb-8">
+          <div className="mb-6">
             <Label className="text-sm text-foreground/60 mb-4 block text-center font-serif italic">
               {t('sanri.modeSelect')}
             </Label>
@@ -388,6 +388,41 @@ const SanriyaSorPage = () => {
             <p className="text-xs text-foreground/50 mt-3 text-center">
               {currentMode.description}
             </p>
+          </div>
+
+          {/* Domain Selection (Collapsible) */}
+          <div className="mb-8">
+            <details className="group">
+              <summary className="text-xs text-foreground/40 mb-2 cursor-pointer text-center hover:text-foreground/60 transition-colors list-none flex items-center justify-center gap-2">
+                <span>{t('sanri.domainSelect')}</span>
+                <svg className="w-3 h-3 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="flex flex-wrap justify-center gap-2 mt-3"
+              >
+                {domainsList.map((domain) => (
+                  <Button
+                    key={domain.id || 'auto'}
+                    variant={selectedDomain === domain.id ? "secondary" : "ghost"}
+                    size="sm"
+                    className={`rounded-full gap-1.5 text-xs transition-all ${
+                      selectedDomain === domain.id 
+                        ? "bg-accent/20 border border-accent/30" 
+                        : "border border-transparent hover:border-border/50"
+                    }`}
+                    onClick={() => setSelectedDomain(domain.id)}
+                    data-testid={`domain-${domain.id || 'auto'}`}
+                  >
+                    <span>{domain.emoji}</span>
+                    <span>{domain.label}</span>
+                  </Button>
+                ))}
+              </motion.div>
+            </details>
           </div>
 
           {/* Error Alert */}
