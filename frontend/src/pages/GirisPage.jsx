@@ -238,7 +238,10 @@ const GirisPage = () => {
 
                 {/* Privacy Note */}
                 <p className="text-white/30 text-xs text-center leading-relaxed">
-                  {text.privacyNote}
+                  {text.privacyNote}{' '}
+                  <Link to="/gizlilik" className="text-amber-500/70 hover:text-amber-500 underline">
+                    {text.privacyLink}
+                  </Link>
                 </p>
               </motion.div>
             )}
