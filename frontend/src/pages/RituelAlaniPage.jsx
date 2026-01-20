@@ -677,7 +677,7 @@ const GirisEsigi = ({ onReady, t }) => {
           className="absolute bottom-12"
         >
           <p className="text-xs text-muted-foreground">
-            {breathCount < 3 ? `${3 - breathCount} nefes daha...` : ""}
+            {breathCount < 3 ? (t('common.minutes') === 'min' ? `${3 - breathCount} more breaths...` : `${3 - breathCount} nefes daha...`) : ""}
           </p>
         </motion.div>
       )}
