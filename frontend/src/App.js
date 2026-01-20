@@ -124,6 +124,11 @@ function App() {
                   <Route path="/gorselin" element={<GorselinPage />} />
                   <Route path="/hakkinda" element={<AboutPage />} />
                   
+                  {/* Auth Routes */}
+                  <Route path="/giris" element={<GirisPage />} />
+                  <Route path="/onboarding" element={<OnboardingPage />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+                  
                   {/* Admin Routes */}
                   <Route path="/admin/login" element={<AdminLoginPage />} />
                   <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
