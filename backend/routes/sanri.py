@@ -590,8 +590,8 @@ def auto_detect_mode(message: str, emotional_tone: str) -> str:
     # Varsayılan -> MIRROR
     return "mirror"
 
-def build_full_prompt(mode: str, emotional_tone: str) -> str:
-    """Mod ve duygusal tona göre tam prompt oluştur"""
+def build_full_prompt(mode: str, emotional_tone: str, profile_context: str = "") -> str:
+    """Mod, duygusal ton ve profil context'ine göre tam prompt oluştur"""
     mode_config = MODE_PROMPTS.get(mode, MODE_PROMPTS["mirror"])
     
     # Build comprehensive prompt
@@ -606,9 +606,13 @@ CURRENT MODE: {mode.upper()}
 
 {SANRI_SAFETY_LAYER}
 
+{SANRI_PROTOCOL}
+
 {SANRI_VOICE_BEHAVIOR}
 
 {SANRI_MEMORY_LAYER}
+
+{profile_context}
 
 ADDITIONAL CONTEXT:
 - Detected emotional tone: {emotional_tone}
