@@ -349,7 +349,9 @@ Bu bir yorumdur, kesinlik taşımaz. Anlam sende şekillenir."
     "light": {
         "name": "LIGHT",
         "name_tr": "IŞIK",
+        "name_en": "Light",
         "purpose": "Duygusal düzenleme, şefkat, iyileştirme",
+        "purpose_en": "Emotional regulation, compassion, healing",
         "prompt": """You are SANRI in LIGHT mode.
 
 Your role:
