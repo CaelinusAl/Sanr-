@@ -620,7 +620,37 @@ const translations = {
         divine: 'Give me a message for today.',
         shadow: 'I saw a black cat in my dream, what does it mean?',
         light: "I'm very anxious, I don't feel safe."
-      }
+      },
+      
+      // Content Domains
+      domains: {
+        awakened_cities: {
+          name: 'Awakened Cities',
+          description: 'Cities as archetypal consciousness nodes'
+        },
+        consciousness_field: {
+          name: 'Consciousness Field',
+          description: 'Awareness, perception, identity journey'
+        },
+        frequency_field: {
+          name: 'Frequency Field',
+          description: 'Emotional vibrations and energy'
+        },
+        ritual_space: {
+          name: 'Ritual Space',
+          description: 'Breath, meditation, sacred practices'
+        },
+        neural_ecstasy: {
+          name: 'Neural Ecstasy',
+          description: 'Mental clarity and aesthetic pleasure'
+        },
+        book_112: {
+          name: 'Book 112',
+          description: 'The Self-Creating Goddess'
+        }
+      },
+      domainAuto: 'Auto-detect',
+      domainSelect: 'Select domain (optional)'
     },
 
     // ==================== GORSELIN PAGE ====================
