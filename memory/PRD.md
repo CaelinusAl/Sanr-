@@ -152,7 +152,32 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 
 ## Son Güncelleme: 20 Ocak 2026
 
-### Kullanıcı & Auth Sistemi (YENİ) ✅
+### Store Release Hazırlığı (YENİ) ✅
+**20 Ocak 2026**
+
+**Tamamlanan:**
+- Sign in with Apple butonu eklendi (iOS App Store gereksinimi)
+- Gizlilik Politikası sayfası oluşturuldu (/gizlilik, /privacy)
+- KVKK/GDPR uyumlu içerik (TR/EN)
+- Store Release Plan dokümanı (/app/STORE_RELEASE_PLAN.md)
+
+**Minimum Store-Ready Kriterleri (P0):**
+| Özellik | Durum |
+|---------|-------|
+| Sign in with Apple | ✅ DONE |
+| Privacy Policy Page | ✅ DONE |
+| Account Deletion | ✅ DONE |
+| Data Export | ✅ DONE |
+| GÖRSELİN Hologram API | ⏳ TODO |
+| GÖRSELİN Watermark Toggle | ⏳ TODO |
+| GÖRSELİN Image Analysis | ⏳ TODO |
+| Loading States Polish | ⏳ TODO |
+
+**Store Assets Gerekli:**
+- App Icon (512x512 Android, 1024x1024 iOS)
+- Feature Graphic (1024x500)
+- Screenshots (8 ekran, TR/EN)
+- Store Descriptions (TR/EN)
 **20 Ocak 2026**
 
 Kapsamlı kullanıcı sistemi:
