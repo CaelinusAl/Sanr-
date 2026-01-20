@@ -57,6 +57,19 @@ const PageLoader = () => (
   </div>
 );
 
+// Upgrade Flow Wrapper - handles Day 3/Day 7 prompts
+const UpgradeFlowWrapper = () => {
+  const { trigger, showPrompt, dismissPrompt } = useUpgradeFlow();
+  
+  return (
+    <UpgradeFlowModal 
+      trigger={trigger}
+      isOpen={showPrompt}
+      onClose={dismissPrompt}
+    />
+  );
+};
+
 // Admin Route Guard
 const AdminRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAdmin();
