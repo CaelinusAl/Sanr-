@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useState, useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import("@/pages/HomePage"));
@@ -16,6 +17,11 @@ const FrekansPage = lazy(() => import("@/pages/FrekansPage"));
 const RituelAlaniPage = lazy(() => import("@/pages/RituelAlaniPage"));
 const BilincAlaniPage = lazy(() => import("@/pages/BilincAlaniPage"));
 const GorselinPage = lazy(() => import("@/pages/GorselinPage"));
+
+// Auth Pages
+const GirisPage = lazy(() => import("@/pages/GirisPage"));
+const OnboardingPage = lazy(() => import("@/pages/OnboardingPage"));
+const AuthCallback = lazy(() => import("@/components/AuthCallback"));
 
 // Admin Pages
 const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLoginPage"));
