@@ -33,6 +33,8 @@ const GorselinPage = () => {
   const [generatedImages, setGeneratedImages] = useState([]);
   const [promptUsed, setPromptUsed] = useState('');
   const [generatedCaption, setGeneratedCaption] = useState('');
+  const [generateError, setGenerateError] = useState(null);
+  const [generateProgress, setGenerateProgress] = useState('');
   
   // Analysis state
   const [uploadedImage, setUploadedImage] = useState(null);
