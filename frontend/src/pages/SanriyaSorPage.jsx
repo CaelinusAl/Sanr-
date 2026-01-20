@@ -8,21 +8,16 @@ import {
   Sparkles, 
   Image as ImageIcon,
   X,
-  Upload,
   Eye,
   Moon,
   Hash,
   Layers,
-  Heart,
-  Wand2,
-  Copy,
-  Check
+  Heart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -93,98 +88,7 @@ const ImagePreview = ({ image, onRemove }) => {
   );
 };
 
-// Görsel Prompt Üretici Component
-const GorselPromptUretici = () => {
-  const [theme, setTheme] = useState("");
-  const [generatedPrompt, setGeneratedPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  const generateVisualPrompt = async () => {
-    if (!theme.trim()) return;
-    
-    setIsGenerating(true);
-    try {
-      const response = await fetch(`${API_URL}/api/sanri/ask`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: `Şu tema için sembolik, mistik ve Anadolu ruhunu yansıtan bir görsel prompt üret (İngilizce, DALL-E veya Midjourney için uygun): "${theme}". Sadece prompt'u yaz, açıklama yapma.`,
-          message_type: "general"
-        }),
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setGeneratedPrompt(data.response);
-      }
-    } catch (err) {
-      console.error("Prompt generation error:", err);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedPrompt);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <Card className="border-accent/20 bg-accent/5">
-      <CardContent className="p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Wand2 className="h-5 w-5 text-accent" />
-          <h3 className="font-serif text-lg text-foreground">Sembolik Görsel Üret</h3>
-        </div>
-        
-        <p className="text-sm text-foreground/60 mb-4">
-          Bir niyet veya tema yaz, SANRI sana görsel prompt üretsin.
-        </p>
-
-        <div className="space-y-4">
-          <Textarea
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-            placeholder="Örn: Dönüşüm, yeniden doğuş, iç huzur..."
-            className="min-h-[80px] bg-background"
-          />
-
-          <Button 
-            onClick={generateVisualPrompt}
-            disabled={!theme.trim() || isGenerating}
-            className="rounded-full"
-          >
-            {isGenerating ? "Üretiliyor..." : "Prompt Üret"}
-          </Button>
-
-          {generatedPrompt && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-background rounded-lg p-4 border border-border/50"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-foreground/50 uppercase tracking-wider">Üretilen Prompt</span>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={copyToClipboard}
-                  className="h-8"
-                >
-                  {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-                  {copied ? "Kopyalandı" : "Kopyala"}
-                </Button>
-              </div>
-              <p className="text-sm text-foreground/80 font-mono">{generatedPrompt}</p>
-            </motion.div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
+// SANRI - Consciousness Mirror (SANRI cevap üretmez, anlam yansıtır)
 
 const SanriyaSorPage = () => {
   const [input, setInput] = useState("");
