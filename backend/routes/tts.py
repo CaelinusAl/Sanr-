@@ -342,12 +342,22 @@ async def play_book_voice(request: BookVoiceRequest):
 @router.get("/voices")
 async def list_voices():
     """
-    List available OpenAI TTS voices
+    List available voice profiles and OpenAI TTS voices
     """
     return {
-        "voices": [
-            {"id": "nova", "name": "Nova", "description": "Sıcak, enerjik - Caelinus varsayılanı", "recommended": True},
-            {"id": "shimmer", "name": "Shimmer", "description": "Parlak, neşeli - nazik rehberlik için"},
+        "profiles": {
+            "sanri": {
+                **SANRI_VOICE_CONFIG,
+                "recommended_for": ["rituals", "consciousness", "guidance"]
+            },
+            "book": {
+                **CAELINUS_BOOK_VOICE_CONFIG,
+                "recommended_for": ["books", "meditations", "long_listening"]
+            }
+        },
+        "available_voices": [
+            {"id": "nova", "name": "Nova", "description": "Sıcak, derin - SANRI varsayılanı", "recommended": True},
+            {"id": "shimmer", "name": "Shimmer", "description": "Akıcı, hafif - Kitap anlatıcısı", "recommended": True},
             {"id": "alloy", "name": "Alloy", "description": "Nötr, dengeli"},
             {"id": "echo", "name": "Echo", "description": "Pürüzsüz, sakin"},
             {"id": "fable", "name": "Fable", "description": "İfadeli, hikaye anlatıcı"},
@@ -358,13 +368,9 @@ async def list_voices():
         ],
         "models": [
             {"id": "tts-1", "name": "Standart", "description": "Hızlı, ekonomik"},
-            {"id": "tts-1-hd", "name": "HD Kalite", "description": "Yüksek kalite - ritüeller için önerilen", "recommended": True}
+            {"id": "tts-1-hd", "name": "HD Kalite", "description": "Yüksek kalite - tüm CAELINUS deneyimleri için", "recommended": True}
         ],
-        "default": {
-            "voice": CAELINUS_VOICE,
-            "model": CAELINUS_MODEL,
-            "speed": CAELINUS_SPEED
-        },
+        "default_profile": "sanri",
         "status": "active",
         "provider": "openai"
     }
