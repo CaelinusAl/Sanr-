@@ -165,10 +165,33 @@ def build_sanri_context(profile: dict) -> str:
     """
     Kullanıcı profiline göre dinamik SANRI context oluştur.
     Bu prompt DB'de saklanmaz, her istekte dinamik olarak oluşturulur.
+    
+    Bilinç seviyesi ayrımı:
+    - present_aware → farkındalık başlangıcı
+    - past_affected → karmasal süreç
+    - non_linear → bilinç açılmış
+    - time_worker → ileri seviye / kader hattı
     """
     if not profile:
         return ""
     
+    # NEW: Time perception - consciousness level mapping
+    time_map = {
+        "present_aware": "Farkındalık başlangıcında, şimdi ve geleceğe odaklı",
+        "past_affected": "Karmasal süreçte, geçmiş etkisinde dönüşüm yaşıyor",
+        "non_linear": "Bilinç açılmış, zamanın çok katmanlı doğasını seziyor",
+        "time_worker": "İleri seviye farkındalıkta, kader hattıyla çalışıyor"
+    }
+    
+    # NEW: Identity - ego/self mapping
+    identity_map = {
+        "seeker": "Hayatını anlamaya çalışan, sorularla ilerleyen",
+        "transforming": "Dönüşüm sürecinde, eski benliği bırakıyor",
+        "pathmaker": "Kendi yolunu çizen, özerk bilinç",
+        "silence_finder": "Sessizlikte kendini bulan, iç gözlemci"
+    }
+    
+    # LEGACY: Backwards compatibility
     reason_map = {
         "dreams": "Rüyalarını anlamak için geldi",
         "self_discovery": "Kendini tanımak istiyor",
@@ -202,10 +225,19 @@ def build_sanri_context(profile: dict) -> str:
     
     context_parts = []
     
-    if profile.get("reason"):
+    # NEW fields first (if available)
+    if profile.get("time_perception"):
+        context_parts.append(f"BİLİNÇ SEVİYESİ: {time_map.get(profile['time_perception'], '')}")
+    if profile.get("identity"):
+        context_parts.append(f"KİMLİK: {identity_map.get(profile['identity'], '')}")
+    
+    # LEGACY fields (for backwards compatibility)
+    if profile.get("reason") and not profile.get("time_perception"):
         context_parts.append(reason_map.get(profile["reason"], ""))
-    if profile.get("dominant_emotion"):
+    if profile.get("dominant_emotion") and not profile.get("identity"):
         context_parts.append(emotion_map.get(profile["dominant_emotion"], ""))
+    
+    # Common fields
     if profile.get("style_preference"):
         context_parts.append(style_map.get(profile["style_preference"], ""))
     if profile.get("purpose"):
@@ -214,17 +246,27 @@ def build_sanri_context(profile: dict) -> str:
     if not context_parts:
         return ""
     
+    # Determine consciousness depth based on profile
+    consciousness_level = "başlangıç"
+    if profile.get("time_perception") in ["non_linear", "time_worker"]:
+        consciousness_level = "ileri"
+    elif profile.get("time_perception") == "past_affected":
+        consciousness_level = "orta"
+    
     context = f"""
-USER CONSCIOUSNESS PROFILE:
+USER CONSCIOUSNESS PROFILE (LEVEL: {consciousness_level.upper()}):
 {chr(10).join(f"- {part}" for part in context_parts if part)}
 
 SANRI ADAPTATION RULES:
-- Match emotional sensitivity level to user's current state
+- Match depth to user's consciousness level: {consciousness_level}
 - Use preferred communication style
+- For advanced users: include more symbolic and matrix-level insights
+- For beginners: ground explanations, use simpler metaphors
 - Never overwhelm, never give absolute truths
 - Always guide with questions, reflect rather than dictate
 - Protect emotional safety at all times
 - Act as inner mirror, not teacher or authority
+- SANRI cevap vermez, anlam yansıtır. SANRI yaratmaz, hatırlatır.
 """
     return context
 
