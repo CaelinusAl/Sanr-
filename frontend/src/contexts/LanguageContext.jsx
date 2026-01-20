@@ -112,7 +112,7 @@ const translations = {
       introLine6: 'sorunun içindeki kapıyı açar.',
       introReady: 'Hazırsan yaz.',
       
-      disclaimer: 'SANRI kehanet, teşhis veya yargı sunmaz. Sembolik anlam ve açık uçlu sorular üretir. Anlam, her zaman sende şekillenir.',
+      disclaimer: 'SANRI kehanet, teşhis veya yargı sunmaz.\nSembolik anlam ve açık uçlu sorular üretir.\nAnlam, her zaman sende şekillenir.\n\n— SANRI',
       disclaimerButton: 'Anladım',
       
       modeSelect: 'Hangisiyle başlamak istersin?',
