@@ -1311,9 +1311,22 @@ Use it only to adapt your tone, depth, and approach.
                 logger.warning(f"Profile update warning: {str(profile_error)}")
                 # Continue without profile - graceful degradation
         
-        # Build full prompt with profile context and language
+        # Build full prompt with profile context, language and domain
         system_language = request.system_language or "tr"
-        full_prompt = build_full_prompt(mode, emotional_tone, profile_context, system_language)
+        
+        # Domain routing (Hybrid: manual > city_context > auto > default)
+        city_data = request.city_data.model_dump() if request.city_data else None
+        if request.domain:
+            # Manual domain selection overrides
+            domain = request.domain
+        elif city_data:
+            # City context forces awakened_cities domain
+            domain = "awakened_cities"
+        else:
+            # Automatic detection
+            domain = detect_domain(request.message, city_data)
+        
+        full_prompt = build_full_prompt(mode, emotional_tone, profile_context, system_language, domain, city_data)
         
         chat = LlmChat(
             api_key=api_key,
@@ -1334,6 +1347,7 @@ Use it only to adapt your tone, depth, and approach.
             "content": request.message,
             "timestamp": timestamp,
             "mode": mode,
+            "domain": domain,
             "emotional_tone": emotional_tone,
             "symbols": detected_symbols,
             "themes": detected_themes,
@@ -1344,12 +1358,14 @@ Use it only to adapt your tone, depth, and approach.
             "content": response,
             "timestamp": timestamp,
             "mode": mode,
+            "domain": domain,
             "language": system_language
         })
         
         mode_config = MODE_PROMPTS.get(mode, MODE_PROMPTS["mirror"])
+        domain_config = DOMAIN_CONFIGS.get(domain, DOMAIN_CONFIGS["consciousness_field"])
         
-        logger.info(f"SANRI: mode={mode}, tone={emotional_tone}, lang={system_language}, user={user_id[:8]}..., profile_updated={profile_updated}")
+        logger.info(f"SANRI: mode={mode}, domain={domain}, tone={emotional_tone}, lang={system_language}, user={user_id[:8]}..., profile_updated={profile_updated}")
         
         return SanriResponse(
             response=response,
@@ -1357,6 +1373,8 @@ Use it only to adapt your tone, depth, and approach.
             mode=mode,
             mode_name_tr=mode_config["name_tr"],
             mode_name_en=mode_config.get("name_en", mode_config["name"]),
+            domain=domain,
+            domain_name=domain_config["name"] if system_language == "en" else domain_config["name_tr"],
             timestamp=timestamp,
             language=system_language,
             profile_updated=profile_updated
