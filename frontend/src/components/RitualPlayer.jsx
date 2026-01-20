@@ -464,7 +464,7 @@ const RitualPlayer = ({
                     {/* Voice info */}
                     {voiceInfo && (
                       <div className="mt-2 text-xs text-indigo-400/60">
-                        {voiceInfo.description}
+                        {voiceInfo.name} • {voiceInfo.provider || 'ElevenLabs'}
                       </div>
                     )}
 
