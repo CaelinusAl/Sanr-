@@ -18,7 +18,8 @@ import {
   Moon,
   Sun,
   BookOpen,
-  AlertCircle
+  AlertCircle,
+  Crown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -46,6 +47,146 @@ import {
   getBugunRitueli,
   getRituelById
 } from "@/data/rituel-112-data";
+import RitualPlayer from "@/components/RitualPlayer";
+import axios from "axios";
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+const IS_PREMIUM = process.env.REACT_APP_DEMO_PREMIUM === 'true';
+
+// ============================================
+// YENİ: Premium Ritüel Hatları Componenti
+// ============================================
+
+const PremiumRitualLines = ({ onSelectRitual }) => {
+  const [lines, setLines] = useState([]);
+  const [rituals, setRituals] = useState([]);
+  const [selectedLine, setSelectedLine] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [linesRes, ritualsRes] = await Promise.all([
+        axios.get(`${API_URL}/api/premium-ritual/lines`),
+        axios.get(`${API_URL}/api/premium-ritual/rituals`)
+      ]);
+      setLines(linesRes.data.lines || []);
+      setRituals(ritualsRes.data.rituals || []);
+      if (linesRes.data.lines?.length > 0) {
+        setSelectedLine(linesRes.data.lines[0].id);
+      }
+    } catch (error) {
+      console.error('Error fetching premium rituals:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredRituals = rituals.filter(r => r.line_id === selectedLine);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* 3 Hat Seçimi */}
+      <div className="grid grid-cols-3 gap-3">
+        {lines.map((line) => (
+          <button
+            key={line.id}
+            onClick={() => setSelectedLine(line.id)}
+            className={`p-4 rounded-xl border text-center transition-all ${
+              selectedLine === line.id
+                ? 'bg-accent/10 border-accent/50'
+                : 'bg-card/50 border-border/50 hover:bg-card/80'
+            }`}
+          >
+            <span className="text-2xl block mb-2">{line.icon}</span>
+            <span className="text-sm font-medium text-foreground block">{line.name_tr.split(' & ')[0]}</span>
+            <span className="text-xs text-foreground/50 block mt-1">{line.description_tr}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Seçili Hat Ritüelleri */}
+      <div className="space-y-4">
+        {filteredRituals.map((ritual) => {
+          const hasSteps = ritual.steps && ritual.steps.length > 0;
+          const isLocked = !IS_PREMIUM;
+          
+          return (
+            <Card 
+              key={ritual.id} 
+              className={`border-border/50 bg-card/50 relative overflow-hidden ${!hasSteps ? 'opacity-60' : ''}`}
+            >
+              {/* Locked Overlay for non-premium */}
+              {isLocked && (
+                <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px] z-10 flex items-center justify-center">
+                  <div className="text-center p-4">
+                    <Lock className="h-8 w-8 text-accent/60 mx-auto mb-2" />
+                    <p className="text-sm text-foreground/60 mb-3">Premium ile aç</p>
+                    <Button size="sm" className="rounded-full bg-accent hover:bg-accent/90">
+                      <Crown className="h-3 w-3 mr-1" />
+                      Premium'a Geç
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      ritual.is_featured ? 'bg-amber-500/20' : 'bg-accent/10'
+                    }`}>
+                      <span className="text-2xl">{ritual.icon}</span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-serif text-lg text-foreground">{ritual.name_tr}</h4>
+                        {ritual.is_featured && (
+                          <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-500 rounded-full">
+                            ÖNE ÇIKAN
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-foreground/50 line-clamp-1">{ritual.description_tr}</p>
+                      <div className="flex items-center gap-3 mt-1 text-xs text-foreground/40">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {ritual.duration_minutes} dk
+                        </span>
+                        <span>{ritual.steps?.length || 0} adım</span>
+                        <span className="px-2 py-0.5 rounded bg-accent/10 text-accent">{ritual.level}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Button 
+                    className="rounded-full" 
+                    size="sm"
+                    onClick={() => hasSteps && !isLocked && onSelectRitual(ritual)}
+                    disabled={!hasSteps || isLocked}
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    {hasSteps ? 'Başlat' : 'Yakında'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 // ============================================
 // YENİ: Ritüel Modülleri Componenti
