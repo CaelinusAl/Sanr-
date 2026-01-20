@@ -987,8 +987,15 @@ const RituelAlaniPage = () => {
         ritual={premiumRitualPlayer.ritual}
         isOpen={premiumRitualPlayer.open}
         onClose={handleClosePremiumRitual}
-        isPremium={IS_PREMIUM}
+        isPremium={isPremium}
         language={language}
+      />
+      
+      {/* Upgrade Modal */}
+      <UpgradeModal 
+        isOpen={isUpgradeModalOpen}
+        onClose={hideUpgradeModal}
+        feature={FEATURES.RITUAL_DEEP}
       />
     </div>
   );
