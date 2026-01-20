@@ -571,11 +571,19 @@ const SanriyaSorPage = () => {
                 ) : (
                   <Card className="border-accent/20 bg-accent/5">
                     <CardContent className="p-6 sm:p-8">
-                      <div className="flex items-start gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                          <Infinity className="h-5 w-5 text-accent" />
+                      <div className="flex items-start justify-between gap-3 mb-6">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+                            <Infinity className="h-5 w-5 text-accent" />
+                          </div>
+                          <p className="text-sm text-accent uppercase tracking-wider font-medium pt-2">SANRI</p>
                         </div>
-                        <p className="text-sm text-accent uppercase tracking-wider font-medium pt-2">SANRI</p>
+                        {/* Domain indicator */}
+                        {message.domain_name && (
+                          <span className="text-[10px] px-2 py-1 rounded-full bg-accent/10 text-accent/70 uppercase tracking-wider">
+                            {message.domain_name}
+                          </span>
+                        )}
                       </div>
 
                       <SanriResponseText text={message.content} />
