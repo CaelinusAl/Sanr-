@@ -144,7 +144,7 @@ const RitualPlayer = ({
     }
   }, [volume, isMuted]);
 
-  // Load ritual audio using SANRI VOICE endpoint
+  // Load ritual audio using SANRI VOICE endpoint (ElevenLabs)
   const loadRitualAudio = useCallback(async () => {
     if (!ritual || !isPremium) return;
     
@@ -152,20 +152,20 @@ const RitualPlayer = ({
     setHasInteracted(true);
     
     try {
-      // Use the new SANRI VOICE ritual endpoint
-      const response = await axios.post(`${API_URL}/api/tts/ritual/play`, {
+      // Use the new SANRI VOICE ritual endpoint (ElevenLabs)
+      const response = await axios.post(`${API_URL}/api/sanri/voice/ritual`, {
         ritual_id: ritual.id,
         language
       });
       
       setAudioUrl(response.data.audio_url);
       setFullText(response.data.full_text);
-      setVoiceInfo(response.data.voice_config);
+      setVoiceInfo(response.data.voice);
       
       toast.success(
         language === 'tr' 
-          ? `${response.data.voice_config?.description || 'SANRI sesi'} yüklendi` 
-          : 'SANRI voice loaded',
+          ? `${response.data.voice?.name || 'SANRI Dream'} sesi yüklendi` 
+          : 'SANRI Dream voice loaded',
         { icon: '🎙️' }
       );
     } catch (error) {
