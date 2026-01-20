@@ -22,49 +22,52 @@ import { Label } from "@/components/ui/label";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// SANRI 5 Bilinç Modu
-const consciousnessModes = [
-  { 
-    id: "dream", 
-    label: "RÜYA", 
-    icon: Moon, 
-    description: "Meditasyon, ritüel, sinir sistemi sakinleştirme",
+// SANRI 5 Bilinç Modu - Object yapısı
+const readingModes = {
+  DREAM: {
+    id: "dream",
+    label: "RÜYA",
+    icon: Moon,
+    description: "Meditasyon ve ritüel alanı",
     color: "from-indigo-500/20 to-purple-500/20",
     borderColor: "border-indigo-500/30"
   },
-  { 
-    id: "mirror", 
-    label: "AYNA", 
-    icon: Eye, 
-    description: "Duygu yansıtma, içgörü, farkındalık",
+  MIRROR: {
+    id: "mirror",
+    label: "AYNA",
+    icon: Eye,
+    description: "Duygu yansıtma ve içgörü",
     color: "from-cyan-500/20 to-blue-500/20",
     borderColor: "border-cyan-500/30"
   },
-  { 
-    id: "divine", 
-    label: "İLAHİ", 
-    icon: Sun, 
-    description: "Kutsal mesajlar, dişil bilgelik",
+  DIVINE: {
+    id: "divine",
+    label: "İLAHİ",
+    icon: Sun,
+    description: "Kutsal mesajlar",
     color: "from-amber-500/20 to-yellow-500/20",
     borderColor: "border-amber-500/30"
   },
-  { 
-    id: "shadow", 
-    label: "GÖLGE", 
-    icon: Cloud, 
-    description: "Rüya analizi, sembol çözümleme, bilinçaltı",
+  SHADOW: {
+    id: "shadow",
+    label: "GÖLGE",
+    icon: Cloud,
+    description: "Rüya ve sembol çözümleme",
     color: "from-violet-500/20 to-fuchsia-500/20",
     borderColor: "border-violet-500/30"
   },
-  { 
-    id: "light", 
-    label: "IŞIK", 
-    icon: Heart, 
-    description: "Duygusal düzenleme, şefkat, iyileştirme",
+  LIGHT: {
+    id: "light",
+    label: "IŞIK",
+    icon: Heart,
+    description: "Şefkat ve iyileştirme",
     color: "from-rose-500/20 to-pink-500/20",
     borderColor: "border-rose-500/30"
-  },
-];
+  }
+};
+
+// Array versiyonu (UI render için)
+const modesList = Object.values(readingModes);
 
 // Örnek sorular (mod bazlı)
 const examplePrompts = {
