@@ -152,7 +152,49 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 
 ## Son Güncelleme: 20 Ocak 2026
 
-### SANRI VOICE Sistemi (YENİ) ✅
+### Kullanıcı & Auth Sistemi (YENİ) ✅
+**20 Ocak 2026**
+
+Kapsamlı kullanıcı sistemi:
+
+**Authentication:**
+- Google OAuth (Emergent Auth) - Hızlı onboarding için öncelikli
+- Email/Password - Premium ve admin kullanıcılar için
+- Session yönetimi: httpOnly cookie, 7 gün expiry
+- Password hashing: SHA256 with salt
+
+**Bilinç Profili (Onboarding):**
+4 sorulu bilinç profili:
+1. "Bu alana neden geldin?" (dreams, self_discovery, turning_point, curiosity)
+2. "Şu an hayatında en baskın duygu ne?" (seeking, confused, calm, tired, curious, love)
+3. "SANRI seninle nasıl konuşsun?" (soft, wise, direct, symbolic)
+4. "Bu alanı hangi amaçla kullanacaksın?" (dreams, rituals, frequencies, self_knowledge, all)
+
+**SANRI Kişiselleştirme:**
+- Dinamik context builder (build_sanri_context)
+- Her kullanıcı için farklı SANRI deneyimi
+- Context DB'de saklanmaz, istekte oluşturulur
+
+**Admin Kullanıcı Yönetimi:**
+- `/admin/users` - Dashboard analytics + kullanıcı listesi
+- Premium yönetimi (manuel atama)
+- Kullanıcı silme / anonimleştirme (KVKK/GDPR)
+
+**Privacy (KVKK/GDPR):**
+- `/api/user/export` - Veri export
+- `/api/user/delete` - Hesap silme
+- `/api/admin/users/{id}/anonymize` - Anonimleştirme
+- Onboarding'de consent checkbox
+
+**Auth Endpoints:**
+- `POST /api/auth/google/session` - Google OAuth
+- `POST /api/auth/email/register` - Email kayıt
+- `POST /api/auth/email/login` - Email giriş
+- `GET /api/auth/me` - Current user
+- `POST /api/auth/onboarding` - Bilinç profili
+- `GET /api/auth/sanri-context` - SANRI context
+- `GET /api/auth/sanri-welcome` - Karşılama mesajı
+- `POST /api/auth/logout` - Çıkış
 CAELINUS AI'nin ses kimliğinin temel parçası. İki farklı ses profili:
 
 **SANRI_VOICE (Ritüel Rehberi):**
