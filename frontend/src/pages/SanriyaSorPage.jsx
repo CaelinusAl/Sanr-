@@ -132,7 +132,7 @@ const SanriyaSorPage = () => {
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [sessionId, setSessionId] = useState(null);
   const [error, setError] = useState(null);
-  const [selectedMode, setSelectedMode] = useState("dream");
+  const [selectedMode, setSelectedMode] = useState("mirror"); // Varsayılan: AYNA modu
   const [uploadedImage, setUploadedImage] = useState(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
