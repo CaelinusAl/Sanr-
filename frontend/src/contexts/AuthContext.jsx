@@ -191,6 +191,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     hasProfile,
     loginWithGoogle,
+    loginWithApple,
     loginWithEmail,
     registerWithEmail,
     processGoogleCallback,
