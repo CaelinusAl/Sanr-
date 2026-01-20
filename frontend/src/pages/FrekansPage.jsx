@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Pause } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
 import { frekansTexts, getRandomFrekansText, getNextText } from "@/data/bilinc-frekans";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const FrekansPage = () => {
+  const { t } = useLanguage();
   const [currentText, setCurrentText] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [breathPhase, setBreathPhase] = useState("in"); // in, hold, out
@@ -61,7 +62,7 @@ const FrekansPage = () => {
             className="text-center"
           >
             <span className="text-accent/40 text-xs tracking-[0.4em] uppercase">
-              Frekans
+              {t('frekans.title')}
             </span>
           </motion.div>
         </div>
@@ -116,7 +117,7 @@ const FrekansPage = () => {
         <div className="container mx-auto px-6">
           <div className="text-center">
             <p className="text-[10px] text-muted-foreground/20 tracking-wider">
-              ← → veya boşluk tuşu ile geç
+              {t('frekans.navigation')}
             </p>
           </div>
         </div>
