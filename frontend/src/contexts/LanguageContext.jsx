@@ -175,7 +175,37 @@ const translations = {
         divine: 'Bugün için bana bir mesaj ver.',
         shadow: 'Rüyamda siyah bir kedi gördüm, ne anlama geliyor?',
         light: 'Çok kaygılıyım, kendimi güvende hissetmiyorum.'
-      }
+      },
+      
+      // Content Domains
+      domains: {
+        awakened_cities: {
+          name: 'Uyanmış Şehirler',
+          description: 'Şehirler arketipik bilinç noktaları olarak'
+        },
+        consciousness_field: {
+          name: 'Bilinç Alanı',
+          description: 'Farkındalık, algı, kimlik yolculuğu'
+        },
+        frequency_field: {
+          name: 'Frekans Alanı',
+          description: 'Duygusal titreşimler ve enerji'
+        },
+        ritual_space: {
+          name: 'Ritüel Alanı',
+          description: 'Nefes, meditasyon, kutsal pratikler'
+        },
+        neural_ecstasy: {
+          name: 'Beyin Orgazmı',
+          description: 'Zihinsel berraklık ve estetik haz'
+        },
+        book_112: {
+          name: '112. Kitap',
+          description: 'Kendini Yaratan Tanrıça'
+        }
+      },
+      domainAuto: 'Otomatik algılama',
+      domainSelect: 'Domain seç (opsiyonel)'
     },
 
     // ==================== GORSELIN PAGE ====================
