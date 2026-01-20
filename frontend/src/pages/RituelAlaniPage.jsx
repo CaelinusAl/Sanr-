@@ -769,6 +769,14 @@ const KapiSecimi = ({ onSelectKapi, t, language }) => {
 
 const RituelAlaniPage = () => {
   const { t, language } = useLanguage();
+  const { 
+    isPremium, 
+    hasFeature, 
+    showUpgradeModal,
+    isUpgradeModalOpen,
+    hideUpgradeModal
+  } = usePremium();
+  
   const [screen, setScreen] = useState("ana"); // ana, giris, kapilar, deneyim
   const [selectedKapi, setSelectedKapi] = useState(null);
   const [activeRituel, setActiveRituel] = useState(null);
@@ -776,6 +784,12 @@ const RituelAlaniPage = () => {
   const [premiumRitualPlayer, setPremiumRitualPlayer] = useState({ open: false, ritual: null });
 
   const handleStartRituel = (rituel) => {
+    // Check if this is a deep ritual that requires premium
+    const isDeepRitual = rituel.type === 'deep' || rituel.type === 'kapanis';
+    if (isDeepRitual && !isPremium) {
+      showUpgradeModal(FEATURES.RITUAL_DEEP);
+      return;
+    }
     setActiveRituel(rituel);
   };
 
@@ -784,6 +798,10 @@ const RituelAlaniPage = () => {
   };
 
   const handleStartPremiumRitual = (ritual) => {
+    if (!isPremium) {
+      showUpgradeModal(FEATURES.RITUAL_DEEP);
+      return;
+    }
     setPremiumRitualPlayer({ open: true, ritual });
   };
 
