@@ -219,9 +219,16 @@ const SubscriptionPage = () => {
     const priceData = plan.price?.[language === 'tr' ? 'tr' : 'en'];
     if (!priceData || priceData.amount === 0) return t.free;
     
-    const symbol = priceData.currency === 'TRY' ? '₺' : '$';
-    const period = priceData.period === 'year' ? t.year : t.month;
-    return `${symbol}${priceData.amount}/${period}`;
+    const symbol = priceData.currency === 'TRY' ? '₺' : '€';
+    let period = '';
+    if (priceData.period === 'year') {
+      period = `/${t.year}`;
+    } else if (priceData.period === 'month') {
+      period = `/${t.month}`;
+    } else if (priceData.period === 'access') {
+      period = ''; // One-time access fee
+    }
+    return `${symbol}${priceData.amount}${period}`;
   };
   
   const renderFeatureValue = (value) => {
