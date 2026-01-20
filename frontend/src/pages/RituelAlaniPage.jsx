@@ -333,14 +333,16 @@ const RituelModulleri = ({ onStartRituel, t, language }) => {
 // YENİ: 112 Ritüelleri Listesi
 // ============================================
 
-const Rituel112Listesi = ({ onStartRituel }) => {
+const Rituel112Listesi = ({ onStartRituel, t, language }) => {
+  const kitap112Rituelleri = get112Ritueller(language);
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
         <BookOpen className="h-6 w-6 text-primary" />
         <div>
-          <h3 className="font-serif text-xl text-foreground">112. Kitap Ritüelleri</h3>
-          <p className="text-sm text-foreground/60">Kendini Yaratan Tanrıça</p>
+          <h3 className="font-serif text-xl text-foreground">{t('rituel.book112.title')}</h3>
+          <p className="text-sm text-foreground/60">{t('rituel.book112.subtitle')}</p>
         </div>
       </div>
 
@@ -381,7 +383,7 @@ const Rituel112Listesi = ({ onStartRituel }) => {
       <Alert className="border-accent/20 bg-accent/5 mt-6">
         <AlertCircle className="h-4 w-4 text-accent" />
         <AlertDescription className="text-sm text-foreground/60">
-          Bu ritüeller terapi veya teşhis değildir. Duygusal zorlanma yaşıyorsanız profesyonel destek almanızı öneririz.
+          {t('rituel.entry.warning')}
         </AlertDescription>
       </Alert>
     </div>
