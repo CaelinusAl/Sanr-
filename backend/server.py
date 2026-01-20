@@ -105,6 +105,9 @@ app.include_router(admin_router, prefix="/api")
 # Include Visual router
 app.include_router(visual_router, prefix="/api")
 
+# Include Premium Ritual router
+app.include_router(premium_ritual_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
