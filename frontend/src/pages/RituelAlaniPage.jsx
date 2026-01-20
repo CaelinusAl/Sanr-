@@ -193,7 +193,7 @@ const PremiumRitualLines = ({ onSelectRitual }) => {
 // YENİ: Ritüel Modülleri Componenti
 // ============================================
 
-const RituelModulleri = ({ onStartRituel }) => {
+const RituelModulleri = ({ onStartRituel, t }) => {
   const bugunRitueli = getBugunRitueli();
 
   return (
@@ -212,7 +212,7 @@ const RituelModulleri = ({ onStartRituel }) => {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs text-accent uppercase tracking-wider font-medium">Bugünün Ritüeli</span>
+                  <span className="text-xs text-accent uppercase tracking-wider font-medium">{t('rituel.today')}</span>
                   <span className="text-xs text-foreground/50 bg-foreground/10 px-2 py-0.5 rounded-full">
                     {bugunRitueli.duration}
                   </span>
@@ -225,7 +225,7 @@ const RituelModulleri = ({ onStartRituel }) => {
                   data-testid="bugun-rituel-btn"
                 >
                   <Play className="h-4 w-4 mr-2" />
-                  Başlat
+                  {t('common.start')}
                 </Button>
               </div>
             </div>
@@ -246,10 +246,10 @@ const RituelModulleri = ({ onStartRituel }) => {
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                 <Clock className="h-5 w-5 text-primary" />
               </div>
-              <h4 className="font-serif text-lg text-foreground mb-1">Mikro Ritüel</h4>
-              <p className="text-xs text-foreground/50 mb-3">1-3 dakika</p>
+              <h4 className="font-serif text-lg text-foreground mb-1">{t('rituel.modules.micro.title')}</h4>
+              <p className="text-xs text-foreground/50 mb-3">{t('rituel.modules.micro.duration')}</p>
               <p className="text-sm text-foreground/60 mb-4">
-                Günlük akışı bozmadan, hızlı farkındalık anları.
+                {t('rituel.modules.micro.description')}
               </p>
               <Button 
                 variant="outline" 
@@ -258,7 +258,7 @@ const RituelModulleri = ({ onStartRituel }) => {
                 onClick={() => onStartRituel(mikroRitueller[0])}
                 data-testid="mikro-rituel-btn"
               >
-                Seç
+                {t('common.explore')}
               </Button>
             </CardContent>
           </Card>
@@ -275,10 +275,10 @@ const RituelModulleri = ({ onStartRituel }) => {
               <div className="w-10 h-10 rounded-xl bg-emphasis/10 flex items-center justify-center mb-4 group-hover:bg-emphasis/20 transition-colors">
                 <Flame className="h-5 w-5 text-emphasis" />
               </div>
-              <h4 className="font-serif text-lg text-foreground mb-1">Derin Ritüel</h4>
-              <p className="text-xs text-foreground/50 mb-3">7-12 dakika</p>
+              <h4 className="font-serif text-lg text-foreground mb-1">{t('rituel.modules.deep.title')}</h4>
+              <p className="text-xs text-foreground/50 mb-3">{t('rituel.modules.deep.duration')}</p>
               <p className="text-sm text-foreground/60 mb-4">
-                İçe yolculuk, dönüşüm, bırakma çalışmaları.
+                {t('rituel.modules.deep.description')}
               </p>
               <Button 
                 variant="outline" 
@@ -287,7 +287,7 @@ const RituelModulleri = ({ onStartRituel }) => {
                 onClick={() => onStartRituel(derinRitueller[0])}
                 data-testid="derin-rituel-btn"
               >
-                Seç
+                {t('common.explore')}
               </Button>
             </CardContent>
           </Card>
@@ -304,10 +304,10 @@ const RituelModulleri = ({ onStartRituel }) => {
               <div className="w-10 h-10 rounded-xl bg-anatolian/10 flex items-center justify-center mb-4 group-hover:bg-anatolian/20 transition-colors">
                 <Moon className="h-5 w-5 text-anatolian" />
               </div>
-              <h4 className="font-serif text-lg text-foreground mb-1">Niyet & Kapanış</h4>
-              <p className="text-xs text-foreground/50 mb-3">1 dakika</p>
+              <h4 className="font-serif text-lg text-foreground mb-1">{t('rituel.modules.closing.title')}</h4>
+              <p className="text-xs text-foreground/50 mb-3">{t('rituel.modules.closing.duration')}</p>
               <p className="text-sm text-foreground/60 mb-4">
-                Günü bilinçli başlat veya bitir.
+                {t('rituel.modules.closing.description')}
               </p>
               <Button 
                 variant="outline" 
@@ -316,7 +316,7 @@ const RituelModulleri = ({ onStartRituel }) => {
                 onClick={() => onStartRituel(kapanisRituelleri[0])}
                 data-testid="kapanis-rituel-btn"
               >
-                Seç
+                {t('common.explore')}
               </Button>
             </CardContent>
           </Card>
