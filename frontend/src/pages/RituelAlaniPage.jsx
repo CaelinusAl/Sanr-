@@ -878,11 +878,11 @@ const RituelAlaniPage = () => {
               </TabsContent>
 
               <TabsContent value="moduller">
-                <RituelModulleri onStartRituel={handleStartRituel} t={t} />
+                <RituelModulleri onStartRituel={handleStartRituel} t={t} language={language} />
               </TabsContent>
 
               <TabsContent value="112">
-                <Rituel112Listesi onStartRituel={handleStartRituel} />
+                <Rituel112Listesi onStartRituel={handleStartRituel} t={t} language={language} />
               </TabsContent>
             </Tabs>
           </motion.div>
