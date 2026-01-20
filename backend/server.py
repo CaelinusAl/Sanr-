@@ -139,6 +139,9 @@ app.include_router(user_management_router, prefix="/api")
 # Include Admin Users router
 app.include_router(admin_users_router, prefix="/api")
 
+# Include Consciousness Profile router
+app.include_router(consciousness_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
