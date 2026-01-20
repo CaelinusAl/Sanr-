@@ -32,6 +32,7 @@ const GirisPage = () => {
       subtitle2: "Sorular seni hatırlatmak için var.",
       welcome: "Bu alan, kendini hatırlamak isteyenler içindir.",
       googleBtn: "Google ile Devam Et",
+      appleBtn: "Apple ile Devam Et",
       emailBtn: "E-posta ile Devam Et",
       or: "veya",
       login: "Giriş Yap",
@@ -45,7 +46,8 @@ const GirisPage = () => {
       loginHere: "Giriş Yap",
       back: "Geri",
       continue: "Devam Et",
-      privacyNote: "Devam ederek, kişisel verilerinin gizlilik politikamız kapsamında işleneceğini kabul etmiş olursun."
+      privacyNote: "Devam ederek, gizlilik politikamızı kabul etmiş olursun.",
+      privacyLink: "Gizlilik Politikası"
     },
     en: {
       title: "CAELINUS AI",
@@ -53,6 +55,7 @@ const GirisPage = () => {
       subtitle2: "Questions exist to remind you.",
       welcome: "This space is for those who want to remember themselves.",
       googleBtn: "Continue with Google",
+      appleBtn: "Continue with Apple",
       emailBtn: "Continue with Email",
       or: "or",
       login: "Login",
@@ -66,7 +69,8 @@ const GirisPage = () => {
       loginHere: "Login",
       back: "Back",
       continue: "Continue",
-      privacyNote: "By continuing, you agree to our privacy policy for processing your personal data."
+      privacyNote: "By continuing, you agree to our privacy policy.",
+      privacyLink: "Privacy Policy"
     }
   };
   
