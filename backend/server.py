@@ -153,6 +153,9 @@ app.include_router(consciousness_router, prefix="/api")
 # Include Subscription router
 app.include_router(subscription_router, prefix="/api")
 
+# Include Profile router (Bilinç Aynası)
+app.include_router(profile_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
