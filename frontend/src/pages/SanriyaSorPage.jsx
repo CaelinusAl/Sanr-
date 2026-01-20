@@ -330,29 +330,31 @@ const SanriyaSorPage = () => {
       <section className="container mx-auto px-6">
         <div className="max-w-2xl mx-auto">
           
-          {/* SANRI 5 Bilinç Modu */}
-          <div className="mb-6">
-            <Label className="text-sm text-foreground/60 mb-3 block">Bilinç Modu Seç:</Label>
-            <div className="flex flex-wrap gap-2">
+          {/* Hangisiyle başlamak istersin? */}
+          <div className="mb-8">
+            <Label className="text-sm text-foreground/60 mb-4 block text-center font-serif italic">
+              Hangisiyle başlamak istersin?
+            </Label>
+            <div className="flex flex-wrap justify-center gap-3">
               {modesList.map((mode) => (
                 <Button
                   key={mode.id}
                   variant={currentMode.id === mode.id ? "default" : "outline"}
-                  size="sm"
-                  className={`rounded-full gap-2 transition-all duration-300 ${
+                  size="lg"
+                  className={`rounded-full gap-2 transition-all duration-300 px-5 py-3 ${
                     currentMode.id === mode.id 
-                      ? `bg-gradient-to-r ${mode.color} ${mode.borderColor} border` 
-                      : "border-border/50 hover:border-accent/50"
+                      ? `bg-gradient-to-r ${mode.color} ${mode.borderColor} border shadow-lg` 
+                      : "border-border/50 hover:border-accent/50 hover:bg-accent/5"
                   }`}
                   onClick={() => setActiveMode(mode)}
                   data-testid={`mode-${mode.id}`}
                 >
-                  <mode.icon className="h-4 w-4" />
-                  {mode.label}
+                  <span className="text-base">{mode.emoji}</span>
+                  <span>{mode.label}</span>
                 </Button>
               ))}
             </div>
-            <p className="text-xs text-foreground/40 mt-2">
+            <p className="text-xs text-foreground/50 mt-3 text-center">
               {currentMode.description}
             </p>
           </div>
