@@ -280,6 +280,13 @@ const CitiesPage = () => {
           )}
         </div>
       </section>
+      
+      {/* Upgrade Modal */}
+      <UpgradeModal 
+        isOpen={isUpgradeModalOpen}
+        onClose={hideUpgradeModal}
+        feature={FEATURES.CITIES_FULL}
+      />
     </div>
   );
 };
