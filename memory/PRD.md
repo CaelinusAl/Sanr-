@@ -90,7 +90,11 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - `GET /api/admin/public/rituals` - Frontend için yayınlanan ritüeller
 
 ### TTS API
-- `POST /api/tts/generate` - Ses üret
+- `POST /api/tts/generate` - Ses üret (voice_profile: sanri/book/custom)
+- `POST /api/tts/ritual/play` - SANRI VOICE ile ritüel seslendir
+- `POST /api/tts/book/play` - BOOK VOICE ile kitap seslendir
+- `GET /api/tts/profiles` - Ses profili detayları
+- `GET /api/tts/voices` - Mevcut sesler ve modeller
 - `GET /api/tts/status` - TTS durumu
 
 ### SANRI API
