@@ -81,9 +81,9 @@ class EmailLoginRequest(BaseModel):
     password: str
 
 class OnboardingRequest(BaseModel):
-    """Bilinç profili güncelleme"""
-    reason: ReasonType
-    dominant_emotion: EmotionType
+    """Bilinç profili güncelleme - NEW 4-question system"""
+    time_perception: TimePerceptionType
+    identity: IdentityType
     style_preference: StyleType
     purpose: PurposeType
     language: Literal["tr", "en"] = "tr"
