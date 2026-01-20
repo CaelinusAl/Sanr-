@@ -19,7 +19,8 @@ import {
   Wand2,
   FileText,
   Layers,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Crown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAdmin } from "../../contexts/AdminContext";
@@ -29,6 +30,12 @@ const menuItems = [
     section: "Kontrol",
     items: [
       { path: "/admin", icon: LayoutDashboard, label: "Dashboard", exact: true }
+    ]
+  },
+  {
+    section: "Premium & Abonelik",
+    items: [
+      { path: "/admin/subscriptions", icon: Crown, label: "Subscription Yönetimi" }
     ]
   },
   {
