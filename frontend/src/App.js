@@ -112,43 +112,46 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <LanguageProvider>
-            <AdminProvider>
-            <LayoutWrapper isDark={isDark} toggleTheme={toggleTheme}>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  {/* Public Routes */}
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/sehirler" element={<CitiesPage />} />
-                  <Route path="/sehir/:cityId" element={<CityDetailPage />} />
-                  <Route path="/okuma-katmanlari" element={<ReadingLayersPage />} />
-                  <Route path="/sanriya-sor" element={<SanriyaSorPage />} />
-                  <Route path="/bilinc" element={<BilincPage />} />
-                  <Route path="/frekans" element={<FrekansPage />} />
-                  <Route path="/rituel" element={<RituelAlaniPage />} />
-                  <Route path="/bilinc-alani" element={<BilincAlaniPage />} />
-                  <Route path="/gorselin" element={<GorselinPage />} />
-                  <Route path="/hakkinda" element={<AboutPage />} />
-                  
-                  {/* Auth Routes */}
-                  <Route path="/giris" element={<GirisPage />} />
-                  <Route path="/onboarding" element={<OnboardingPage />} />
-                  <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/gizlilik" element={<GizlilikPage />} />
-                  <Route path="/privacy" element={<GizlilikPage />} />
-                  
-                  {/* Admin Routes */}
-                  <Route path="/admin/login" element={<AdminLoginPage />} />
-                  <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-                  <Route path="/admin/users" element={<AdminRoute><AdminUsersPage /></AdminRoute>} />
-                  <Route path="/admin/rituals" element={<AdminRoute><RitualsList /></AdminRoute>} />
-                  <Route path="/admin/rituals/new" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
-                  <Route path="/admin/rituals/:id" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
-                  <Route path="/admin/visual-presets" element={<AdminRoute><VisualPresetsPage /></AdminRoute>} />
-                </Routes>
-              </Suspense>
-            </LayoutWrapper>
-            <Toaster position="bottom-right" />
-          </AdminProvider>
+            <PremiumProvider>
+              <AdminProvider>
+              <LayoutWrapper isDark={isDark} toggleTheme={toggleTheme}>
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    {/* Public Routes */}
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/sehirler" element={<CitiesPage />} />
+                    <Route path="/sehir/:cityId" element={<CityDetailPage />} />
+                    <Route path="/okuma-katmanlari" element={<ReadingLayersPage />} />
+                    <Route path="/sanriya-sor" element={<SanriyaSorPage />} />
+                    <Route path="/bilinc" element={<BilincPage />} />
+                    <Route path="/frekans" element={<FrekansPage />} />
+                    <Route path="/rituel" element={<RituelAlaniPage />} />
+                    <Route path="/bilinc-alani" element={<BilincAlaniPage />} />
+                    <Route path="/gorselin" element={<GorselinPage />} />
+                    <Route path="/hakkinda" element={<AboutPage />} />
+                    <Route path="/premium" element={<SubscriptionPage />} />
+                    
+                    {/* Auth Routes */}
+                    <Route path="/giris" element={<GirisPage />} />
+                    <Route path="/onboarding" element={<OnboardingPage />} />
+                    <Route path="/auth/callback" element={<AuthCallback />} />
+                    <Route path="/gizlilik" element={<GizlilikPage />} />
+                    <Route path="/privacy" element={<GizlilikPage />} />
+                    
+                    {/* Admin Routes */}
+                    <Route path="/admin/login" element={<AdminLoginPage />} />
+                    <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                    <Route path="/admin/users" element={<AdminRoute><AdminUsersPage /></AdminRoute>} />
+                    <Route path="/admin/rituals" element={<AdminRoute><RitualsList /></AdminRoute>} />
+                    <Route path="/admin/rituals/new" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
+                    <Route path="/admin/rituals/:id" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
+                    <Route path="/admin/visual-presets" element={<AdminRoute><VisualPresetsPage /></AdminRoute>} />
+                  </Routes>
+                </Suspense>
+              </LayoutWrapper>
+              <Toaster position="bottom-right" />
+            </AdminProvider>
+          </PremiumProvider>
         </LanguageProvider>
         </AuthProvider>
       </BrowserRouter>
