@@ -607,32 +607,3 @@ export default {
   PlanCard,
   UpgradeModal
 };
-            </h3>
-            
-            {/* Description */}
-            <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed">
-              {description}
-            </p>
-            
-            {/* CTA */}
-            <Button 
-              onClick={onUpgrade}
-              className="rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 px-8"
-            >
-              <Crown className="w-4 h-4 mr-2" />
-              {language === 'en' ? 'Unlock Access' : 'Erişimi Aç'}
-            </Button>
-            
-            {/* Soft note */}
-            <p className="text-xs text-muted-foreground mt-4 italic">
-              {language === 'en' 
-                ? '"You are ready to go deeper. This field opens when you choose to remember more."'
-                : '"Derine inmeye hazırsın. Bu alan, daha fazlasını hatırlamayı seçtiğinde açılır."'
-              }
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-};
