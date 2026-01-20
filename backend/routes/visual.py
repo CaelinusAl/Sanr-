@@ -596,8 +596,10 @@ async def analyze_image(
         
         image_base64 = base64.b64encode(image_content).decode('utf-8')
         
-        # Determine content type
+        # Determine content type - ensure it's a valid image type
         content_type = image.content_type or "image/jpeg"
+        if content_type not in ["image/jpeg", "image/png", "image/gif", "image/webp"]:
+            content_type = "image/jpeg"  # Default to jpeg
         
         # Build user message with context
         user_text = "Bu görseli sembolik olarak oku."
@@ -617,12 +619,13 @@ async def analyze_image(
             system_message=system_prompt
         ).with_model("anthropic", model_name)
         
-        # Create message with image
+        # Create message with image - use correct image type
         user_message = UserMessage(
             text=user_text,
             file_contents=[FileContent(
                 content_type=content_type,
-                file_content_base64=image_base64
+                file_content_base64=image_base64,
+                file_type="image"  # Explicitly set file type
             )]
         )
         
