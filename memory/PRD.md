@@ -144,7 +144,41 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - [ ] Privacy Policy URL
 - [ ] Local makinede AAB build
 
-## Son Güncelleme: 19 Ocak 2026
+## Son Güncelleme: 20 Ocak 2026
+
+### SANRI VOICE Sistemi (YENİ) ✅
+CAELINUS AI'nin ses kimliğinin temel parçası. İki farklı ses profili:
+
+**SANRI_VOICE (Ritüel Rehberi):**
+- Ses: OpenAI `nova` voice
+- Model: `tts-1-hd` (yüksek kalite)
+- Hız: `0.78x` (çok yavaş, hipnotik etki için)
+- Karakter: Kadın sesi, yumuşak, sakin, derin, güven veren
+- Amaç: Kullanıcının zihnini yavaşlatan, güven veren, içe döndüren ses
+- Kullanım: Premium ritüeller, bilinç deneyimleri, hipnotik rehberlik
+
+**CAELINUS_BOOK_VOICE (Anlatıcı):**
+- Ses: OpenAI `shimmer` voice  
+- Model: `tts-1-hd`
+- Hız: `0.85x` (yine yavaş ama daha akıcı)
+- Karakter: Nötr, akıcı, sıcak anlatıcı tonu
+- Amaç: Uzun dinlemelerde yormayan, kitap okumalarına uygun
+- Kullanım: Kitap bölümleri, meditasyonlar, anlatım içerikleri
+
+**API Endpoints:**
+- `POST /api/tts/ritual/play` - SANRI VOICE ile ritüel seslendir
+- `POST /api/tts/book/play` - BOOK VOICE ile kitap seslendir  
+- `POST /api/tts/generate` - voice_profile parametreli genel TTS
+- `GET /api/tts/profiles` - Ses profili detayları
+- `GET /api/tts/status` - Servis durumu ve profil bilgileri
+
+**RitualPlayer Bileşeni:**
+- Premium ritüel seçildiğinde açılan immersive modal
+- Play butonu `/api/tts/ritual/play` çağırır
+- Wave animasyonu (loading/playing durumları)
+- Kontroller: play/pause, ses, restart, metin göster
+- Progress bar ile süre takibi
+- "SANRI VOICE" badge'i
 
 ### GÖRSELİN Modülü (YENİ) ✅
 CAELINUS AI'ın ana imza özelliklerinden biri:
