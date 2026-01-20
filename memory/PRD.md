@@ -31,12 +31,18 @@ When UI language = EN:
 ✅ Splash screen hikaye metinleri
 ✅ Footer ve hata mesajları
 
-### Çeviri Kapsamı - BEKLEYEN (Data i18n)
-✅ **TAMAMLANDI** - Static content data files bilingual yapıya çevrildi:
-- `bilinc-frekans.js` - Consciousness/Frequency card texts (TR/EN)
-- `rituel-112-data.js` - Ritual names, durations, steps (TR/EN)
+### Çeviri Kapsamı - Data i18n ✅ TAMAMLANDI
+**20 Ocak 2026**
 
-### Data i18n Mimarisi
+Static content data files bilingual yapıya çevrildi:
+
+| Dosya | İçerik | Status |
+|-------|--------|--------|
+| `bilinc-frekans.js` | Consciousness/Frequency card texts | ✅ TR/EN |
+| `rituel-112-data.js` | Mikro/Derin/Kapanış/Book 112 rituals | ✅ TR/EN |
+| `rituel-data.js` | 7 Gates, Entry texts, Phases, Transitions | ✅ TR/EN |
+
+### Final Data i18n Architecture
 ```javascript
 // Her data dosyası şu yapıda:
 export const dataName = {
@@ -44,9 +50,23 @@ export const dataName = {
   en: [{ id, title, text, ... }]
 };
 
-// Component'lerde kullanım:
+// Language-aware helper functions:
+export const getData = (lang = 'tr') => dataName[lang] || dataName.tr;
+
+// Component kullanımı:
 const { language } = useLanguage();
 const items = getData(language); // "tr" veya "en"
+```
+
+### Language Flow
+```
+User selects EN
+  → language state = "en"
+  → useLanguage() returns "en"
+  → getData("en") returns English content
+  → UI renders in English
+  → SANRI responds in English
+  → Zero Turkish anywhere
 ```
 
 ## 6 Content Domains (Hybrid Routing) ✅
