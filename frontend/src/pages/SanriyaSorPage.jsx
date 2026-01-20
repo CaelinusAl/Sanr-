@@ -738,11 +738,11 @@ const SanriyaSorPage = () => {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-6"
+              className="mt-6 flex justify-center"
             >
               <DailyLimitIndicator 
-                feature="sanri_daily" 
-                showUpgrade={true}
+                limitType="sanri_daily" 
+                showWhenUnlimited={false}
               />
             </motion.div>
           )}
