@@ -188,7 +188,7 @@ const PremiumRitualExperience = ({ ritual, onClose, onComplete }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   
-  const { speak, stop, isLoading: ttsLoading, isPlaying, isAvailable } = useOpenAITTS();
+  const { speak, stop, isLoading: ttsLoading, isPlaying, isAvailable } = useSanriVoice();
   const timerRef = useRef(null);
 
   // Ritüel akışını yükle
