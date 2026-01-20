@@ -41,10 +41,10 @@ import {
   kapiGecis
 } from "@/data/rituel-data";
 import {
-  mikroRitueller,
-  derinRitueller,
-  kapanisRituelleri,
-  kitap112Rituelleri,
+  getMikroRitueller,
+  getDerinRitueller,
+  getKapanisRitueller,
+  get112Ritueller,
   getBugunRitueli,
   getRituelById
 } from "@/data/rituel-112-data";
