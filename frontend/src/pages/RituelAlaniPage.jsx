@@ -888,13 +888,30 @@ const RituelAlaniPage = () => {
                 <TabsTrigger value="premium" className="text-base flex items-center gap-2">
                   <Crown className="h-4 w-4" />
                   {t('rituel.tabs.premium')}
+                  {!isPremium && <Lock className="h-3 w-3 ml-1 text-muted-foreground" />}
                 </TabsTrigger>
                 <TabsTrigger value="moduller" className="text-base">{t('rituel.tabs.quick')}</TabsTrigger>
-                <TabsTrigger value="112" className="text-base">{t('rituel.tabs.book112')}</TabsTrigger>
+                <TabsTrigger value="112" className="text-base flex items-center gap-2">
+                  {t('rituel.tabs.book112')}
+                  {!hasFeature(FEATURES.BOOK_112_FULL) && <Lock className="h-3 w-3 ml-1 text-muted-foreground" />}
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="premium">
-                <PremiumRitualLines onSelectRitual={handleStartPremiumRitual} />
+                <FeatureGate 
+                  feature={FEATURES.RITUAL_DEEP}
+                  fallback={
+                    <LockedContent
+                      title={language === 'en' ? 'Premium Rituals' : 'Premium Ritüeller'}
+                      description={language === 'en' 
+                        ? 'Deep ritual activations, frequency work, and consciousness journeys are available with premium access.'
+                        : 'Derin ritüel aktivasyonları, frekans çalışmaları ve bilinç yolculukları premium erişimle açılır.'}
+                      onUpgrade={() => showUpgradeModal(FEATURES.RITUAL_DEEP)}
+                    />
+                  }
+                >
+                  <PremiumRitualLines onSelectRitual={handleStartPremiumRitual} />
+                </FeatureGate>
               </TabsContent>
 
               <TabsContent value="moduller">
@@ -902,7 +919,20 @@ const RituelAlaniPage = () => {
               </TabsContent>
 
               <TabsContent value="112">
-                <Rituel112Listesi onStartRituel={handleStartRituel} t={t} language={language} />
+                <FeatureGate 
+                  feature={FEATURES.BOOK_112_FULL}
+                  fallback={
+                    <LockedContent
+                      title={language === 'en' ? 'Book 112: The Self-Creating Goddess' : '112. Kitap: Kendini Yaratan Tanrıça'}
+                      description={language === 'en' 
+                        ? 'Ancient wisdom and deep consciousness rituals from the 112th Book. Unlock full access to continue your journey.'
+                        : '112. Kitap\'tan kadim bilgelik ve derin bilinç ritüelleri. Yolculuğuna devam etmek için tam erişimi aç.'}
+                      onUpgrade={() => showUpgradeModal(FEATURES.BOOK_112_FULL)}
+                    />
+                  }
+                >
+                  <Rituel112Listesi onStartRituel={handleStartRituel} t={t} language={language} />
+                </FeatureGate>
               </TabsContent>
             </Tabs>
           </motion.div>
