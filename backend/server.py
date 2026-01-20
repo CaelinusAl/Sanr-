@@ -110,8 +110,9 @@ app.include_router(bilinc_alani_router, prefix="/api")
 # Include Ritual router
 app.include_router(ritual_router, prefix="/api")
 
-# Include TTS router
-app.include_router(tts_router, prefix="/api")
+# Include SANRI Voice router (ElevenLabs - SOLE TTS ENGINE)
+# Replaces old OpenAI TTS router
+app.include_router(sanri_voice_router, prefix="/api")
 
 # Include Admin router
 app.include_router(admin_router, prefix="/api")
