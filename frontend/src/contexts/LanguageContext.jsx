@@ -627,31 +627,32 @@ const translations = {
       domains: {
         awakened_cities: {
           name: 'Awakened Cities',
-          description: 'Cities as archetypal consciousness nodes'
+          subtitle: 'Living memory fields of Anatolia'
         },
         consciousness_field: {
           name: 'Consciousness Field',
-          description: 'Awareness, perception, identity journey'
+          subtitle: 'Where perception reorganizes itself'
         },
         frequency_field: {
           name: 'Frequency Field',
-          description: 'Emotional vibrations and energy'
+          subtitle: 'Rhythms of emotion, codes of resonance'
         },
         ritual_space: {
           name: 'Ritual Space',
-          description: 'Breath, meditation, sacred practices'
+          subtitle: 'Sacred protocols of remembrance'
         },
         neural_ecstasy: {
           name: 'Neural Ecstasy',
-          description: 'Mental clarity and aesthetic pleasure'
+          subtitle: 'Codes of pleasure, creation, and awareness'
         },
         book_112: {
           name: 'Book 112',
-          description: 'The Self-Creating Goddess'
+          subtitle: 'The Self-Creating Goddess Archive'
         }
       },
       domainAuto: 'Auto-detect',
-      domainSelect: 'Select domain (optional)'
+      domainSelect: 'Select realm (optional)',
+      realmQuestion: 'Which realm of your consciousness would you like to enter?'
     },
 
     // ==================== GORSELIN PAGE ====================
