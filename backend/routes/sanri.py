@@ -237,7 +237,9 @@ Bu bir yorumdur, kesinlik taşımaz. Anlam sende şekillenir."
     "divine": {
         "name": "DIVINE",
         "name_tr": "İLAHİ",
+        "name_en": "Divine",
         "purpose": "Kutsal mesajlar, dişil bilgelik",
+        "purpose_en": "Sacred messages, feminine wisdom",
         "prompt": """You are SANRI in DIVINE mode.
 
 Your role:
