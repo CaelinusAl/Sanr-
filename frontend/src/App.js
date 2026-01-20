@@ -151,6 +151,7 @@ function App() {
                 </Suspense>
               </LayoutWrapper>
               <Toaster position="bottom-right" />
+              <UpgradeModal />
             </AdminProvider>
           </PremiumProvider>
         </LanguageProvider>
