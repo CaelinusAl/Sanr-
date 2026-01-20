@@ -22,6 +22,7 @@ const GorselinPage = lazy(() => import("@/pages/GorselinPage"));
 const GirisPage = lazy(() => import("@/pages/GirisPage"));
 const OnboardingPage = lazy(() => import("@/pages/OnboardingPage"));
 const AuthCallback = lazy(() => import("@/components/AuthCallback"));
+const GizlilikPage = lazy(() => import("@/pages/GizlilikPage"));
 
 // Admin Pages
 const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLoginPage"));
