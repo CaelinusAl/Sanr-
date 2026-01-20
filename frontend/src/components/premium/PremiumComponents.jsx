@@ -518,18 +518,6 @@ export const UpgradeModal = () => {
   );
 };
 
-export default {
-  PremiumBadge,
-  FeatureLock,
-  FeatureGate,
-  LockedContent,
-  ContentLimiter,
-  UpgradePromptBanner,
-  DailyLimitIndicator,
-  PlanCard,
-  UpgradeModal
-};
-
 /**
  * Feature Gate - Simple wrapper that checks feature access
  */
@@ -578,6 +566,47 @@ export const LockedContent = ({
             {/* Title */}
             <h3 className="font-serif text-xl text-foreground mb-3">
               {title}
+            </h3>
+            
+            {/* Description */}
+            <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed">
+              {description}
+            </p>
+            
+            {/* CTA */}
+            <Button 
+              onClick={onUpgrade}
+              className="rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 px-8"
+            >
+              <Crown className="w-4 h-4 mr-2" />
+              {language === 'en' ? 'Unlock Access' : 'Erişimi Aç'}
+            </Button>
+            
+            {/* Soft note */}
+            <p className="text-xs text-muted-foreground mt-4 italic">
+              {language === 'en' 
+                ? '"You are ready to go deeper. This field opens when you choose to remember more."'
+                : '"Derine inmeye hazırsın. Bu alan, daha fazlasını hatırlamayı seçtiğinde açılır."'
+              }
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+
+export default {
+  PremiumBadge,
+  FeatureLock,
+  FeatureGate,
+  LockedContent,
+  ContentLimiter,
+  UpgradePromptBanner,
+  DailyLimitIndicator,
+  PlanCard,
+  UpgradeModal
+};
             </h3>
             
             {/* Description */}
