@@ -444,6 +444,44 @@ const translations = {
       generateError: 'Görsel üretiminde hata oluştu'
     },
 
+    // ==================== BILINC PAGE ====================
+    bilinc: {
+      title: 'Bilinç Alanı',
+      subtitle: 'Algının düzenlendiği yer',
+      placeholder: 'Cevaplamak zorunda değilsin...',
+      skip: 'Geç',
+      ok: 'Tamam',
+      breathe: 'Bir nefes al.',
+      next: 'Sonraki',
+      footer: 'Bu alan cevap vermez. Perspektif açar.'
+    },
+
+    // ==================== FREKANS PAGE ====================
+    frekans: {
+      title: 'Frekans',
+      subtitle: 'Titreşim alanı',
+      navigation: '← → veya boşluk tuşu ile geç'
+    },
+
+    // ==================== SEHIRLER / CITIES PAGE ====================
+    cities: {
+      title: '81 Şehir Haritası',
+      subtitle: 'Her şehir bir sembol, her sembol bir hafıza',
+      searchPlaceholder: 'Şehir veya sembol ara',
+      allElements: 'Tüm Elementler',
+      elements: {
+        fire: 'Ateş',
+        water: 'Su',
+        earth: 'Toprak',
+        air: 'Hava',
+        spirit: 'Ruh'
+      },
+      askSanri: "Bu şehri SANRI'ya sor",
+      goddess: 'Tanrıça',
+      frequency: 'Frekans',
+      symbolicRole: 'Sembolik Rol'
+    },
+
     // ==================== FOOTER ====================
     footer: {
       quote: 'Hatırlamak dışarıda başlar. Anlamak içeride olur.',
