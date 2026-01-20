@@ -31,32 +31,35 @@ PLAN_CONFIG = {
     "free": {
         "id": "free",
         "name": {
-            "tr": "Uyanış",
-            "en": "Awaken"
+            "tr": "Arayıcı",
+            "en": "Seeker"
         },
         "display_name": {
-            "tr": "Ücretsiz – Uyanış",
-            "en": "Free – Awaken"
+            "tr": "Başlangıç – Arayıcı",
+            "en": "Begin Your Journey"
         },
         "description": {
-            "tr": "Keşif ve bağlanma modu. Bilinç yolculuğuna ilk adım.",
-            "en": "Discovery and bonding mode. First step to consciousness journey."
+            "tr": "Keşif ve merak modu. Derinliği görmeden hisset.",
+            "en": "Discovery mode. Feel the depth before you see it."
         },
         "price": {
             "tr": {"amount": 0, "currency": "TRY", "period": "month"},
-            "en": {"amount": 0, "currency": "USD", "period": "month"}
+            "en": {"amount": 0, "currency": "EUR", "period": "month"}
         },
         "features": {
             "sanri_daily_limit": 3,
+            "sanri_preview_only": True,
             "sanri_deep_analysis": False,
             "sanri_visual_analysis": False,
             "sanri_fate_layer": False,
             "consciousness_cards_limit": 6,
             "frequency_items_limit": 5,
+            "ritual_preview_only": True,
             "ritual_micro": True,
             "ritual_deep": False,
             "ritual_neural_ecstasy": False,
             "book_112_full": False,
+            "cities_preview_only": True,
             "cities_full": False,
             "cities_sanri": False,
             "profile_mirror": False,
@@ -65,130 +68,162 @@ PLAN_CONFIG = {
         },
         "order": 0
     },
-    "soul": {
-        "id": "soul",
+    "initiate": {
+        "id": "initiate",
         "name": {
-            "tr": "Premium Ruh",
-            "en": "Premium Soul"
+            "tr": "İnisiye",
+            "en": "Initiate"
         },
         "display_name": {
-            "tr": "Premium Ruh",
-            "en": "Premium Soul"
+            "tr": "İnisiye – Hatırlayan",
+            "en": "Initiate – The Remembering"
         },
         "description": {
-            "tr": "Derin sembolik analiz. Bilinç ve frekans alanlarına tam erişim.",
-            "en": "Deep symbolic analysis. Full access to consciousness and frequency fields."
+            "tr": "Artık aramıyorsun. Hatırlıyorsun.",
+            "en": "You are no longer searching. You are remembering."
         },
         "price": {
             "tr": {"amount": 199, "currency": "TRY", "period": "month"},
-            "en": {"amount": 9.99, "currency": "USD", "period": "month"}
+            "en": {"amount": 9.99, "currency": "EUR", "period": "month"}
+        },
+        "yearly_price": {
+            "tr": {"amount": 1990, "currency": "TRY", "period": "year"},
+            "en": {"amount": 99, "currency": "EUR", "period": "year"}
         },
         "features": {
             "sanri_daily_limit": -1,  # unlimited
+            "sanri_preview_only": False,
             "sanri_deep_analysis": True,
             "sanri_visual_analysis": False,
             "sanri_fate_layer": False,
             "consciousness_cards_limit": -1,
             "frequency_items_limit": -1,
+            "ritual_preview_only": False,
             "ritual_micro": True,
             "ritual_deep": True,
             "ritual_neural_ecstasy": False,
             "book_112_full": False,
+            "cities_preview_only": False,
             "cities_full": True,
-            "cities_sanri": False,  # limited integration
-            "profile_mirror": False,
+            "cities_sanri": False,
+            "profile_mirror": True,
             "voice_sanri": False,
             "watermark": False
         },
         "order": 1,
-        "highlight": True,  # Main revenue tier
+        "highlight": True,
         "badge": {
-            "tr": "En Popüler",
-            "en": "Most Popular"
+            "tr": "Ana Katman",
+            "en": "Core Tier"
         }
     },
-    "initiation": {
-        "id": "initiation",
+    "soul": {
+        "id": "soul",
         "name": {
-            "tr": "Premium İnisiyasyon",
-            "en": "Premium Initiation"
+            "tr": "Soul",
+            "en": "Soul"
         },
         "display_name": {
-            "tr": "Premium İnisiyasyon",
-            "en": "Premium Initiation"
+            "tr": "Soul – Derin Bilinç",
+            "en": "Soul – Deep Consciousness"
         },
         "description": {
-            "tr": "Kader katmanı ve matris okuması. Tam bilinç sistemi erişimi.",
-            "en": "Fate layer and matrix reading. Full consciousness system access."
+            "tr": "Bilincin evrim geçiriyor. Daha derin bir katmana erişim açılıyor.",
+            "en": "Your consciousness is evolving. A deeper layer is now accessible."
         },
         "price": {
             "tr": {"amount": 499, "currency": "TRY", "period": "month"},
-            "en": {"amount": 24.99, "currency": "USD", "period": "month"}
+            "en": {"amount": 24.99, "currency": "EUR", "period": "month"}
+        },
+        "yearly_price": {
+            "tr": {"amount": 4990, "currency": "TRY", "period": "year"},
+            "en": {"amount": 249, "currency": "EUR", "period": "year"}
         },
         "features": {
             "sanri_daily_limit": -1,
+            "sanri_preview_only": False,
             "sanri_deep_analysis": True,
             "sanri_visual_analysis": True,
             "sanri_fate_layer": True,
+            "sanri_timeline": True,
             "consciousness_cards_limit": -1,
             "frequency_items_limit": -1,
+            "ritual_preview_only": False,
             "ritual_micro": True,
             "ritual_deep": True,
             "ritual_neural_ecstasy": True,
             "book_112_full": True,
+            "cities_preview_only": False,
             "cities_full": True,
             "cities_sanri": True,
             "profile_mirror": True,
+            "profile_consciousness_map": True,
             "voice_sanri": True,
+            "soul_weekly_message": True,
             "watermark": False
         },
-        "order": 2
+        "order": 2,
+        "badge": {
+            "tr": "Derin Katman",
+            "en": "Deep Layer"
+        }
     },
     "oracle": {
         "id": "oracle",
         "name": {
-            "tr": "Oracle Çemberi",
-            "en": "Oracle Circle"
+            "tr": "Oracle",
+            "en": "Oracle"
         },
         "display_name": {
-            "tr": "Oracle / Master Modu",
-            "en": "Oracle / Master Mode"
+            "tr": "Oracle – Görünmeyen Katman",
+            "en": "Oracle – The Hidden Layer"
         },
         "description": {
-            "tr": "Yalnızca davetlilere özel. Yüksek bilinç SANRI deneyimi.",
-            "en": "Invitation only. High-consciousness SANRI experience."
+            "tr": "Bu katman yalnızca davet ile açılır. Bazı kapılar ancak görüldüğünde açılır.",
+            "en": "This layer is protected by invitation only. Some doors open only when you are seen."
         },
         "price": {
-            "tr": {"amount": 9000, "currency": "TRY", "period": "year"},
-            "en": {"amount": 499, "currency": "USD", "period": "year"}
+            "tr": {"amount": 6660, "currency": "TRY", "period": "access"},  # One-time access fee
+            "en": {"amount": 333, "currency": "EUR", "period": "access"}
+        },
+        "maintenance_price": {
+            "tr": {"amount": 590, "currency": "TRY", "period": "month"},
+            "en": {"amount": 29, "currency": "EUR", "period": "month"}
         },
         "features": {
             "sanri_daily_limit": -1,
+            "sanri_preview_only": False,
             "sanri_deep_analysis": True,
             "sanri_visual_analysis": True,
             "sanri_fate_layer": True,
-            "sanri_high_consciousness": True,  # Special Oracle-only mode
-            "sanri_timeline_analysis": True,
+            "sanri_timeline": True,
+            "sanri_oracle_mode": True,  # Special Oracle-only SANRI mode
+            "sanri_collective_reading": True,
             "consciousness_cards_limit": -1,
             "frequency_items_limit": -1,
+            "ritual_preview_only": False,
             "ritual_micro": True,
             "ritual_deep": True,
             "ritual_neural_ecstasy": True,
-            "ritual_private_weekly": True,
+            "ritual_high_frequency": True,
             "book_112_full": True,
+            "hidden_layer": True,
+            "cities_preview_only": False,
             "cities_full": True,
             "cities_sanri": True,
             "profile_mirror": True,
-            "profile_consciousness_report": True,
+            "profile_consciousness_map": True,
+            "profile_fate_line": True,
             "voice_sanri": True,
             "voice_personalized": True,
+            "oracle_messages": True,
             "watermark": False
         },
         "order": 3,
         "invite_only": True,
         "badge": {
-            "tr": "Sadece Davetlilere",
-            "en": "Invitation Only"
+            "tr": "Davet Gerekli",
+            "en": "Invitation Required"
         }
     }
 }
