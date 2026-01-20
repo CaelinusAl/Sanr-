@@ -932,6 +932,15 @@ const RituelAlaniPage = () => {
           />
         )}
       </AnimatePresence>
+
+      {/* Premium Ritual Player */}
+      <RitualPlayer
+        ritual={premiumRitualPlayer.ritual}
+        isOpen={premiumRitualPlayer.open}
+        onClose={handleClosePremiumRitual}
+        isPremium={IS_PREMIUM}
+        language="tr"
+      />
     </div>
   );
 };
