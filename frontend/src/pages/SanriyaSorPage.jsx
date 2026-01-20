@@ -179,18 +179,7 @@ const SanriyaSorPage = () => {
       messageToSend = `[Kullanıcı bir görsel paylaştı]\n\nKullanıcının sorusu: ${userInput}`;
     }
 
-    // Mod bazlı context ekle
-    const modeContexts = {
-      dream: "Bu bir rüya okuma talebi.",
-      news: "Bu bir haber/kolektif sembol okuma talebi.",
-      birthdate: "Bu bir doğum tarihi/sayı okuma talebi.",
-      symbol: "Bu bir sembol okuma talebi.",
-      mirror: "Bu bir içsel ayna/derin yansıma talebi. Daha şefkatli ve topraklayıcı ol."
-    };
-
-    const contextPrefix = modeContexts[selectedMode] || "";
-    const fullMessage = contextPrefix ? `${contextPrefix}\n\n${messageToSend}` : messageToSend;
-
+    // SANRI 5 Bilinç Modu - direkt mod gönder
     setInput("");
     setError(null);
     setConversation(prev => [...prev, { 
@@ -207,9 +196,9 @@ const SanriyaSorPage = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: fullMessage,
+          message: messageToSend,
           session_id: sessionId,
-          message_type: selectedMode
+          mode: selectedMode  // Yeni mod sistemi
         }),
       });
 
@@ -226,6 +215,8 @@ const SanriyaSorPage = () => {
       setConversation(prev => [...prev, { 
         type: "sanri", 
         content: data.response,
+        mode: data.mode,
+        mode_name_tr: data.mode_name_tr,
         timestamp: data.timestamp
       }]);
     } catch (err) {
