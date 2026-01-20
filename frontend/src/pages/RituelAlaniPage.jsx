@@ -28,6 +28,8 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePremium, FEATURES } from "@/contexts/PremiumContext";
+import { UpgradeModal, FeatureGate, LockedContent } from "@/components/premium/PremiumComponents";
 import { 
   getKapilar,
   ritueller, 
