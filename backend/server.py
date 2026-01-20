@@ -52,6 +52,12 @@ set_user_management_db(db)
 # Set database for admin users routes
 set_admin_users_db(db)
 
+# Set database for consciousness profile routes
+set_consciousness_db(db)
+
+# Set database for SANRI routes (for profile integration)
+set_sanri_db(db)
+
 # Create the main app without a prefix
 app = FastAPI()
 
