@@ -143,6 +143,7 @@ function App() {
             <Toaster position="bottom-right" />
           </AdminProvider>
         </LanguageProvider>
+        </AuthProvider>
       </BrowserRouter>
     </div>
   );
