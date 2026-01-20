@@ -139,27 +139,25 @@ const OnboardingPage = () => {
 
   const questions = [
     {
-      key: 'reason',
+      key: 'time_perception',
       title: text.q1_title,
       subtitle: text.q1_subtitle,
       options: [
-        { value: 'dreams', label: text.q1_opt1, icon: '🌙' },
-        { value: 'self_discovery', label: text.q1_opt2, icon: '🪞' },
-        { value: 'turning_point', label: text.q1_opt3, icon: '🔄' },
-        { value: 'curiosity', label: text.q1_opt4, icon: '✨' }
+        { value: 'present_aware', label: text.q1_opt1, icon: '🌱' },      // farkındalık başlangıcı
+        { value: 'past_affected', label: text.q1_opt2, icon: '🔄' },      // karmasal süreç
+        { value: 'non_linear', label: text.q1_opt3, icon: '∞' },          // bilinç açılmış
+        { value: 'time_worker', label: text.q1_opt4, icon: '⏳' }         // ileri seviye / kader hattı
       ]
     },
     {
-      key: 'dominant_emotion',
+      key: 'identity',
       title: text.q2_title,
       subtitle: text.q2_subtitle,
       options: [
-        { value: 'seeking', label: text.q2_opt1, icon: '🔍' },
-        { value: 'confused', label: text.q2_opt2, icon: '🌫️' },
-        { value: 'calm', label: text.q2_opt3, icon: '🕊️' },
-        { value: 'tired', label: text.q2_opt4, icon: '😔' },
-        { value: 'curious', label: text.q2_opt5, icon: '🦋' },
-        { value: 'love', label: text.q2_opt6, icon: '💜' }
+        { value: 'seeker', label: text.q2_opt1, icon: '🔍' },             // hayatını anlamaya çalışan
+        { value: 'transforming', label: text.q2_opt2, icon: '🦋' },       // dönüşüm sürecinde
+        { value: 'pathmaker', label: text.q2_opt3, icon: '🌟' },          // kendi yolunu çizen
+        { value: 'silence_finder', label: text.q2_opt4, icon: '🕊️' }     // sessizlikte kendini bulan
       ]
     },
     {
