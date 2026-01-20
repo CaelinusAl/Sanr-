@@ -99,7 +99,6 @@ const SanriyaSorPage = () => {
   const [error, setError] = useState(null);
   const [selectedMode, setSelectedMode] = useState("dream");
   const [uploadedImage, setUploadedImage] = useState(null);
-  const [activeTab, setActiveTab] = useState("chat");
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
