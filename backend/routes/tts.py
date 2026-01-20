@@ -421,9 +421,10 @@ async def tts_status():
 @router.post("/test")
 async def test_tts():
     """
-    Test TTS with a sample Caelinus ritual text
+    Test both SANRI and BOOK voice profiles with sample texts
     """
-    sample_text = "Şimdi... kendinle temas etmek için... küçük bir alan açıyoruz..."
+    sanri_text = "Şimdi... kendinle temas etmek için... küçük bir alan açıyoruz..."
+    book_text = "Bilinç, düşüncenin ötesinde var olan bir alandır."
     
     try:
         client = get_tts_client()
@@ -434,20 +435,35 @@ async def test_tts():
                 "message": "TTS servisi yapılandırılmamış"
             }
         
-        audio_base64 = await client.generate_speech_base64(
-            text=sample_text,
-            model=CAELINUS_MODEL,
-            voice=CAELINUS_VOICE,
-            speed=CAELINUS_SPEED
+        # Test SANRI voice
+        sanri_audio = await client.generate_speech_base64(
+            text=sanri_text,
+            model=SANRI_VOICE_CONFIG["model"],
+            voice=SANRI_VOICE_CONFIG["voice"],
+            speed=SANRI_VOICE_CONFIG["speed"]
+        )
+        
+        # Test BOOK voice
+        book_audio = await client.generate_speech_base64(
+            text=book_text,
+            model=CAELINUS_BOOK_VOICE_CONFIG["model"],
+            voice=CAELINUS_BOOK_VOICE_CONFIG["voice"],
+            speed=CAELINUS_BOOK_VOICE_CONFIG["speed"]
         )
         
         return {
             "status": "success",
-            "message": "TTS çalışıyor",
-            "sample_text": sample_text,
-            "audio_url": f"data:audio/mpeg;base64,{audio_base64}",
-            "voice": CAELINUS_VOICE,
-            "model": CAELINUS_MODEL
+            "message": "Her iki ses profili de çalışıyor",
+            "sanri_voice": {
+                "sample_text": sanri_text,
+                "audio_url": f"data:audio/mpeg;base64,{sanri_audio}",
+                "config": SANRI_VOICE_CONFIG
+            },
+            "book_voice": {
+                "sample_text": book_text,
+                "audio_url": f"data:audio/mpeg;base64,{book_audio}",
+                "config": CAELINUS_BOOK_VOICE_CONFIG
+            }
         }
         
     except Exception as e:
@@ -455,3 +471,38 @@ async def test_tts():
             "status": "error",
             "message": str(e)
         }
+
+# ============== VOICE PROFILE INFO ==============
+
+@router.get("/profiles")
+async def get_voice_profiles():
+    """
+    Get detailed info about SANRI and CAELINUS voice profiles
+    """
+    return {
+        "sanri": {
+            **SANRI_VOICE_CONFIG,
+            "use_cases": [
+                "Premium ritüeller",
+                "Bilinç deneyimleri", 
+                "İç alan çalışmaları",
+                "Hipnotik rehberlik"
+            ],
+            "turkish_name": "SANRI SESİ",
+            "character": "Rehber • Bilge • Bilinç Açıcı"
+        },
+        "book": {
+            **CAELINUS_BOOK_VOICE_CONFIG,
+            "use_cases": [
+                "Kitap okumaları",
+                "Uzun meditasyonlar",
+                "Anlatım içerikleri",
+                "Bilinç Alanı bölümleri"
+            ],
+            "turkish_name": "CAELINUS KİTAP SESİ",
+            "character": "Anlatıcı • Akıcı • Sıcak"
+        },
+        "platform": "CAELINUS AI",
+        "language": "Turkish (Primary)",
+        "note": "Ses, CAELINUS AI'nin kimliğinin temel parçasıdır."
+    }
