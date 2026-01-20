@@ -689,7 +689,9 @@ const GirisEsigi = ({ onReady, t }) => {
 // MEVCUT: Kapı Seçimi Component (Kısaltılmış)
 // ============================================
 
-const KapiSecimi = ({ onSelectKapi }) => {
+const KapiSecimi = ({ onSelectKapi, t, language }) => {
+  const kapilar = getKapilar(language);
+  
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -699,13 +701,13 @@ const KapiSecimi = ({ onSelectKapi }) => {
     >
       <div className="text-center mb-12">
         <span className="text-primary/60 text-xs tracking-[0.3em] uppercase mb-2 block">
-          7 Kutsal Kapı
+          {language === 'en' ? '7 Sacred Gates' : '7 Kutsal Kapı'}
         </span>
         <h2 className="font-serif text-3xl text-foreground mb-4">
-          Hangi Kapıyı Açmak İstiyorsun?
+          {t('rituel.gates.title')}
         </h2>
         <p className="text-sm text-muted-foreground">
-          Her kapı farklı bir bilinç katmanına götürür
+          {t('rituel.gates.subtitle')}
         </p>
       </div>
 
@@ -752,7 +754,7 @@ const KapiSecimi = ({ onSelectKapi }) => {
         className="text-center mt-12"
       >
         <p className="text-xs text-muted-foreground/50">
-          Her kapı açıldığında, bir parça daha hatırlarsın.
+          {t('rituel.gates.note')}
         </p>
       </motion.div>
     </motion.div>
