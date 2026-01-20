@@ -569,10 +569,11 @@ async def complete_onboarding(request: Request, onboarding: OnboardingRequest):
     
     now = datetime.now(timezone.utc)
     
+    # NEW 4-question consciousness profile
     profile_doc = {
         "user_id": user["user_id"],
-        "reason": onboarding.reason,
-        "dominant_emotion": onboarding.dominant_emotion,
+        "time_perception": onboarding.time_perception,
+        "identity": onboarding.identity,
         "style_preference": onboarding.style_preference,
         "purpose": onboarding.purpose,
         "language": onboarding.language,
