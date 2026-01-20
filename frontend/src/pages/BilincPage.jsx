@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, RefreshCw, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { bilincTexts, getRandomBilincText, getNextText } from "@/data/bilinc-frekans";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const BilincPage = () => {
+  const { t } = useLanguage();
   const [currentText, setCurrentText] = useState(null);
   const [userResponse, setUserResponse] = useState("");
   const [hasResponded, setHasResponded] = useState(false);
@@ -46,10 +48,10 @@ const BilincPage = () => {
             className="text-center max-w-xl mx-auto"
           >
             <span className="text-primary/60 text-xs tracking-[0.3em] uppercase mb-2 block">
-              Bilinç Alanı
+              {t('bilinc.title')}
             </span>
             <p className="text-muted-foreground text-sm">
-              Algının düzenlendiği yer
+              {t('bilinc.subtitle')}
             </p>
           </motion.div>
         </div>
@@ -96,7 +98,7 @@ const BilincPage = () => {
                       <Textarea
                         value={userResponse}
                         onChange={(e) => setUserResponse(e.target.value)}
-                        placeholder="Cevaplamak zorunda değilsin..."
+                        placeholder={t('bilinc.placeholder')}
                         className="min-h-[80px] resize-none bg-muted/30 border-border/50 focus:border-primary/30 text-center"
                       />
 
@@ -107,7 +109,7 @@ const BilincPage = () => {
                           onClick={handleNext}
                           className="text-muted-foreground"
                         >
-                          Geç
+                          {t('bilinc.skip')}
                         </Button>
                         {userResponse.trim() && (
                           <Button
@@ -115,7 +117,7 @@ const BilincPage = () => {
                             onClick={handleRespond}
                             className="rounded-full"
                           >
-                            Tamam
+                            {t('bilinc.ok')}
                           </Button>
                         )}
                       </div>
@@ -148,7 +150,7 @@ const BilincPage = () => {
                           <span className="w-1 h-1 bg-primary/30 rounded-full" />
                         </div>
                         <p className="text-xs text-muted-foreground mt-4">
-                          Bir nefes al.
+                          {t('bilinc.breathe')}
                         </p>
                       </div>
 
@@ -157,7 +159,7 @@ const BilincPage = () => {
                         onClick={handleNext}
                         className="text-muted-foreground hover:text-foreground"
                       >
-                        <span>Sonraki</span>
+                        <span>{t('bilinc.next')}</span>
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </motion.div>
@@ -174,7 +176,7 @@ const BilincPage = () => {
         <div className="container mx-auto px-6">
           <div className="text-center">
             <p className="text-xs text-muted-foreground/50">
-              Bu alan cevap vermez. Perspektif açar.
+              {t('bilinc.footer')}
             </p>
           </div>
         </div>
