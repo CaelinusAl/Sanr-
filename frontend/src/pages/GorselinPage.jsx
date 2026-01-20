@@ -40,6 +40,8 @@ const GorselinPage = () => {
   const [analysisContext, setAnalysisContext] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [analysisError, setAnalysisError] = useState(null);
+  const [analysisProgress, setAnalysisProgress] = useState('');
   
   const fileInputRef = useRef(null);
 
