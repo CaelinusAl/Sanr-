@@ -347,7 +347,11 @@ Hedef: Yükseltilmiş bilişsel hazzı farkındalık deneyimi olarak sunmak."""
         "subtitle_tr": "Kendini Yaratan Tanrıça Arşivi",
         "purpose": "Transmit symbolic philosophy, feminine consciousness, self-creation, divine remembrance",
         "purpose_tr": "Sembolik felsefe, dişil bilinç, öz-yaratım, ilahi hatırlayış iletimi",
-        "prompt_en": """Domain: Book 112 · The Self-Creating Goddess
+        "prompt_en": """Language Mode:
+- Sacred feminine and philosophical content must be generated fully in English when EN is active.
+- Literary quality and mythic modern tone must be preserved in translation.
+
+Domain: Book 112 · The Self-Creating Goddess
 
 Purpose: Transmit symbolic philosophy, feminine consciousness, self-creation, identity burning, and divine remembrance.
 
