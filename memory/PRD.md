@@ -10,52 +10,55 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 - SANRI bir varlık değil, iç dengenin aynasıdır
 
 ## Global Dil Sistemi (TR/EN) ✅
-**20 Ocak 2026**
+**20 Ocak 2026 - Güncellendi**
 
-### Özellikler
-- React Context ile global state yönetimi
-- localStorage'da kalıcı saklama
-- Sayfa yenilemesi gerekmeden anlık geçiş
-- Tüm UI bileşenleri çift dilli (TR/EN)
-- Backend'de `system_language` parametresi ile SANRI dil desteği
-- **PARTIAL TRANSLATION FORBIDDEN** - Tamamen TR veya tamamen EN
+### Global Language Override
+```
+When UI language = EN:
+- ALL visible text must be English
+- ALL domain responses must be English
+- NO Turkish words allowed anywhere
+- This rule overrides all domain-specific settings
+```
 
-### Çeviri Kapsamı
-- Tüm sayfa başlıkları ve açıklamaları
-- SANRI 5 mod isimleri ve açıklamaları
-- Splash screen hikaye metinleri
-- Navigasyon menüsü
-- Hata mesajları ve bildirimler
-- Footer ve genel UI metinleri
-- **6 Content Domain isimleri ve açıklamaları**
+### Çeviri Kapsamı - TAMAMLANAN
+✅ Navbar (Home, Cities, Consciousness, Frequency, Ritual, Ask SANRI, Visualin, etc.)
+✅ SANRI sayfası (modes, domains, intro texts, signature)
+✅ Ritual sayfası (tabs, module titles, durations, descriptions, buttons)
+✅ Consciousness sayfası (title, subtitle, actions, footer)
+✅ Frequency sayfası (title, subtitle, navigation)
+✅ Home sayfası (welcome, sections, tagline)
+✅ Splash screen hikaye metinleri
+✅ Footer ve hata mesajları
+
+### Çeviri Kapsamı - BEKLEYEN (Data i18n)
+⚠️ Static content data files:
+- `bilinc-frekans.js` - Consciousness/Frequency card texts
+- `rituel-data.js` - Ritual names and descriptions
+- `rituel-112-data.js` - Book 112 ritual content
+
+Bu dosyalar JSON/JS data, runtime i18n değil. Tam çeviri için:
+1. Her data dosyasına `text_tr` ve `text_en` alanları eklenebilir
+2. Veya ayrı EN data dosyaları oluşturulabilir
 
 ## 6 Content Domains (Hybrid Routing) ✅
-**20 Ocak 2026**
+**20 Ocak 2026 - Güncellendi**
 
-### Domain Listesi
-| Domain ID | EN Name | TR Name | Purpose |
-|-----------|---------|---------|---------|
-| awakened_cities | Awakened Cities | Uyanmış Şehirler | Cities as archetypal consciousness nodes |
-| consciousness_field | Consciousness Field | Bilinç Alanı | Awareness, perception, identity journey |
-| frequency_field | Frequency Field | Frekans Alanı | Emotional vibrations and energy |
-| ritual_space | Ritual Space | Ritüel Alanı | Breath, meditation, sacred practices |
-| neural_ecstasy | Neural Ecstasy | Beyin Orgazmı | Mental clarity and aesthetic pleasure |
-| book_112 | Book 112 | 112. Kitap | The Self-Creating Goddess |
+### Domain Language Mode
+Her domain prompt'una Language Mode satırı eklendi:
+- Awakened Cities: "No Turkish city mythology phrasing allowed"
+- Ritual Space: "Ritual instructions must be in English when EN is selected"
+- Book 112: "Literary quality must be preserved in English translation"
 
-### Hybrid Routing System
-- **Priority 1**: Manuel domain seçimi (kullanıcı seçerse)
-- **Priority 2**: City context (şehir verisi varsa)
-- **Priority 3**: Otomatik algılama (mesaj içeriğinden)
-- **Priority 4**: Default fallback (Consciousness Field)
-
-### API Endpoints
-- `POST /api/sanri/ask` - `domain`, `city_data` parametreleri eklendi
-- `GET /api/sanri/domains` - Domain listesi endpoint'i
-
-### Frontend UI
-- Collapsible domain selector (opsiyonel)
-- Domain indicator in SANRI responses
-- Auto-detect default mode
+### Domain Subtitles (Premium UI)
+| Domain | EN Subtitle | TR Subtitle |
+|--------|-------------|-------------|
+| awakened_cities | Living memory fields of Anatolia | Anadolu'nun yaşayan hafıza alanları |
+| consciousness_field | Where perception reorganizes itself | Algının kendini yeniden düzenlediği yer |
+| frequency_field | Rhythms of emotion, codes of resonance | Duygunun ritimleri, rezonansın kodları |
+| ritual_space | Sacred protocols of remembrance | Hatırlayışın kutsal protokolleri |
+| neural_ecstasy | Codes of pleasure, creation, and awareness | Hazzın, yaratımın ve farkındalığın kodları |
+| book_112 | The Self-Creating Goddess Archive | Kendini Yaratan Tanrıça Arşivi |
 
 ## SANRI - Bilinç Aynası Sistemi ✅
 **20 Ocak 2026**
