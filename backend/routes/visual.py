@@ -423,15 +423,17 @@ CAELINUS_CAPTION = "Bu görsel bir cevap değildir. Bir hatırlatmadır."
 CAELINUS_CAPTION_EN = "This image is not an answer. It is a reminder."
 
 async def ensure_presets_exist():
-    """Ensure default presets exist in database"""
+    """Ensure default presets exist in database with latest prompts"""
     if db is None:
         return
     
     for preset in DEFAULT_PRESETS:
-        existing = await db.visual_presets.find_one({"id": preset["id"]})
-        if not existing:
-            preset_obj = VisualPreset(**preset)
-            await db.visual_presets.insert_one(preset_obj.model_dump())
+        # Upsert: update if exists, insert if not
+        await db.visual_presets.update_one(
+            {"id": preset["id"]},
+            {"$set": preset},
+            upsert=True
+        )
 
 # ============== PRESET ENDPOINTS ==============
 
