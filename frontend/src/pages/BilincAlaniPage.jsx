@@ -810,7 +810,7 @@ const BilincAlaniPage = () => {
                             data-testid={`start-ritual-${ritual.id}`}
                           >
                             <Play className="h-4 w-4 mr-2" />
-                            Başlat
+                            {tx.start}
                           </Button>
                         </CardContent>
                       </Card>
@@ -823,7 +823,7 @@ const BilincAlaniPage = () => {
             {/* Alt Bilgi */}
             <div className="text-center mt-16">
               <p className="text-xs text-foreground/40">
-                "Ve bu ayna, yalnızca hazır olana açılır."
+                {tx.footer}
               </p>
             </div>
           </motion.div>
