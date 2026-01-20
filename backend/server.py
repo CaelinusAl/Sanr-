@@ -18,6 +18,9 @@ from routes.tts import router as tts_router
 from routes.admin import router as admin_router, set_database as set_admin_db
 from routes.visual import router as visual_router, set_database as set_visual_db
 from routes.premium_ritual import router as premium_ritual_router, set_database as set_premium_ritual_db
+from routes.user_auth import router as user_auth_router, set_database as set_user_auth_db
+from routes.user_management import router as user_management_router, set_database as set_user_management_db
+from routes.admin_users import router as admin_users_router, set_database as set_admin_users_db
 
 
 ROOT_DIR = Path(__file__).parent
