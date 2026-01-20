@@ -701,83 +701,143 @@ const GorselinPage = () => {
             <AnimatePresence>
               {analysisResult && (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   className="space-y-4"
                 >
+                  {/* Title - Sanrı Okuması */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-center py-6"
+                  >
+                    <h2 
+                      className="text-2xl text-white/90 font-light"
+                      style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                    >
+                      Sanrı Okuması
+                    </h2>
+                    <p className="text-white/40 text-sm mt-1">
+                      {analysisResult.meta?.latency_ms ? `${(analysisResult.meta.latency_ms / 1000).toFixed(1)}s` : ''}
+                    </p>
+                  </motion.div>
+
                   {/* Surface Layer - Görünen Katman */}
                   {analysisResult.surface && (
-                    <Card className="bg-white/[0.03] border-white/10">
-                      <CardContent className="p-6">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-lg">🜂</span>
-                          <Label className="text-indigo-300 font-medium">YÜZEY – GÖRÜNEN KATMAN</Label>
-                        </div>
-                        <div className="text-white/80 leading-relaxed whitespace-pre-line">
-                          {analysisResult.surface.replace(/🜂\s*YÜZEY[^\n]*\n?/i, '')}
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <Card className="bg-white/[0.03] border-white/10">
+                        <CardContent className="p-6">
+                          <div className="flex items-center gap-2 mb-4">
+                            <span className="text-xl">🜂</span>
+                            <Label className="text-indigo-300 font-medium text-base">YÜZEY – GÖRÜNEN KATMAN</Label>
+                          </div>
+                          <div 
+                            className="text-white/80 leading-relaxed whitespace-pre-line"
+                            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
+                          >
+                            {analysisResult.surface.replace(/🜂\s*YÜZEY[^\n]*\n?/gi, '').replace(/---+/g, '').trim()}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   )}
 
                   {/* Consciousness Layer - Gizli Akış */}
                   {analysisResult.consciousness && (
-                    <Card className="bg-gradient-to-br from-indigo-950/50 to-violet-950/30 border-indigo-500/20">
-                      <CardContent className="p-6">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-lg">🜁</span>
-                          <Label className="text-violet-300 font-medium">BİLİNÇ – GİZLİ AKIŞ</Label>
-                        </div>
-                        <div className="text-white/90 leading-relaxed whitespace-pre-line" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                          {analysisResult.consciousness.replace(/🜁\s*BİLİNÇ[^\n]*\n?/i, '')}
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
+                    >
+                      <Card className="bg-gradient-to-br from-indigo-950/50 to-violet-950/30 border-indigo-500/20">
+                        <CardContent className="p-6">
+                          <div className="flex items-center gap-2 mb-4">
+                            <span className="text-xl">🜁</span>
+                            <Label className="text-violet-300 font-medium text-base">BİLİNÇ – GİZLİ AKIŞ</Label>
+                          </div>
+                          <div 
+                            className="text-white/90 leading-relaxed whitespace-pre-line" 
+                            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
+                          >
+                            {analysisResult.consciousness.replace(/🜁\s*BİLİNÇ[^\n]*\n?/gi, '').replace(/---+/g, '').trim()}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   )}
 
                   {/* Destiny Layer - Yön ve Zaman */}
                   {analysisResult.destiny && (
-                    <Card className="bg-gradient-to-br from-purple-950/50 to-pink-950/30 border-purple-500/20">
-                      <CardContent className="p-6">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-lg">🜃</span>
-                          <Label className="text-purple-300 font-medium">KADER – YÖN VE ZAMAN</Label>
-                        </div>
-                        <div className="text-white/90 leading-relaxed whitespace-pre-line" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                          {analysisResult.destiny.replace(/🜃\s*KADER[^\n]*\n?/i, '')}
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8 }}
+                    >
+                      <Card className="bg-gradient-to-br from-purple-950/50 to-pink-950/30 border-purple-500/20">
+                        <CardContent className="p-6">
+                          <div className="flex items-center gap-2 mb-4">
+                            <span className="text-xl">🜃</span>
+                            <Label className="text-purple-300 font-medium text-base">KADER – YÖN VE ZAMAN</Label>
+                          </div>
+                          <div 
+                            className="text-white/90 leading-relaxed whitespace-pre-line" 
+                            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
+                          >
+                            {analysisResult.destiny.replace(/🜃\s*KADER[^\n]*\n?/gi, '').replace(/---+/g, '').trim()}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   )}
 
                   {/* Reminder - Hatırlatma */}
                   {analysisResult.reminder && (
-                    <Card className="bg-gradient-to-br from-amber-950/30 to-orange-950/20 border-amber-500/20">
-                      <CardContent className="p-6">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Heart className="w-4 h-4 text-amber-400" />
-                          <Label className="text-amber-300 font-medium">HATIRLATMA</Label>
-                        </div>
-                        <p className="text-white/80 leading-relaxed italic" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                          {analysisResult.reminder}
-                        </p>
-                      </CardContent>
-                    </Card>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.0 }}
+                    >
+                      <Card className="bg-gradient-to-br from-amber-950/30 to-orange-950/20 border-amber-500/30">
+                        <CardContent className="p-6 text-center">
+                          <Heart className="w-5 h-5 text-amber-400 mx-auto mb-3" />
+                          <p 
+                            className="text-amber-100/90 leading-relaxed italic text-lg"
+                            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                          >
+                            "{analysisResult.reminder}"
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   )}
 
-                  {/* Fallback for old format compatibility */}
-                  {!analysisResult.surface && !analysisResult.consciousness && !analysisResult.destiny && analysisResult.seen && (
-                    <>
-                      {/* Old format - Gördüğüm */}
+                  {/* Fallback: Show raw analysis_text if sections not parsed */}
+                  {!analysisResult.surface && !analysisResult.consciousness && analysisResult.analysis_text && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
                       <Card className="bg-white/[0.03] border-white/10">
                         <CardContent className="p-6">
-                          <div className="flex items-center gap-2 mb-3">
-                            <ImageIcon className="w-4 h-4 text-indigo-400" />
-                            <Label className="text-indigo-300 font-medium">Gördüğüm</Label>
+                          <div 
+                            className="text-white/90 leading-relaxed whitespace-pre-line"
+                            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
+                          >
+                            {analysisResult.analysis_text}
                           </div>
-                          <p className="text-white/80 leading-relaxed">{analysisResult.seen}</p>
                         </CardContent>
+                      </Card>
+                    </motion.div>
+                  )}
+
+                  {/* Old format compatibility removed for cleaner code */}
                       </Card>
 
                       {/* Old format - Sembolik Okuma */}
