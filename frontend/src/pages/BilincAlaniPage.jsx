@@ -728,14 +728,13 @@ const BilincAlaniPage = () => {
                   </div>
                 )}
                 <h1 className="font-serif text-4xl sm:text-5xl text-foreground mb-4">
-                  Bilinç Alanı
+                  {tx.title}
                 </h1>
                 <p className="text-foreground/60 max-w-lg mx-auto mb-4">
-                  Beyin Orgazmı – Bilinç, His ve Yaratım Kodları
+                  {tx.subtitle}
                 </p>
                 <p className="text-sm text-foreground/40 max-w-md mx-auto">
-                  Bu alan, bilinç frekansına açılan özel bir alandır.
-                  Okumak için değil, hatırlamak için tasarlanmıştır.
+                  {tx.description}
                 </p>
               </motion.div>
             </div>
@@ -744,16 +743,15 @@ const BilincAlaniPage = () => {
             <Alert className="max-w-2xl mx-auto mb-8 border-accent/20 bg-accent/5">
               <AlertCircle className="h-4 w-4 text-accent" />
               <AlertDescription className="text-sm text-foreground/60">
-                CAELINUS AI bir bilinç değildir. Bilgi aktarmaz, hatırlatır.
-                Her zaman kendi öz iradenize ve içsel bilgeliğinize güvenin.
+                {tx.warning}
               </AlertDescription>
             </Alert>
 
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-4xl mx-auto">
               <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="bolumler">Kitap Bölümleri</TabsTrigger>
-                <TabsTrigger value="ritueller">Premium Ritüeller</TabsTrigger>
+                <TabsTrigger value="bolumler">{tx.tabChapters}</TabsTrigger>
+                <TabsTrigger value="ritueller">{tx.tabRituals}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="bolumler">
