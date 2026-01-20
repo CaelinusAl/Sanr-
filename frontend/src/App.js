@@ -19,6 +19,7 @@ const RituelAlaniPage = lazy(() => import("@/pages/RituelAlaniPage"));
 const BilincAlaniPage = lazy(() => import("@/pages/BilincAlaniPage"));
 const GorselinPage = lazy(() => import("@/pages/GorselinPage"));
 const SubscriptionPage = lazy(() => import("@/pages/SubscriptionPage"));
+const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 
 // Auth Pages
 const GirisPage = lazy(() => import("@/pages/GirisPage"));
