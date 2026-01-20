@@ -334,29 +334,71 @@ const BolumDetay = ({ bolum, onBack, onStartChat, onStartRitual }) => {
         </CardContent>
       </Card>
 
-      {/* İlgili Ritüeller */}
-      {relatedRitueller.length > 0 && (
+      {/* İlgili Ritüeller - Premium Gating */}
+      {relatedRitueller && relatedRitueller.length > 0 && (
         <div>
-          <h3 className="font-serif text-xl text-foreground mb-4">Bu Bölüme Ait Ritüel</h3>
-          {relatedRitueller.map(rituel => (
-            <Card key={rituel.id} className="border-border/50 bg-card/50">
-              <CardContent className="p-6 flex items-center justify-between">
-                <div>
-                  <h4 className="font-serif text-lg text-foreground">{rituel.title}</h4>
-                  <p className="text-sm text-foreground/50">{rituel.duration}</p>
-                </div>
-                <Button 
-                  className="rounded-full" 
-                  size="sm"
-                  onClick={() => onStartRitual(rituel)}
-                  data-testid={`bolum-ritual-${rituel.id}`}
-                >
-                  <Play className="h-4 w-4 mr-2" />
-                  Başlat
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+          <h3 className="font-serif text-xl text-foreground mb-4 flex items-center gap-2">
+            Bu Bölüme Ait Ritüel
+            <Crown className="h-4 w-4 text-accent" />
+          </h3>
+          {relatedRitueller.map(rituel => {
+            const isPremiumUser = process.env.REACT_APP_DEMO_PREMIUM === 'true';
+            const isLocked = rituel.locked && !isPremiumUser;
+            
+            return (
+              <Card 
+                key={rituel.id} 
+                className={`border-border/50 bg-card/50 mb-3 relative overflow-hidden ${isLocked ? 'opacity-80' : ''}`}
+              >
+                {/* Locked Overlay */}
+                {isLocked && (
+                  <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] z-10 flex items-center justify-center">
+                    <div className="text-center p-4">
+                      <Lock className="h-8 w-8 text-accent/60 mx-auto mb-2" />
+                      <p className="text-sm text-foreground/60 mb-3">Premium ile aç</p>
+                      <Button size="sm" className="rounded-full bg-accent hover:bg-accent/90">
+                        <Crown className="h-3 w-3 mr-1" />
+                        Premium'a Geç
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                
+                <CardContent className="p-6 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
+                      <Sparkles className="h-5 w-5 text-accent" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-serif text-lg text-foreground">{rituel.title}</h4>
+                        {rituel.locked && <Lock className="h-3 w-3 text-foreground/40" />}
+                      </div>
+                      <p className="text-sm text-foreground/50">{rituel.desc}</p>
+                      <div className="flex items-center gap-3 mt-1 text-xs text-foreground/40">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {rituel.duration}
+                        </span>
+                        <span>{rituel.steps} adım</span>
+                        <span className="px-2 py-0.5 rounded bg-accent/10 text-accent">{rituel.level}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Button 
+                    className="rounded-full" 
+                    size="sm"
+                    onClick={() => !isLocked && onStartRitual(rituel)}
+                    disabled={isLocked}
+                    data-testid={`bolum-ritual-${rituel.id}`}
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    Başlat
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
 
