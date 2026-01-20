@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <base-config cleartextTrafficPermitted="false">
+    <!-- Internal Test: Allow cleartext for testing -->
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
     </base-config>
-    <domain-config cleartextTrafficPermitted="false">
+    <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">caelinus.com</domain>
         <domain includeSubdomains="true">www.caelinus.com</domain>
+        <domain includeSubdomains="true">sanri-guide.preview.emergentagent.com</domain>
+        <domain includeSubdomains="true">localhost</domain>
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
