@@ -80,29 +80,32 @@ class PlayRitualResponse(BaseModel):
     steps_count: int
 
 # ============== SANRI VOICE CONFIG ==============
+# SANRI VOICE konfigürasyonu artık routes/tts.py'de merkezi olarak yönetiliyor
+# Bu dosyada sadece referans için tutulmuştur
 
 SANRI_VOICE_PROMPT = """
 Voice Profile (SANRI):
-- female voice
-- warm and deep hypnotic tone
-- slow speaking pace
-- soft pauses between sentences
-- very calm, confident and nurturing presence
-- intimate and guiding
-- divine feminine energy
-- modern, grounded
-- not theatrical, not robotic
-- suitable for meditation and hypnosis
+- Female voice - Kadın sesi
+- Warm, deep, hypnotic tone - Sıcak, derin, hipnotik ton
+- Very slow speaking pace (0.78x) - Çok yavaş konuşma hızı
+- Soft pauses between sentences
+- Calm, confident, nurturing presence
+- Intimate and guiding - İçsel ve yönlendirici
+- Divine feminine energy - Dişil enerji
+- Modern, grounded - Modern, topraklanmış
+- Not theatrical, not robotic
+- Suitable for meditation and hypnosis
 - Turkish language (primary)
-- gentle breath, low pitch
-- emotional warmth without exaggeration
+- Gentle breath, low pitch
+- Emotional warmth without exaggeration
+- Purpose: Kullanıcının zihnini yavaşlatan, güven veren, içe döndüren ses
 """
 
-# OpenAI TTS Settings for SANRI Voice
+# OpenAI TTS Settings for SANRI Voice (synced with tts.py)
 SANRI_TTS_CONFIG = {
-    "voice": "nova",  # Warm feminine voice
-    "model": "tts-1-hd",  # High quality
-    "speed": 0.80  # Slow for meditation
+    "voice": "nova",       # Sıcak, derin kadın sesi
+    "model": "tts-1-hd",   # Yüksek kalite - ritüeller için şart
+    "speed": 0.78          # Çok yavaş - hipnotik etki için
 }
 
 # ============== 3 RITUAL LINES ==============
