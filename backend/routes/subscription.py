@@ -865,3 +865,254 @@ async def admin_get_upgrade_flow(request: Request):
     
     settings = await db.settings.find_one({"key": "upgrade_flow"}, {"_id": 0})
     return settings.get("value", DEFAULT_UPGRADE_FLOW) if settings else DEFAULT_UPGRADE_FLOW
+
+
+
+@router.get("/admin/users-subscriptions")
+async def admin_get_users_subscriptions(request: Request, skip: int = 0, limit: int = 50):
+    """Admin: Get all users with their subscription status"""
+    admin_token = request.cookies.get("admin_token")
+    if not admin_token:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Get users with subscription info
+    pipeline = [
+        {"$project": {
+            "_id": 0,
+            "user_id": 1,
+            "email": 1,
+            "name": 1,
+            "plan_type": {"$ifNull": ["$plan_type", "free"]},
+            "premium_until": 1,
+            "oracle_invited": {"$ifNull": ["$oracle_invited", False]},
+            "oracle_invite_code": 1,
+            "plan_upgraded_at": 1,
+            "created_at": 1,
+            "is_premium": {"$ifNull": ["$is_premium", False]}
+        }},
+        {"$sort": {"created_at": -1}},
+        {"$skip": skip},
+        {"$limit": limit}
+    ]
+    
+    users = await db.users.aggregate(pipeline).to_list(limit)
+    total = await db.users.count_documents({})
+    
+    # Count by plan
+    plan_counts = {}
+    for plan_id in PLAN_CONFIG.keys():
+        count = await db.users.count_documents({"plan_type": plan_id})
+        plan_counts[plan_id] = count
+    
+    # Free users (no plan_type field)
+    free_count = await db.users.count_documents({"$or": [
+        {"plan_type": {"$exists": False}},
+        {"plan_type": "free"}
+    ]})
+    plan_counts["free"] = free_count
+    
+    return {
+        "users": users,
+        "total": total,
+        "skip": skip,
+        "limit": limit,
+        "plan_counts": plan_counts
+    }
+
+@router.post("/admin/set-user-plan")
+async def admin_set_user_plan(request: Request, user_id: str, plan_type: str, duration_days: int = 30):
+    """Admin: Manually set a user's plan (upgrade or downgrade)"""
+    admin_token = request.cookies.get("admin_token")
+    if not admin_token:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    if plan_type not in PLAN_CONFIG:
+        raise HTTPException(status_code=400, detail=f"Invalid plan type: {plan_type}")
+    
+    # Check if user exists
+    user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    old_plan = user.get("plan_type", "free")
+    
+    # Calculate expiry
+    if plan_type == "free":
+        expiry = None
+        is_premium = False
+    else:
+        expiry = datetime.now(timezone.utc) + timedelta(days=duration_days)
+        is_premium = True
+    
+    # Update user
+    update_data = {
+        "plan_type": plan_type,
+        "is_premium": is_premium,
+        "plan_upgraded_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    if expiry:
+        update_data["premium_until"] = expiry.isoformat()
+    else:
+        update_data["premium_until"] = None
+    
+    # Oracle-specific
+    if plan_type == "oracle":
+        update_data["oracle_invited"] = True
+    
+    await db.users.update_one(
+        {"user_id": user_id},
+        {"$set": update_data}
+    )
+    
+    # Log the action
+    await db.subscription_logs.insert_one({
+        "user_id": user_id,
+        "action": "admin_set_plan",
+        "from_plan": old_plan,
+        "to_plan": plan_type,
+        "duration_days": duration_days,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "admin_action": True
+    })
+    
+    return {
+        "success": True,
+        "user_id": user_id,
+        "old_plan": old_plan,
+        "new_plan": plan_type,
+        "premium_until": expiry.isoformat() if expiry else None
+    }
+
+@router.post("/admin/activate-oracle")
+async def admin_activate_oracle(request: Request, user_id: str, duration_days: int = 365):
+    """Admin: Activate Oracle tier for a user (with invitation)"""
+    admin_token = request.cookies.get("admin_token")
+    if not admin_token:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Check if user exists
+    user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    expiry = datetime.now(timezone.utc) + timedelta(days=duration_days)
+    
+    # Generate special Oracle invite code for this user
+    oracle_code = f"ORACLE-{secrets.token_hex(4).upper()}"
+    
+    await db.users.update_one(
+        {"user_id": user_id},
+        {"$set": {
+            "plan_type": "oracle",
+            "premium_until": expiry.isoformat(),
+            "is_premium": True,
+            "oracle_invited": True,
+            "oracle_invite_code": oracle_code,
+            "oracle_activated_at": datetime.now(timezone.utc).isoformat(),
+            "plan_upgraded_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Log
+    await db.subscription_logs.insert_one({
+        "user_id": user_id,
+        "action": "admin_activate_oracle",
+        "oracle_code": oracle_code,
+        "duration_days": duration_days,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {
+        "success": True,
+        "user_id": user_id,
+        "plan_type": "oracle",
+        "oracle_code": oracle_code,
+        "premium_until": expiry.isoformat()
+    }
+
+@router.delete("/admin/invite-code/{code}")
+async def admin_delete_invite_code(request: Request, code: str):
+    """Admin: Delete an invite code"""
+    admin_token = request.cookies.get("admin_token")
+    if not admin_token:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    result = await db.invite_codes.delete_one({"code": code.upper()})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Invite code not found")
+    
+    return {"success": True, "deleted_code": code}
+
+@router.get("/admin/subscription-logs")
+async def admin_get_subscription_logs(request: Request, user_id: str = None, limit: int = 100):
+    """Admin: Get subscription activity logs"""
+    admin_token = request.cookies.get("admin_token")
+    if not admin_token:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    query = {}
+    if user_id:
+        query["user_id"] = user_id
+    
+    logs = await db.subscription_logs.find(query, {"_id": 0}).sort("timestamp", -1).to_list(limit)
+    
+    return {"logs": logs, "count": len(logs)}
+
+@router.get("/admin/subscription-stats")
+async def admin_get_subscription_stats(request: Request):
+    """Admin: Get overall subscription statistics"""
+    admin_token = request.cookies.get("admin_token")
+    if not admin_token:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    total_users = await db.users.count_documents({})
+    
+    # Count by plan
+    plan_stats = {}
+    for plan_id in PLAN_CONFIG.keys():
+        if plan_id == "free":
+            count = await db.users.count_documents({"$or": [
+                {"plan_type": {"$exists": False}},
+                {"plan_type": "free"}
+            ]})
+        else:
+            count = await db.users.count_documents({"plan_type": plan_id})
+        plan_stats[plan_id] = count
+    
+    # Active premium users (not expired)
+    now = datetime.now(timezone.utc).isoformat()
+    active_premium = await db.users.count_documents({
+        "plan_type": {"$ne": "free"},
+        "premium_until": {"$gt": now}
+    })
+    
+    # Oracle invites
+    oracle_invited = await db.users.count_documents({"oracle_invited": True})
+    
+    # Invite codes stats
+    total_codes = await db.invite_codes.count_documents({})
+    active_codes = await db.invite_codes.count_documents({
+        "expires_at": {"$gt": now},
+        "$expr": {"$lt": ["$uses", "$max_uses"]}
+    })
+    
+    # Recent upgrades (last 7 days)
+    week_ago = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+    recent_upgrades = await db.subscription_logs.count_documents({
+        "action": {"$in": ["upgrade", "admin_set_plan", "redeem_invite"]},
+        "timestamp": {"$gte": week_ago}
+    })
+    
+    return {
+        "total_users": total_users,
+        "plan_distribution": plan_stats,
+        "active_premium": active_premium,
+        "oracle_invited": oracle_invited,
+        "invite_codes": {
+            "total": total_codes,
+            "active": active_codes
+        },
+        "recent_upgrades_7d": recent_upgrades
+    }
