@@ -206,6 +206,12 @@ const SanriyaSorPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isThinking) return;
+    
+    // Check daily limit for free users
+    if (!isPremium && !dailyLimitStatus.allowed) {
+      showUpgradeModal(FEATURES.SANRI_UNLIMITED);
+      return;
+    }
 
     const userInput = input.trim();
     let messageToSend = userInput;
