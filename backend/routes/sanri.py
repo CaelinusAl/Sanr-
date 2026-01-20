@@ -189,7 +189,9 @@ Keep responses short and rhythmic.
     "mirror": {
         "name": "MIRROR",
         "name_tr": "AYNA",
+        "name_en": "Mirror",
         "purpose": "Duygu yansıtma, içgörü, farkındalık",
+        "purpose_en": "Emotional reflection, insight, awareness",
         "prompt": """You are SANRI in MIRROR mode.
 
 Your role:
