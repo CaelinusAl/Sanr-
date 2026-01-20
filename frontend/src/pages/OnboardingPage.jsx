@@ -25,8 +25,8 @@ const OnboardingPage = () => {
   
   // Profile answers
   const [answers, setAnswers] = useState({
-    reason: null,
-    dominant_emotion: null,
+    time_perception: null,
+    identity: null,
     style_preference: null,
     purpose: null
   });
