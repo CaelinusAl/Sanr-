@@ -456,7 +456,7 @@ const RituelDeneyimi = ({ rituel, onClose, onComplete, t }) => {
           <p className="text-foreground/60 mb-8">{rituel.title}</p>
           
           <p className="font-serif text-lg text-foreground/80 italic mb-8">
-            "{t('rituel.complete.note')}"
+            &ldquo;{t('rituel.complete.note')}&rdquo;
           </p>
 
           <div className="flex gap-4 justify-center">
