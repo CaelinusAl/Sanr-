@@ -903,6 +903,14 @@ def calculate_interaction_depth(text: str) -> int:
 
 SanriMode = Literal["dream", "mirror", "divine", "shadow", "light"]
 SystemLanguage = Literal["tr", "en"]
+ContentDomain = Literal["awakened_cities", "consciousness_field", "frequency_field", "ritual_space", "neural_ecstasy", "book_112"]
+
+class CityMetadata(BaseModel):
+    """City context for Awakened Cities domain"""
+    city_name: str
+    goddess_archetype: Optional[str] = None
+    frequency_signature: Optional[str] = None
+    symbolic_role: Optional[str] = None
 
 class SanriRequest(BaseModel):
     message: str
@@ -911,6 +919,8 @@ class SanriRequest(BaseModel):
     mode: Optional[SanriMode] = None
     message_type: Optional[str] = "general"
     system_language: Optional[SystemLanguage] = "tr"  # TR/EN bilingual support
+    domain: Optional[ContentDomain] = None  # Manual domain selection
+    city_data: Optional[CityMetadata] = None  # City context for Awakened Cities
 
 class SanriResponse(BaseModel):
     response: str
@@ -918,6 +928,8 @@ class SanriResponse(BaseModel):
     mode: str
     mode_name_tr: str
     mode_name_en: str  # Added for bilingual support
+    domain: str  # Active domain
+    domain_name: str  # Domain display name
     timestamp: str
     language: str  # Response language
     profile_updated: bool = False  # Indicates if consciousness profile was updated
