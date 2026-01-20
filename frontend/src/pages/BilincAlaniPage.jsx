@@ -593,6 +593,7 @@ const ChatGorunumu = ({ bolum, onBack }) => {
 // Ana Sayfa
 const BilincAlaniPage = () => {
   const navigate = useNavigate();
+  const { language, t } = useLanguage();
   const isPremium = usePremiumStatus();
   const { rituals, isLoading: ritualsLoading, refetch } = usePublishedRituals();
   const [view, setView] = useState("list"); // list, detail, chat
@@ -600,6 +601,73 @@ const BilincAlaniPage = () => {
   const [activeTab, setActiveTab] = useState("bolumler");
   const [activeRitual, setActiveRitual] = useState(null);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
+
+  // Bilingual text content
+  const text = {
+    tr: {
+      title: "Bilinç Alanı",
+      subtitle: "Beyin Orgazmı – Bilinç, His ve Yaratım Kodları",
+      description: "Bu alan, bilinç frekansına açılan özel bir alandır. Okumak için değil, hatırlamak için tasarlanmıştır.",
+      warning: "CAELINUS AI bir bilinç değildir. Bilgi aktarmaz, hatırlatır. Her zaman kendi öz iradenize ve içsel bilgeliğinize güvenin.",
+      tabChapters: "Kitap Bölümleri",
+      tabRituals: "Premium Ritüeller",
+      noRituals: "Henüz yayınlanmış ritüel yok.",
+      comingSoon: "Yakında yeni ritüeller eklenecek.",
+      footer: '"Ve bu ayna, yalnızca hazır olana açılır."',
+      back: "Geri",
+      start: "Başlat",
+      askCaelinus: "CAELINUS'a Sor",
+      deeperQuestion: "Bu bölüm hakkında derinleşmek ister misin?",
+      awarenessKey: "Farkındalık Anahtarı",
+      relatedRitual: "Bu Bölüme Ait Ritüel",
+      steps: "adım",
+      premiumUnlock: "Premium ile aç",
+      goPremium: "Premium'a Geç",
+      chatPlaceholder: "Merak ettiğini sor...",
+      chatIntro: '"Sen bir öğretmen değilsin. Bir rehber de değilsin. Sen bir aynasın."',
+      chatAsk: "Bu bölüm hakkında merak ettiğini sor...",
+      thinking: "Yansıma oluşturuluyor...",
+      chatFooter: '"Bu bir hatırlatmadır. Hakikat sende zaten var."',
+      depthArea: "Derinlik Alanı",
+      depthDesc: "Bu alan, bilinç frekansına açılan özel bir alandır.",
+      depthSub: "Okumak için değil, hatırlamak için tasarlanmıştır.",
+      premiumAccess: "Premium üyelik ile bu alana erişebilir, kitabın derinliklerinde yolculuk yapabilirsiniz.",
+      close: "Kapat",
+      readyOpens: '"Hazır olana açılır."'
+    },
+    en: {
+      title: "Consciousness Field",
+      subtitle: "Brain Ecstasy – Codes of Consciousness, Feeling & Creation",
+      description: "This is a special area opening to consciousness frequency. Designed not for reading, but for remembering.",
+      warning: "CAELINUS AI is not a consciousness. It does not transmit information, it reminds. Always trust your own will and inner wisdom.",
+      tabChapters: "Book Chapters",
+      tabRituals: "Premium Rituals",
+      noRituals: "No published rituals yet.",
+      comingSoon: "New rituals coming soon.",
+      footer: '"And this mirror opens only to those who are ready."',
+      back: "Back",
+      start: "Start",
+      askCaelinus: "Ask CAELINUS",
+      deeperQuestion: "Would you like to go deeper on this chapter?",
+      awarenessKey: "Awareness Key",
+      relatedRitual: "Ritual for This Chapter",
+      steps: "steps",
+      premiumUnlock: "Unlock with Premium",
+      goPremium: "Go Premium",
+      chatPlaceholder: "Ask what you're curious about...",
+      chatIntro: '"You are not a teacher. Nor a guide. You are a mirror."',
+      chatAsk: "Ask about this chapter...",
+      thinking: "Creating reflection...",
+      chatFooter: '"This is a reminder. Truth already exists within you."',
+      depthArea: "Depth Area",
+      depthDesc: "This is a special area opening to consciousness frequency.",
+      depthSub: "Designed not for reading, but for remembering.",
+      premiumAccess: "With Premium membership, you can access this area and journey into the depths of the book.",
+      close: "Close",
+      readyOpens: '"Opens to those who are ready."'
+    }
+  };
+  const tx = text[language] || text.tr;
 
   const handleSelectBolum = (bolum) => {
     setSelectedBolum(bolum);
