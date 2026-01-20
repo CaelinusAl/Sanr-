@@ -46,9 +46,16 @@ DOMAIN_CONFIGS = {
     "awakened_cities": {
         "name": "Awakened Cities",
         "name_tr": "Uyanmış Şehirler",
+        "subtitle_en": "Living memory fields of Anatolia",
+        "subtitle_tr": "Anadolu'nun yaşayan hafıza alanları",
         "purpose": "Cities as symbolic consciousness archetypes and awakened feminine frequencies",
         "purpose_tr": "Şehirler sembolik bilinç arketipleri ve uyanmış dişil frekanslar olarak",
-        "prompt_en": """Domain: Awakened Cities
+        "prompt_en": """Language Mode:
+- City interpretations must be generated FULLY in English when EN is active.
+- No Turkish city mythology phrasing allowed.
+- Cultural expressions must be universal, not nationalistic.
+
+Domain: Awakened Cities
 
 Purpose: Present cities as symbolic consciousness archetypes and awakened feminine frequencies.
 
@@ -96,9 +103,15 @@ Hedef: Coğrafyanın yaşayan bilinç olarak sembolik algısını uyandırmak.""
     "consciousness_field": {
         "name": "Consciousness Field",
         "name_tr": "Bilinç Alanı",
+        "subtitle_en": "Where perception reorganizes itself",
+        "subtitle_tr": "Algının kendini yeniden düzenlediği yer",
         "purpose": "Guide through awareness, perception layers, identity dissolution, inner observation",
         "purpose_tr": "Farkındalık, algı katmanları, kimlik çözülmesi, iç gözlem rehberliği",
-        "prompt_en": """Domain: Consciousness Field
+        "prompt_en": """Language Mode:
+- Always respond in English when interface_language = EN.
+- Philosophical and reflective content must maintain depth in English translation.
+
+Domain: Consciousness Field
 
 Purpose: Guide the user through awareness, perception layers, identity dissolution, and inner observation.
 
