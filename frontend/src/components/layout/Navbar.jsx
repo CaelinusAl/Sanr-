@@ -1,26 +1,29 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Moon, Sun, Menu, Crown } from "lucide-react";
+import { Moon, Sun, Menu, Crown, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-
-const navLinks = [
-  { href: "/", label: "Başlangıç" },
-  { href: "/sehirler", label: "Şehirler" },
-  { href: "/bilinc", label: "Bilinç" },
-  { href: "/frekans", label: "Frekans" },
-  { href: "/rituel", label: "Ritüel" },
-  { href: "/sanriya-sor", label: "SANRI'ya Sor" },
-  { href: "/gorselin", label: "Görselin", isNew: true },
-  { href: "/bilinc-alani", label: "Bilinç Alanı", isPremium: true },
-  { href: "/hakkinda", label: "Hakkında" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const Navbar = ({ isDark, toggleTheme }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const { t, language, toggleLanguage } = useLanguage();
+
+  // Navigation links with translation
+  const navLinks = [
+    { href: "/", label: t('nav.home') },
+    { href: "/sehirler", label: t('nav.cities') },
+    { href: "/bilinc", label: t('nav.bilinc') },
+    { href: "/frekans", label: t('nav.frekans') },
+    { href: "/rituel", label: t('nav.rituel') },
+    { href: "/sanriya-sor", label: t('nav.sanri') },
+    { href: "/gorselin", label: t('nav.gorselin'), isNew: true },
+    { href: "/bilinc-alani", label: t('nav.bilincAlani'), isPremium: true },
+    { href: "/hakkinda", label: t('nav.about') },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,7 +55,7 @@ export const Navbar = ({ isDark, toggleTheme }) => {
               CAELINUS
             </span>
             <span className="text-[10px] tracking-[0.2em] text-foreground/60 uppercase">
-              Anadolu'nun Tanrıçaları
+              {language === 'en' ? "Goddesses of Anatolia" : "Anadolu'nun Tanrıçaları"}
             </span>
           </div>
         </Link>
@@ -70,14 +73,31 @@ export const Navbar = ({ isDark, toggleTheme }) => {
               }`}
             >
               {link.isPremium && <Crown className="h-3.5 w-3.5 text-accent" />}
-              {link.isNew && <span className="text-[9px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-500 rounded-full uppercase tracking-wider font-semibold">Yeni</span>}
+              {link.isNew && (
+                <span className="text-[9px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-500 rounded-full uppercase tracking-wider font-semibold">
+                  {t('common.new')}
+                </span>
+              )}
               {link.label}
             </Link>
           ))}
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          {/* Language Toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleLanguage}
+            className="rounded-full hover:bg-primary/10 px-3 hidden sm:flex items-center gap-1.5"
+            data-testid="nav-language-toggle"
+          >
+            <Globe className="h-4 w-4" />
+            <span className="text-xs font-medium">{language.toUpperCase()}</span>
+          </Button>
+
+          {/* Theme Toggle */}
           <Button
             variant="ghost"
             size="icon"
@@ -119,6 +139,19 @@ export const Navbar = ({ isDark, toggleTheme }) => {
             </SheetTrigger>
             <SheetContent side="right" className="w-80 bg-background/98 backdrop-blur-xl border-l border-border/50">
               <div className="flex flex-col h-full pt-12">
+                {/* Mobile Language Toggle */}
+                <div className="flex justify-center mb-6">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={toggleLanguage}
+                    className="rounded-full px-4 flex items-center gap-2"
+                  >
+                    <Globe className="h-4 w-4" />
+                    <span>{language === 'tr' ? 'Türkçe' : 'English'}</span>
+                  </Button>
+                </div>
+
                 <nav className="flex flex-col gap-5">
                   {navLinks.map((link, index) => (
                     <motion.div
@@ -145,7 +178,7 @@ export const Navbar = ({ isDark, toggleTheme }) => {
                 
                 <div className="mt-auto pb-8">
                   <p className="text-sm text-foreground/50 font-serif italic">
-                    "Hatırlamak dışarıda başlar.<br/>Anlamak içeride olur."
+                    "{t('footer.quote')}"
                   </p>
                 </div>
               </div>
