@@ -390,7 +390,7 @@ const SanriyaSorPage = () => {
                             transition={{ delay: 1 }}
                             className="text-sm text-foreground/50 text-center italic pt-6 mt-6 border-t border-accent/10"
                           >
-                            "Bu bir yorumdur, kesinlik taşımaz. Anlam, sende şekillenir."
+                            &quot;Bu bir yorumdur, kesinlik taşımaz. Anlam, sende şekillenir.&quot;
                           </motion.p>
                         </CardContent>
                       </Card>
