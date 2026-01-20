@@ -91,8 +91,9 @@ class BookVoiceRequest(BaseModel):
 @router.post("/generate", response_model=TTSResponse)
 async def generate_tts(request: TTSRequest):
     """
-    Generate text-to-speech audio for ritual narration
-    Voice: Feminine, warm, slow for consciousness guidance
+    Generate text-to-speech audio with SANRI or BOOK voice profile
+    SANRI: Hipnotik, rehber, bilinç açıcı - Ritüeller için
+    BOOK: Akıcı, sıcak anlatıcı - Kitap okumaları için
     """
     try:
         client = get_tts_client()
@@ -103,10 +104,18 @@ async def generate_tts(request: TTSRequest):
                 detail="Ses servisi yapılandırılmamış. EMERGENT_LLM_KEY gerekli."
             )
         
-        # Use Caelinus defaults or request overrides
-        voice = request.voice or CAELINUS_VOICE
-        model = request.model or CAELINUS_MODEL
-        speed = request.speed or CAELINUS_SPEED
+        # Select voice profile configuration
+        if request.voice_profile == "book":
+            config = CAELINUS_BOOK_VOICE_CONFIG
+        elif request.voice_profile == "custom" and request.voice:
+            config = {"voice": request.voice, "model": "tts-1-hd", "speed": 0.85}
+        else:
+            config = SANRI_VOICE_CONFIG
+        
+        # Use config defaults or request overrides
+        voice = request.voice or config["voice"]
+        model = request.model or config["model"]
+        speed = request.speed or config["speed"]
         
         # Validate text length (OpenAI limit: 4096 chars)
         if len(request.text) > 4096:
@@ -127,13 +136,14 @@ async def generate_tts(request: TTSRequest):
         # Create data URL for audio
         audio_url = f"data:audio/mpeg;base64,{audio_base64}"
         
-        logger.info(f"TTS generated: {len(request.text)} chars, voice={voice}, model={model}")
+        logger.info(f"TTS generated: {len(request.text)} chars, voice={voice}, profile={request.voice_profile}")
         
         return TTSResponse(
             audio_url=audio_url,
             text=request.text,
             voice=voice,
-            model=model
+            model=model,
+            voice_profile=request.voice_profile or "sanri"
         )
         
     except HTTPException:
