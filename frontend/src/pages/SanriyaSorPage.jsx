@@ -271,6 +271,7 @@ const SanriyaSorPage = () => {
     setInput("");
     setSessionId(null);
     setError(null);
+    setSelectedDomain(null); // Reset domain to auto-detect
     handleRemoveImage();
   };
 
