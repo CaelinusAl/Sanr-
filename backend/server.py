@@ -25,6 +25,7 @@ from routes.user_management import router as user_management_router, set_databas
 from routes.admin_users import router as admin_users_router, set_database as set_admin_users_db
 from routes.consciousness_profile import router as consciousness_router, set_database as set_consciousness_db
 from routes.subscription import router as subscription_router, set_database as set_subscription_db
+from routes.profile import router as profile_router, set_database as set_profile_db
 
 
 ROOT_DIR = Path(__file__).parent
