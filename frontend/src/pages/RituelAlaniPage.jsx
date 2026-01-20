@@ -773,6 +773,7 @@ const RituelAlaniPage = () => {
   const [selectedKapi, setSelectedKapi] = useState(null);
   const [activeRituel, setActiveRituel] = useState(null);
   const [activeTab, setActiveTab] = useState("moduller");
+  const [premiumRitualPlayer, setPremiumRitualPlayer] = useState({ open: false, ritual: null });
 
   const handleStartRituel = (rituel) => {
     setActiveRituel(rituel);
@@ -780,6 +781,14 @@ const RituelAlaniPage = () => {
 
   const handleCloseRituel = () => {
     setActiveRituel(null);
+  };
+
+  const handleStartPremiumRitual = (ritual) => {
+    setPremiumRitualPlayer({ open: true, ritual });
+  };
+
+  const handleClosePremiumRitual = () => {
+    setPremiumRitualPlayer({ open: false, ritual: null });
   };
 
   const handleReady = () => {
