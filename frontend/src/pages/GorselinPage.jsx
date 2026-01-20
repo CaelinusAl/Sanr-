@@ -458,10 +458,13 @@ const GorselinPage = () => {
               data-testid="generate-button"
             >
               {isGenerating ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Hologram Oluşturuluyor...
-                </>
+                <div className="flex flex-col items-center gap-1">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>{generateProgress || 'Hologram Oluşturuluyor...'}</span>
+                  </div>
+                  <span className="text-xs text-white/60">Bu işlem 30-60 saniye sürebilir</span>
+                </div>
               ) : (
                 <>
                   <Wand2 className="w-5 h-5 mr-2" />
@@ -469,6 +472,31 @@ const GorselinPage = () => {
                 </>
               )}
             </Button>
+
+            {/* Generate Error */}
+            {generateError && !isGenerating && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-red-500/10 border border-red-500/30 rounded-xl p-4"
+              >
+                <div className="flex items-center gap-3">
+                  <Wand2 className="w-5 h-5 text-red-400" />
+                  <div className="flex-1">
+                    <p className="text-red-300 text-sm">{generateError}</p>
+                  </div>
+                  <Button
+                    onClick={() => { setGenerateError(null); handleGenerate(); }}
+                    variant="outline"
+                    size="sm"
+                    className="bg-red-500/10 border-red-500/30 text-red-300 hover:bg-red-500/20"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-1" />
+                    Tekrar
+                  </Button>
+                </div>
+              </motion.div>
+            )}
 
             {/* Generated Images */}
             <AnimatePresence>
