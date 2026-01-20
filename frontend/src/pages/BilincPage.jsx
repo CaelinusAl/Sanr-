@@ -94,7 +94,7 @@ const BilincPage = () => {
                     >
                       <div className="text-center">
                         <p className="text-muted-foreground text-sm italic mb-8">
-                          "{currentText.question}"
+                          &quot;{currentText.question}&quot;
                         </p>
                       </div>
 
