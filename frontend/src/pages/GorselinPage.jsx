@@ -706,58 +706,127 @@ const GorselinPage = () => {
                   exit={{ opacity: 0, y: -20 }}
                   className="space-y-4"
                 >
-                  {/* Gördüğüm */}
-                  <Card className="bg-white/[0.03] border-white/10">
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <ImageIcon className="w-4 h-4 text-indigo-400" />
-                        <Label className="text-indigo-300 font-medium">Gördüğüm</Label>
-                      </div>
-                      <p className="text-white/80 leading-relaxed">{analysisResult.seen}</p>
-                    </CardContent>
-                  </Card>
+                  {/* Surface Layer - Görünen Katman */}
+                  {analysisResult.surface && (
+                    <Card className="bg-white/[0.03] border-white/10">
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-lg">🜂</span>
+                          <Label className="text-indigo-300 font-medium">YÜZEY – GÖRÜNEN KATMAN</Label>
+                        </div>
+                        <div className="text-white/80 leading-relaxed whitespace-pre-line">
+                          {analysisResult.surface.replace(/🜂\s*YÜZEY[^\n]*\n?/i, '')}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
 
-                  {/* Sembolik Okuma */}
-                  <Card className="bg-gradient-to-br from-indigo-950/50 to-violet-950/30 border-indigo-500/20">
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Sparkles className="w-4 h-4 text-violet-400" />
-                        <Label className="text-violet-300 font-medium">Sembolik Okuma</Label>
-                      </div>
-                      <p className="text-white/90 leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                        {analysisResult.symbolic}
-                      </p>
-                    </CardContent>
-                  </Card>
+                  {/* Consciousness Layer - Gizli Akış */}
+                  {analysisResult.consciousness && (
+                    <Card className="bg-gradient-to-br from-indigo-950/50 to-violet-950/30 border-indigo-500/20">
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-lg">🜁</span>
+                          <Label className="text-violet-300 font-medium">BİLİNÇ – GİZLİ AKIŞ</Label>
+                        </div>
+                        <div className="text-white/90 leading-relaxed whitespace-pre-line" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                          {analysisResult.consciousness.replace(/🜁\s*BİLİNÇ[^\n]*\n?/i, '')}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
 
-                  {/* Yansıma Soruları */}
-                  <Card className="bg-white/[0.03] border-white/10">
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <MessageCircle className="w-4 h-4 text-cyan-400" />
-                        <Label className="text-cyan-300 font-medium">Yansıma Soruları</Label>
-                      </div>
-                      <div className="space-y-3">
-                        {analysisResult.questions.map((question, idx) => (
-                          <div key={idx} className="flex items-start gap-3">
-                            <span className="text-cyan-500/50 font-mono text-sm">{idx + 1}.</span>
-                            <p className="text-white/70 italic">{question}</p>
+                  {/* Destiny Layer - Yön ve Zaman */}
+                  {analysisResult.destiny && (
+                    <Card className="bg-gradient-to-br from-purple-950/50 to-pink-950/30 border-purple-500/20">
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-lg">🜃</span>
+                          <Label className="text-purple-300 font-medium">KADER – YÖN VE ZAMAN</Label>
+                        </div>
+                        <div className="text-white/90 leading-relaxed whitespace-pre-line" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                          {analysisResult.destiny.replace(/🜃\s*KADER[^\n]*\n?/i, '')}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Reminder - Hatırlatma */}
+                  {analysisResult.reminder && (
+                    <Card className="bg-gradient-to-br from-amber-950/30 to-orange-950/20 border-amber-500/20">
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Heart className="w-4 h-4 text-amber-400" />
+                          <Label className="text-amber-300 font-medium">HATIRLATMA</Label>
+                        </div>
+                        <p className="text-white/80 leading-relaxed italic" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                          {analysisResult.reminder}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Fallback for old format compatibility */}
+                  {!analysisResult.surface && !analysisResult.consciousness && !analysisResult.destiny && analysisResult.seen && (
+                    <>
+                      {/* Old format - Gördüğüm */}
+                      <Card className="bg-white/[0.03] border-white/10">
+                        <CardContent className="p-6">
+                          <div className="flex items-center gap-2 mb-3">
+                            <ImageIcon className="w-4 h-4 text-indigo-400" />
+                            <Label className="text-indigo-300 font-medium">Gördüğüm</Label>
                           </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                          <p className="text-white/80 leading-relaxed">{analysisResult.seen}</p>
+                        </CardContent>
+                      </Card>
 
-                  {/* Mini Ritüel */}
-                  <Card className="bg-gradient-to-br from-amber-950/30 to-orange-950/20 border-amber-500/20">
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Heart className="w-4 h-4 text-amber-400" />
-                        <Label className="text-amber-300 font-medium">Mini Ritüel</Label>
-                      </div>
-                      <p className="text-white/80 leading-relaxed">{analysisResult.ritual}</p>
-                    </CardContent>
-                  </Card>
+                      {/* Old format - Sembolik Okuma */}
+                      <Card className="bg-gradient-to-br from-indigo-950/50 to-violet-950/30 border-indigo-500/20">
+                        <CardContent className="p-6">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Sparkles className="w-4 h-4 text-violet-400" />
+                            <Label className="text-violet-300 font-medium">Sembolik Okuma</Label>
+                          </div>
+                          <p className="text-white/90 leading-relaxed" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                            {analysisResult.symbolic}
+                          </p>
+                        </CardContent>
+                      </Card>
+
+                      {/* Old format - Yansıma Soruları */}
+                      {analysisResult.questions && analysisResult.questions.length > 0 && (
+                        <Card className="bg-white/[0.03] border-white/10">
+                          <CardContent className="p-6">
+                            <div className="flex items-center gap-2 mb-4">
+                              <MessageCircle className="w-4 h-4 text-cyan-400" />
+                              <Label className="text-cyan-300 font-medium">Yansıma Soruları</Label>
+                            </div>
+                            <div className="space-y-3">
+                              {analysisResult.questions.map((question, idx) => (
+                                <div key={idx} className="flex items-start gap-3">
+                                  <span className="text-cyan-500/50 font-mono text-sm">{idx + 1}.</span>
+                                  <p className="text-white/70 italic">{question}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Old format - Mini Ritüel */}
+                      {analysisResult.ritual && (
+                        <Card className="bg-gradient-to-br from-amber-950/30 to-orange-950/20 border-amber-500/20">
+                          <CardContent className="p-6">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Heart className="w-4 h-4 text-amber-400" />
+                              <Label className="text-amber-300 font-medium">Mini Ritüel</Label>
+                            </div>
+                            <p className="text-white/80 leading-relaxed">{analysisResult.ritual}</p>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </>
+                  )}
 
                   {/* Premium CTA */}
                   {!IS_PREMIUM && (
