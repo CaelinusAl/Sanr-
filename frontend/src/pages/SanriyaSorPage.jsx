@@ -76,6 +76,18 @@ const ImagePreview = ({ image, onRemove }) => {
 
 const SanriyaSorPage = () => {
   const { t, language } = useLanguage();
+  const { 
+    isPremium, 
+    currentPlan, 
+    hasFeature, 
+    checkDailyLimit, 
+    showUpgradeModal,
+    isUpgradeModalOpen,
+    hideUpgradeModal
+  } = usePremium();
+  
+  // Check daily limit for SANRI
+  const dailyLimitStatus = checkDailyLimit('sanri_daily');
   
   // SANRI 5 Bilinç Modu - dynamically translated
   const readingModes = {
