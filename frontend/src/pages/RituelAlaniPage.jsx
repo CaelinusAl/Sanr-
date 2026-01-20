@@ -914,7 +914,7 @@ const RituelAlaniPage = () => {
                 <ChevronLeft className="h-4 w-4 mr-2" />
                 {t('common.back')}
               </Button>
-              <KapiSecimi onSelectKapi={handleSelectKapi} />
+              <KapiSecimi onSelectKapi={handleSelectKapi} t={t} language={language} />
             </motion.div>
           )}
         </AnimatePresence>
