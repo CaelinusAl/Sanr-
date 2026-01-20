@@ -774,8 +774,8 @@ const BilincAlaniPage = () => {
                 ) : rituals.length === 0 ? (
                   <div className="text-center py-16">
                     <Sparkles className="w-12 h-12 mx-auto mb-4 text-foreground/20" />
-                    <p className="text-foreground/50">Henüz yayınlanmış ritüel yok.</p>
-                    <p className="text-sm text-foreground/30 mt-2">Yakında yeni ritüeller eklenecek.</p>
+                    <p className="text-foreground/50">{tx.noRituals}</p>
+                    <p className="text-sm text-foreground/30 mt-2">{tx.comingSoon}</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -799,7 +799,7 @@ const BilincAlaniPage = () => {
                                 <Clock className="w-3 h-3 inline-block mr-1" />
                                 {ritual.duration || `${ritual.duration_minutes} dk`}
                                 {" • "}
-                                {ritual.steps?.length || 0} adım
+                                {ritual.steps?.length || 0} {tx.steps}
                               </p>
                             </div>
                           </div>
