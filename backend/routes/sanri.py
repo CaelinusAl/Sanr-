@@ -281,9 +281,15 @@ Hedef: Bedenlenmiş farkındalık deneyimleri sunmak."""
     "neural_ecstasy": {
         "name": "Neural Ecstasy",
         "name_tr": "Beyin Orgazmı Kütüphanesi",
+        "subtitle_en": "Codes of pleasure, creation, and awareness",
+        "subtitle_tr": "Hazzın, yaratımın ve farkındalığın kodları",
         "purpose": "Explore peak mental clarity, emotional release, aesthetic pleasure, insight moments",
         "purpose_tr": "Zirve zihinsel berraklık, duygusal salınım, estetik haz, içgörü anları",
-        "prompt_en": """Domain: Neural Ecstasy
+        "prompt_en": """Language Mode:
+- Neuro-aesthetic and cognitive pleasure language must be generated in English when EN is active.
+- Maintain elegance and scientific-poetic tone in translation.
+
+Domain: Neural Ecstasy
 
 Purpose: Explore peak mental clarity, emotional release, aesthetic pleasure, insight moments, and neural coherence states.
 
@@ -337,6 +343,8 @@ Hedef: Yükseltilmiş bilişsel hazzı farkındalık deneyimi olarak sunmak."""
     "book_112": {
         "name": "Book 112 · The Self-Creating Goddess",
         "name_tr": "112. Kitap · Kendini Yaratan Tanrıça",
+        "subtitle_en": "The Self-Creating Goddess Archive",
+        "subtitle_tr": "Kendini Yaratan Tanrıça Arşivi",
         "purpose": "Transmit symbolic philosophy, feminine consciousness, self-creation, divine remembrance",
         "purpose_tr": "Sembolik felsefe, dişil bilinç, öz-yaratım, ilahi hatırlayış iletimi",
         "prompt_en": """Domain: Book 112 · The Self-Creating Goddess
