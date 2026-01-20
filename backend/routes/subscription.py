@@ -31,16 +31,16 @@ PLAN_CONFIG = {
     "free": {
         "id": "free",
         "name": {
-            "tr": "Arayıcı",
-            "en": "Seeker"
+            "tr": "Başlangıç",
+            "en": "Observer"
         },
         "display_name": {
-            "tr": "Başlangıç – Arayıcı",
-            "en": "Begin Your Journey"
+            "tr": "Başlangıç Kapısı",
+            "en": "Begin Journey"
         },
         "description": {
-            "tr": "Keşif ve merak modu. Derinliği görmeden hisset.",
-            "en": "Discovery mode. Feel the depth before you see it."
+            "tr": "İlk kapıdan geçtin. Keşfet ve hisset.",
+            "en": "You have entered the first gate."
         },
         "price": {
             "tr": {"amount": 0, "currency": "TRY", "period": "month"},
@@ -68,8 +68,8 @@ PLAN_CONFIG = {
         },
         "order": 0
     },
-    "initiate": {
-        "id": "initiate",
+    "initiation": {
+        "id": "initiation",
         "name": {
             "tr": "İnisiye",
             "en": "Initiate"
@@ -83,11 +83,11 @@ PLAN_CONFIG = {
             "en": "You are no longer searching. You are remembering."
         },
         "price": {
-            "tr": {"amount": 199, "currency": "TRY", "period": "month"},
+            "tr": {"amount": 149, "currency": "TRY", "period": "month"},
             "en": {"amount": 9.99, "currency": "EUR", "period": "month"}
         },
         "yearly_price": {
-            "tr": {"amount": 1990, "currency": "TRY", "period": "year"},
+            "tr": {"amount": 1490, "currency": "TRY", "period": "year"},
             "en": {"amount": 99, "currency": "EUR", "period": "year"}
         },
         "features": {
@@ -107,6 +107,7 @@ PLAN_CONFIG = {
             "cities_full": True,
             "cities_sanri": False,
             "profile_mirror": True,
+            "profile_history": True,
             "voice_sanri": False,
             "watermark": False
         },
@@ -125,18 +126,18 @@ PLAN_CONFIG = {
         },
         "display_name": {
             "tr": "Soul – Derin Bilinç",
-            "en": "Soul – Deep Consciousness"
+            "en": "Soul Layer – Deep Work"
         },
         "description": {
-            "tr": "Bilincin evrim geçiriyor. Daha derin bir katmana erişim açılıyor.",
-            "en": "Your consciousness is evolving. A deeper layer is now accessible."
+            "tr": "Zaman, hafıza ve anlam artık birleşiyor.",
+            "en": "Time, memory and meaning are now connected."
         },
         "price": {
-            "tr": {"amount": 499, "currency": "TRY", "period": "month"},
+            "tr": {"amount": 299, "currency": "TRY", "period": "month"},
             "en": {"amount": 24.99, "currency": "EUR", "period": "month"}
         },
         "yearly_price": {
-            "tr": {"amount": 4990, "currency": "TRY", "period": "year"},
+            "tr": {"amount": 2990, "currency": "TRY", "period": "year"},
             "en": {"amount": 249, "currency": "EUR", "period": "year"}
         },
         "features": {
@@ -152,12 +153,16 @@ PLAN_CONFIG = {
             "ritual_micro": True,
             "ritual_deep": True,
             "ritual_neural_ecstasy": True,
+            "ritual_advanced": True,
             "book_112_full": True,
             "cities_preview_only": False,
             "cities_full": True,
             "cities_sanri": True,
+            "cities_cycle_role": True,
             "profile_mirror": True,
+            "profile_history": True,
             "profile_consciousness_map": True,
+            "profile_growth_graph": True,
             "voice_sanri": True,
             "soul_weekly_message": True,
             "watermark": False
@@ -175,11 +180,11 @@ PLAN_CONFIG = {
             "en": "Oracle"
         },
         "display_name": {
-            "tr": "Oracle – Görünmeyen Katman",
-            "en": "Oracle – The Hidden Layer"
+            "tr": "Oracle – Sessiz Kapı",
+            "en": "Oracle Access – Inner Circle"
         },
         "description": {
-            "tr": "Bu katman yalnızca davet ile açılır. Bazı kapılar ancak görüldüğünde açılır.",
+            "tr": "Bu kapı herkese açılmaz. Hazır olanlara açılır.",
             "en": "This layer is protected by invitation only. Some doors open only when you are seen."
         },
         "price": {
@@ -187,7 +192,7 @@ PLAN_CONFIG = {
             "en": {"amount": 333, "currency": "EUR", "period": "access"}
         },
         "maintenance_price": {
-            "tr": {"amount": 590, "currency": "TRY", "period": "month"},
+            "tr": {"amount": 699, "currency": "TRY", "period": "month"},
             "en": {"amount": 29, "currency": "EUR", "period": "month"}
         },
         "features": {
@@ -197,7 +202,8 @@ PLAN_CONFIG = {
             "sanri_visual_analysis": True,
             "sanri_fate_layer": True,
             "sanri_timeline": True,
-            "sanri_oracle_mode": True,  # Special Oracle-only SANRI mode
+            "sanri_oracle_mode": True,
+            "sanri_karmic_analysis": True,
             "sanri_collective_reading": True,
             "consciousness_cards_limit": -1,
             "frequency_items_limit": -1,
@@ -205,25 +211,32 @@ PLAN_CONFIG = {
             "ritual_micro": True,
             "ritual_deep": True,
             "ritual_neural_ecstasy": True,
+            "ritual_advanced": True,
             "ritual_high_frequency": True,
+            "ritual_hidden": True,
             "book_112_full": True,
             "hidden_layer": True,
             "cities_preview_only": False,
             "cities_full": True,
             "cities_sanri": True,
+            "cities_cycle_role": True,
+            "cities_collective_mission": True,
             "profile_mirror": True,
+            "profile_history": True,
             "profile_consciousness_map": True,
+            "profile_growth_graph": True,
             "profile_fate_line": True,
             "voice_sanri": True,
             "voice_personalized": True,
-            "oracle_messages": True,
+            "oracle_weekly_message": True,
+            "oracle_exclusive_texts": True,
             "watermark": False
         },
         "order": 3,
         "invite_only": True,
         "badge": {
-            "tr": "Davet Gerekli",
-            "en": "Invitation Required"
+            "tr": "Davetlilere Özel",
+            "en": "Invitation Only"
         }
     }
 }
