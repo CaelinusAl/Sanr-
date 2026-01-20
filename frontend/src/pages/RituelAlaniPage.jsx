@@ -394,7 +394,7 @@ const Rituel112Listesi = ({ onStartRituel, t, language }) => {
 // YENİ: Adım Adım Ritüel Deneyimi
 // ============================================
 
-const RituelDeneyimi = ({ rituel, onClose, onComplete }) => {
+const RituelDeneyimi = ({ rituel, onClose, onComplete, t }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState(rituel.steps[0]?.duration || 10);
@@ -450,20 +450,20 @@ const RituelDeneyimi = ({ rituel, onClose, onComplete }) => {
             <Heart className="h-12 w-12 text-accent mx-auto mb-6" />
           </motion.div>
           
-          <h2 className="font-serif text-3xl text-foreground mb-4">Tamamlandı</h2>
+          <h2 className="font-serif text-3xl text-foreground mb-4">{t('rituel.complete.title')}</h2>
           <p className="text-foreground/60 mb-8">{rituel.title}</p>
           
           <p className="font-serif text-lg text-foreground/80 italic mb-8">
-            "Şimdi bir an dur. Bu anı hisset."
+            "{t('rituel.complete.note')}"
           </p>
 
           <div className="flex gap-4 justify-center">
             <Button variant="outline" onClick={handleRestart} className="rounded-full">
               <RotateCcw className="h-4 w-4 mr-2" />
-              Tekrarla
+              {t('rituel.complete.repeat')}
             </Button>
             <Button onClick={onComplete || onClose} className="rounded-full">
-              Bitir
+              {t('rituel.complete.finish')}
             </Button>
           </div>
         </div>
