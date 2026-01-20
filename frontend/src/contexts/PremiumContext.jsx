@@ -7,11 +7,11 @@ import { useLanguage } from './LanguageContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Plan types
+// Plan types - Updated with new naming
 export const PLAN_TYPES = {
   FREE: 'free',
+  INITIATE: 'initiate',
   SOUL: 'soul',
-  INITIATION: 'initiation',
   ORACLE: 'oracle'
 };
 
@@ -20,22 +20,28 @@ export const FEATURES = {
   // SANRI
   SANRI_BASIC: 'sanri_basic',
   SANRI_UNLIMITED: 'sanri_unlimited',
+  SANRI_PREVIEW_ONLY: 'sanri_preview_only',
   SANRI_DEEP_ANALYSIS: 'sanri_deep_analysis',
   SANRI_VISUAL_ANALYSIS: 'sanri_visual_analysis',
   SANRI_FATE_LAYER: 'sanri_fate_layer',
-  SANRI_HIGH_CONSCIOUSNESS: 'sanri_high_consciousness',
+  SANRI_TIMELINE: 'sanri_timeline',
+  SANRI_ORACLE_MODE: 'sanri_oracle_mode',
   
   // Content
   CONSCIOUSNESS_FULL: 'consciousness_full',
   FREQUENCY_FULL: 'frequency_full',
   CITIES_FULL: 'cities_full',
-  CITIES_SANRI: 'cities_sanri_integration',
+  CITIES_PREVIEW_ONLY: 'cities_preview_only',
+  CITIES_SANRI: 'cities_sanri',
   BOOK_112_FULL: 'book_112_full',
+  HIDDEN_LAYER: 'hidden_layer',
   
   // Rituals
+  RITUAL_PREVIEW_ONLY: 'ritual_preview_only',
   RITUAL_MICRO: 'ritual_micro',
   RITUAL_DEEP: 'ritual_deep',
   RITUAL_NEURAL_ECSTASY: 'ritual_neural_ecstasy',
+  RITUAL_HIGH_FREQUENCY: 'ritual_high_frequency',
   
   // Visual
   VISUAL_GENERATE: 'visual_generate',
@@ -44,7 +50,12 @@ export const FEATURES = {
   
   // Profile
   PROFILE_MIRROR: 'profile_mirror',
-  VOICE_SANRI: 'voice_sanri'
+  PROFILE_CONSCIOUSNESS_MAP: 'profile_consciousness_map',
+  PROFILE_FATE_LINE: 'profile_fate_line',
+  VOICE_SANRI: 'voice_sanri',
+  VOICE_PERSONALIZED: 'voice_personalized',
+  SOUL_WEEKLY_MESSAGE: 'soul_weekly_message',
+  ORACLE_MESSAGES: 'oracle_messages'
 };
 
 // Plan hierarchy for comparisons
