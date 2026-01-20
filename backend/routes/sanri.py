@@ -606,9 +606,25 @@ def auto_detect_mode(message: str, emotional_tone: str) -> str:
     # Varsayılan -> MIRROR
     return "mirror"
 
-def build_full_prompt(mode: str, emotional_tone: str, profile_context: str = "") -> str:
-    """Mod, duygusal ton ve profil context'ine göre tam prompt oluştur"""
+def build_full_prompt(mode: str, emotional_tone: str, profile_context: str = "", system_language: str = "tr") -> str:
+    """Mod, duygusal ton, profil context ve dil'e göre tam prompt oluştur"""
     mode_config = MODE_PROMPTS.get(mode, MODE_PROMPTS["mirror"])
+    
+    # Language-specific instructions
+    if system_language == "en":
+        language_instruction = """
+LANGUAGE: Respond ENTIRELY in English.
+- Use the same poetic, reflective, Jungian style
+- Keep the soft, non-dogmatic tone
+- Signature sentence in English: "This is an interpretation, not certainty. Meaning takes shape within you."
+- All content, questions, and insights must be in English
+"""
+    else:
+        language_instruction = """
+LANGUAGE: Respond ENTIRELY in Turkish (Türkçe).
+- Signature sentence: "Bu bir yorumdur, kesinlik taşımaz. Anlam sende şekillenir."
+- All content must be in Turkish
+"""
     
     # Build comprehensive prompt
     full_prompt = f"""
@@ -630,13 +646,14 @@ CURRENT MODE: {mode.upper()}
 
 {profile_context}
 
+{language_instruction}
+
 ADDITIONAL CONTEXT:
 - Detected emotional tone: {emotional_tone}
 - Adapt your depth and sensitivity accordingly
 - If user seems distressed, prioritize grounding and safety
 - Always end with the signature sentence for deep responses
 - Keep responses between 80-200 words
-- Use Turkish unless user writes in English
 """
     
     return full_prompt
