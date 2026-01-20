@@ -725,11 +725,43 @@ async def analyze_image(
         
         logger.info(f"[{request_id}] Image size: {image_size} bytes, detected_mime: {detected_mime}, header_mime: {image.content_type}")
         
-        image_base64 = base64.b64encode(image_content).decode('utf-8')
-        
-        # Build data URL with correct mime type for Claude vision
-        # Format: data:image/jpeg;base64,... 
-        image_data_url = f"data:{detected_mime};base64,{image_base64}"
+        # Convert image to PNG format for consistent processing
+        # This ensures Claude receives correct mime type (ImageContent assumes PNG)
+        try:
+            from PIL import Image as PILImage
+            import io as iolib
+            
+            img = PILImage.open(iolib.BytesIO(image_content))
+            
+            # Convert to RGB if needed (for RGBA or other modes)
+            if img.mode in ('RGBA', 'LA', 'P'):
+                background = PILImage.new('RGB', img.size, (255, 255, 255))
+                if img.mode == 'P':
+                    img = img.convert('RGBA')
+                background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                img = background
+            elif img.mode != 'RGB':
+                img = img.convert('RGB')
+            
+            # Save as PNG to bytes
+            png_buffer = iolib.BytesIO()
+            img.save(png_buffer, format='PNG', optimize=True)
+            png_bytes = png_buffer.getvalue()
+            
+            logger.info(f"[{request_id}] Converted {detected_mime} to PNG: {len(image_content)} -> {len(png_bytes)} bytes")
+            
+            image_base64 = base64.b64encode(png_bytes).decode('utf-8')
+            
+        except Exception as conv_err:
+            logger.error(f"[{request_id}] Image conversion error: {conv_err}")
+            return {
+                "ok": False,
+                "error": {
+                    "code": "CONVERSION_FAILED",
+                    "message": "Görsel işlenemedi. Lütfen farklı bir görsel deneyin."
+                },
+                "request_id": request_id
+            }
         
         # Build user message with context
         user_text = "Bu görseli sembolik olarak oku."
@@ -741,7 +773,7 @@ async def analyze_image(
         
         # Initialize chat with Claude for vision
         model_name = "claude-sonnet-4-5-20250929"
-        logger.info(f"[{request_id}] Using model: anthropic/{model_name}, mime: {detected_mime}")
+        logger.info(f"[{request_id}] Using model: anthropic/{model_name}, original_mime: {detected_mime}, converted_to: PNG")
         
         chat = LlmChat(
             api_key=api_key,
@@ -749,11 +781,11 @@ async def analyze_image(
             system_message=system_prompt
         ).with_model("anthropic", model_name)
         
-        # Create message with image - pass base64 with data URL prefix for correct mime
+        # Create message with image - ImageContent expects PNG base64
         user_message = UserMessage(
             text=user_text,
             file_contents=[ImageContent(
-                image_base64=image_data_url  # Use data URL format with mime type
+                image_base64=image_base64
             )]
         )
         
