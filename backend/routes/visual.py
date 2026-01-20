@@ -727,6 +727,10 @@ async def analyze_image(
         
         image_base64 = base64.b64encode(image_content).decode('utf-8')
         
+        # Build data URL with correct mime type for Claude vision
+        # Format: data:image/jpeg;base64,... 
+        image_data_url = f"data:{detected_mime};base64,{image_base64}"
+        
         # Build user message with context
         user_text = "Bu görseli sembolik olarak oku."
         if context:
@@ -745,11 +749,11 @@ async def analyze_image(
             system_message=system_prompt
         ).with_model("anthropic", model_name)
         
-        # Create message with image - ImageContent handles base64 internally
+        # Create message with image - pass base64 with data URL prefix for correct mime
         user_message = UserMessage(
             text=user_text,
             file_contents=[ImageContent(
-                image_base64=image_base64
+                image_base64=image_data_url  # Use data URL format with mime type
             )]
         )
         
