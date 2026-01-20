@@ -1104,28 +1104,18 @@ def auto_detect_mode(message: str, emotional_tone: str) -> str:
     # Varsayılan -> MIRROR
     return "mirror"
 
-def build_full_prompt(mode: str, emotional_tone: str, profile_context: str = "", system_language: str = "tr") -> str:
-    """Mod, duygusal ton, profil context ve dil'e göre tam prompt oluştur"""
+def build_full_prompt(mode: str, emotional_tone: str, profile_context: str = "", system_language: str = "tr", domain: str = "consciousness_field", city_data: dict = None) -> str:
+    """Mod, duygusal ton, profil context, dil ve domain'e göre tam prompt oluştur"""
     mode_config = MODE_PROMPTS.get(mode, MODE_PROMPTS["mirror"])
     
-    # Language-specific instructions
-    if system_language == "en":
-        language_instruction = """
-LANGUAGE: Respond ENTIRELY in English.
-- Use the same poetic, reflective, Jungian style
-- Keep the soft, non-dogmatic tone
-- Signature sentence in English: "This is an interpretation, not certainty. Meaning takes shape within you."
-- All content, questions, and insights must be in English
-"""
-    else:
-        language_instruction = """
-LANGUAGE: Respond ENTIRELY in Turkish (Türkçe).
-- Signature sentence: "Bu bir yorumdur, kesinlik taşımaz. Anlam sende şekillenir."
-- All content must be in Turkish
-"""
+    # Get domain-specific prompt
+    domain_prompt = get_domain_prompt(domain, system_language, city_data)
+    domain_config = DOMAIN_CONFIGS.get(domain, DOMAIN_CONFIGS["consciousness_field"])
     
-    # Build comprehensive prompt
+    # Build comprehensive prompt with Global Language Override
     full_prompt = f"""
+{GLOBAL_LANGUAGE_OVERRIDE}
+
 {SANRI_CORE_IDENTITY}
 
 {SANRI_MODE_ROUTER}
@@ -1133,6 +1123,12 @@ LANGUAGE: Respond ENTIRELY in Turkish (Türkçe).
 CURRENT MODE: {mode.upper()}
 
 {mode_config["prompt"]}
+
+{DOMAIN_ROUTING_SYSTEM}
+
+ACTIVE DOMAIN: {domain_config["name"]} ({domain_config["name_tr"]})
+
+{domain_prompt}
 
 {SANRI_SAFETY_LAYER}
 
@@ -1144,7 +1140,10 @@ CURRENT MODE: {mode.upper()}
 
 {profile_context}
 
-{language_instruction}
+CRITICAL LANGUAGE ENFORCEMENT:
+- System language: {system_language.upper()}
+- {'Respond ENTIRELY in English. NO Turkish words allowed.' if system_language == 'en' else 'Respond ENTIRELY in Turkish.'}
+- Signature: {"'This is an interpretation, not certainty. Meaning takes shape within you.'" if system_language == 'en' else "'Bu bir yorumdur, kesinlik taşımaz. Anlam sende şekillenir.'"}
 
 ADDITIONAL CONTEXT:
 - Detected emotional tone: {emotional_tone}
