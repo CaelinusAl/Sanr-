@@ -250,7 +250,7 @@ const SanriyaSorPage = () => {
   };
 
   const handleExampleClick = () => {
-    setInput(examplePrompts[selectedMode] || examplePrompts.dream);
+    setInput(examplePrompts[currentMode.id] || examplePrompts.mirror);
   };
 
   return (
