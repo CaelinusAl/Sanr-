@@ -4,6 +4,7 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { PremiumProvider } from "@/contexts/PremiumContext";
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import("@/pages/HomePage"));
@@ -17,6 +18,7 @@ const FrekansPage = lazy(() => import("@/pages/FrekansPage"));
 const RituelAlaniPage = lazy(() => import("@/pages/RituelAlaniPage"));
 const BilincAlaniPage = lazy(() => import("@/pages/BilincAlaniPage"));
 const GorselinPage = lazy(() => import("@/pages/GorselinPage"));
+const SubscriptionPage = lazy(() => import("@/pages/SubscriptionPage"));
 
 // Auth Pages
 const GirisPage = lazy(() => import("@/pages/GirisPage"));
