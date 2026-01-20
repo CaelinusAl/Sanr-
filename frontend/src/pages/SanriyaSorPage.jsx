@@ -402,24 +402,31 @@ const SanriyaSorPage = () => {
               <motion.div 
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
-                className="flex flex-wrap justify-center gap-2 mt-3"
+                className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-4 max-w-lg mx-auto"
               >
                 {domainsList.map((domain) => (
-                  <Button
+                  <button
                     key={domain.id || 'auto'}
-                    variant={selectedDomain === domain.id ? "secondary" : "ghost"}
-                    size="sm"
-                    className={`rounded-full gap-1.5 text-xs transition-all ${
+                    className={`relative p-3 rounded-xl text-left transition-all ${
                       selectedDomain === domain.id 
-                        ? "bg-accent/20 border border-accent/30" 
-                        : "border border-transparent hover:border-border/50"
+                        ? "bg-accent/15 border border-accent/40 shadow-sm" 
+                        : "bg-background/50 border border-border/30 hover:border-accent/30 hover:bg-accent/5"
                     }`}
                     onClick={() => setSelectedDomain(domain.id)}
                     data-testid={`domain-${domain.id || 'auto'}`}
                   >
-                    <span>{domain.emoji}</span>
-                    <span>{domain.label}</span>
-                  </Button>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-base">{domain.emoji}</span>
+                      <span className={`text-xs font-medium ${selectedDomain === domain.id ? 'text-accent' : 'text-foreground/80'}`}>
+                        {domain.label}
+                      </span>
+                    </div>
+                    {domain.subtitle && (
+                      <p className="text-[10px] text-foreground/50 leading-tight pl-6">
+                        {domain.subtitle}
+                      </p>
+                    )}
+                  </button>
                 ))}
               </motion.div>
             </details>
