@@ -1,0 +1,74 @@
+{
+  "summary": "SANRI VOICE TTS system fully tested - All backend APIs (19/19 tests passed) and frontend RitualPlayer component working correctly. SANRI VOICE generates audio with nova voice at 0.78 speed for premium rituals.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "RitualPlayer",
+        "issues": ["Minor: eslint warnings for missing useEffect dependencies in RitualPlayer.jsx and other admin components - not blocking functionality"]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/tests/test_tts_sanri_voice.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Code quality is good - SANRI_VOICE_CONFIG and CAELINUS_BOOK_VOICE_CONFIG properly defined",
+    "RitualPlayer.jsx has minor eslint warning for missing 'ritual' dependency in useEffect (line 101) - not critical",
+    "TTS endpoints properly handle errors and validation"
+  ],
+  "updated_files": [
+    "/app/tests/test_tts_sanri_voice.py"
+  ],
+  "success_rate": {
+    "backend": "100% (19/19 tests passed)",
+    "frontend": "100% - All RitualPlayer features working"
+  },
+  "test_credentials": "REACT_APP_DEMO_PREMIUM=true enables premium features",
+  "seed_data_creation": "None - using existing zihin-sessizligi ritual",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "SANRI VOICE system is fully functional. Backend TTS endpoints tested: /api/tts/status, /api/tts/profiles, /api/tts/voices, /api/tts/ritual/play, /api/tts/generate. Frontend RitualPlayer tested: Premium tab navigation, ritual selection, audio loading, play/pause, volume, restart, text toggle. Audio generation takes ~10-20 seconds.",
+  "features_tested": {
+    "backend_endpoints": [
+      "/api/tts/status - Returns voice profiles (SANRI, BOOK) and features",
+      "/api/tts/profiles - Returns detailed SANRI and BOOK profile info",
+      "/api/tts/voices - Returns available voices and models",
+      "/api/tts/ritual/play - Generates SANRI VOICE audio for rituals",
+      "/api/tts/generate - Generates TTS with voice_profile parameter",
+      "/api/premium-ritual/lines - Returns 3 ritual lines",
+      "/api/premium-ritual/rituals - Returns grouped rituals",
+      "/api/premium-ritual/rituals/{id} - Returns specific ritual"
+    ],
+    "frontend_components": [
+      "RitualPlayer modal opens on Premium ritual selection",
+      "Play button triggers /api/tts/ritual/play API call",
+      "SANRI VOICE badge appears after audio loads",
+      "Wave animation shows loading/playing state",
+      "Audio controls: play/pause, volume, restart work",
+      "Text toggle shows ritual text",
+      "Progress slider shows audio duration"
+    ]
+  },
+  "voice_profiles_verified": {
+    "sanri": {
+      "voice": "nova",
+      "speed": 0.78,
+      "model": "tts-1-hd",
+      "description": "SANRI - Rehber, bilge, bilinç açıcı kadın sesi"
+    },
+    "book": {
+      "voice": "shimmer",
+      "speed": 0.85,
+      "model": "tts-1-hd",
+      "description": "CAELINUS - Kitap ve meditasyon anlatıcısı"
+    }
+  }
+}
