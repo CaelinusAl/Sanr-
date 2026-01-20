@@ -14,19 +14,19 @@ import { Button } from "@/components/ui/button";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// OpenAI TTS Hook (via Emergent LLM Key)
-const useOpenAITTS = () => {
+// SANRI Dream TTS Hook (ElevenLabs)
+const useSanriVoice = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isAvailable, setIsAvailable] = useState(false);
   const [error, setError] = useState(null);
   const audioRef = useRef(null);
 
-  // Check TTS availability on mount
+  // Check SANRI Voice availability on mount
   useEffect(() => {
     const checkStatus = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/tts/status`);
+        const response = await fetch(`${API_URL}/api/sanri/voice/status`);
         const data = await response.json();
         setIsAvailable(data.status === "active");
       } catch {
@@ -42,7 +42,7 @@ const useOpenAITTS = () => {
       return;
     }
 
-    // If TTS not available, use fallback
+    // If SANRI Voice not available, use fallback
     if (!isAvailable) {
       return speakFallback(text, onEnd);
     }
@@ -51,17 +51,17 @@ const useOpenAITTS = () => {
     setError(null);
     
     try {
-      const response = await fetch(`${API_URL}/api/tts/generate`, {
+      const response = await fetch(`${API_URL}/api/sanri/voice`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           text,
-          speed: 0.85  // Slow for ritual
+          mode: "ritual"  // Ritual mode for ceremonial tone
         }),
       });
 
       if (!response.ok) {
-        throw new Error("TTS failed");
+        throw new Error("SANRI Voice failed");
       }
 
       const data = await response.json();
@@ -94,7 +94,7 @@ const useOpenAITTS = () => {
       await audio.play();
       
     } catch (error) {
-      console.error("OpenAI TTS error:", error);
+      console.error("SANRI Voice error:", error);
       setError(error.message);
       setIsLoading(false);
       // Fallback to Web Speech API
