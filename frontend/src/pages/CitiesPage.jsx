@@ -205,7 +205,7 @@ const CitiesPage = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredCities.map((city, index) => (
+              {displayCities.map((city, index) => (
                 <motion.div
                   key={city.id}
                   initial={{ opacity: 0, x: -20 }}
@@ -242,6 +242,28 @@ const CitiesPage = () => {
                   </Link>
                 </motion.div>
               ))}
+              
+              {/* Locked Cities - List View */}
+              {!isPremium && lockedCount > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: displayCities.length * 0.02 }}
+                >
+                  <Card 
+                    className="border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all cursor-pointer"
+                    onClick={() => showUpgradeModal(FEATURES.CITIES_FULL)}
+                    data-testid="unlock-cities-list"
+                  >
+                    <CardContent className="p-4 flex items-center justify-center gap-4">
+                      <Lock className="h-6 w-6 text-primary" />
+                      <span className="text-sm text-foreground">
+                        +{lockedCount} {language === 'en' ? 'more cities - Unlock full access' : 'şehir daha - Tam erişimi aç'}
+                      </span>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
             </div>
           )}
 
