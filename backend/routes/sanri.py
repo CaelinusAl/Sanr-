@@ -1518,7 +1518,9 @@ async def sanri_status():
         "status": "active",
         "identity": "SANRI - Bilinç Aynası",
         "modes": list(MODE_PROMPTS.keys()),
+        "domains": list(DOMAIN_CONFIGS.keys()),
         "default_mode": DEFAULT_MODE,
+        "default_domain": "consciousness_field",
         "voice": "SANRI Dream (ElevenLabs)",
         "core_principles": [
             "No certainty",
@@ -1528,6 +1530,32 @@ async def sanri_status():
             "No authority tone"
         ],
         "signature": "Bu bir yorumdur, kesinlik taşımaz. Anlam sende şekillenir.",
+        "signature_en": "This is an interpretation, not certainty. Meaning takes shape within you.",
         "safety_layer": "Active - protects psychological safety",
-        "note": "SANRI cevap vermez, yansıtır. SANRI yaratmaz, hatırlatır."
+        "note": "SANRI cevap vermez, yansıtır. SANRI yaratmaz, hatırlatır.",
+        "domain_routing": "Hybrid: Manual > City Context > Auto-detect > Default"
+    }
+
+@router.get("/domains")
+async def get_sanri_domains():
+    """🌍 SANRI content domain'lerini listele"""
+    domains_info = []
+    for domain_key, domain_data in DOMAIN_CONFIGS.items():
+        domains_info.append({
+            "id": domain_key,
+            "name": domain_data["name"],
+            "name_tr": domain_data["name_tr"],
+            "purpose": domain_data["purpose"],
+            "purpose_tr": domain_data["purpose_tr"]
+        })
+    
+    return {
+        "domains": domains_info,
+        "default_domain": "consciousness_field",
+        "supported_languages": ["tr", "en"],
+        "routing_strategy": {
+            "priority": ["manual_selection", "city_context", "automatic_detection", "default_fallback"],
+            "note_en": "Manual domain selection overrides automatic detection. City context forces Awakened Cities domain.",
+            "note_tr": "Manuel domain seçimi otomatik algılamayı geçersiz kılar. Şehir context'i Uyanmış Şehirler domain'ini zorlar."
+        }
     }
