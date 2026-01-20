@@ -491,11 +491,6 @@ const SanriyaSorPage = () => {
                   </div>
                 )}
               </form>
-            </>
-          ) : (
-            /* Görsel Prompt Üretici Tab */
-            <GorselPromptUretici />
-          )}
 
           {/* Info */}
           <div className="mt-10 text-center">
