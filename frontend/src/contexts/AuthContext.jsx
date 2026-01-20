@@ -58,6 +58,13 @@ export const AuthProvider = ({ children }) => {
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   }, []);
 
+  // Apple Sign In (iOS App Store requirement)
+  // Uses same Emergent Auth with Apple provider
+  const loginWithApple = useCallback(() => {
+    const redirectUrl = window.location.origin + '/auth/callback';
+    window.location.href = `https://auth.emergentagent.com/?provider=apple&redirect=${encodeURIComponent(redirectUrl)}`;
+  }, []);
+
   // Email/Password login
   const loginWithEmail = useCallback(async (email, password) => {
     try {
