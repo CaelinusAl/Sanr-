@@ -341,8 +341,8 @@ const SanriyaSorPage = () => {
             className="container mx-auto px-6 mb-6"
           >
             <Alert className="max-w-2xl mx-auto border-accent/30 bg-accent/5">
-              <AlertCircle className="h-4 w-4 text-accent" />
-              <AlertDescription className="text-sm text-foreground/70">
+              <AlertCircle className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+              <AlertDescription className="text-sm text-foreground/70 whitespace-pre-line">
                 {t('sanri.disclaimer')}
                 <Button
                   variant="link"
