@@ -205,21 +205,30 @@ const SanriyaSorPage = () => {
       type: "user", 
       content: userInput,
       image: uploadedImage?.preview,
-      mode: currentMode.id
+      mode: currentMode.id,
+      domain: selectedDomain
     }]);
     setIsThinking(true);
     handleRemoveImage();
 
     try {
+      // Build request body with domain support
+      const requestBody = {
+        message: messageToSend,
+        session_id: sessionId,
+        mode: currentMode.id,
+        system_language: language
+      };
+      
+      // Add domain if manually selected (null = auto-detect)
+      if (selectedDomain) {
+        requestBody.domain = selectedDomain;
+      }
+
       const response = await fetch(`${API_URL}/api/sanri/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: messageToSend,
-          session_id: sessionId,
-          mode: currentMode.id,
-          system_language: language // Pass current language to backend
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -237,6 +246,8 @@ const SanriyaSorPage = () => {
         content: data.response,
         mode: data.mode,
         mode_name: language === 'en' ? data.mode_name_en : data.mode_name_tr,
+        domain: data.domain,
+        domain_name: data.domain_name,
         timestamp: data.timestamp
       }]);
     } catch (err) {
