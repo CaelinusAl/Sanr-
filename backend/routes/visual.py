@@ -838,7 +838,10 @@ def parse_analysis_response_v2(response: str, is_premium: bool) -> dict:
         sections["consciousness"] = consciousness_match.group(0).strip()
     
     # Destiny layer: 🜃 KADER
-    destiny_match = re.search(r'🜃.*?(?=Bu görüntü|Bu görsel|$)', response, re.DOTALL | re.IGNORECASE)
+    destiny_match = re.search(r'🜃.*?(?=Bu görüntü|Bu görsel)', response, re.DOTALL | re.IGNORECASE)
+    if not destiny_match:
+        # Fallback: try to match until end of string
+        destiny_match = re.search(r'🜃.*', response, re.DOTALL | re.IGNORECASE)
     if destiny_match:
         sections["destiny"] = destiny_match.group(0).strip()
     
