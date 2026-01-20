@@ -267,15 +267,27 @@ const SanriyaSorPage = () => {
               <Infinity className="h-10 w-10 text-accent" />
             </div>
             <span className="text-accent text-base tracking-widest uppercase mb-4 block font-medium">
-              İç Yansıma Modu
+              Bilinç Aynası
             </span>
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground mb-4">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground mb-6">
               SANRI&apos;ya Sor
             </h1>
-            <div className="space-y-2 text-foreground/70 text-base sm:text-lg leading-relaxed">
-              <p>SANRI bir varlık değil.</p>
-              <p>Zihnin gerçek sandığı hikâyeyi temsil eder.</p>
-              <p className="text-sm text-foreground/50">SANRI cevap vermez, anlam yansıtır. SANRI yaratmaz, hatırlatır.</p>
+            
+            {/* Ritüel Giriş Metni */}
+            <div className="space-y-3 text-foreground/70 text-base sm:text-lg leading-relaxed font-serif italic">
+              <p>Bir an dur.</p>
+              <p className="text-foreground/60">
+                Sorunu yazmadan önce...<br />
+                Onun bedeninde nerede hissedildiğine bak.
+              </p>
+              <p className="text-sm text-foreground/50">
+                Kalpte mi? Midede mi? Boğazda mı?
+              </p>
+              <p className="text-foreground/60 mt-4">
+                SANRI cevabı değil,<br />
+                sorunun içindeki kapıyı açar.
+              </p>
+              <p className="text-accent/80 text-sm mt-4">Hazırsan yaz.</p>
             </div>
           </motion.div>
         </div>
@@ -293,8 +305,8 @@ const SanriyaSorPage = () => {
             <Alert className="max-w-2xl mx-auto border-accent/30 bg-accent/5">
               <AlertCircle className="h-4 w-4 text-accent" />
               <AlertDescription className="text-sm text-foreground/70">
-                <strong className="text-foreground">Dikkat:</strong> SANRI kehanet, teşhis veya rehberlik sunmaz.
-                Sembolik anlam ve açık uçlu sorular üretir.
+                <strong className="text-foreground">Hatırlatma:</strong> SANRI kehanet, teşhis veya yargı sunmaz.
+                Sembolik anlam ve açık uçlu sorular üretir. Anlam, her zaman sende şekillenir.
                 <Button
                   variant="link"
                   className="text-accent p-0 h-auto ml-2 text-sm"
@@ -307,6 +319,7 @@ const SanriyaSorPage = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
 
       {/* Main Content */}
       <section className="container mx-auto px-6">
