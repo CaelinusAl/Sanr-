@@ -90,6 +90,38 @@ const getIcon = (iconName) => {
   return icons[iconName] || Sparkles;
 };
 
+// Premium Ritüeller - Backend'e bağlanabilir yapı
+const premiumRitueler = [
+  {
+    id: "XI",
+    title: "Zihin–Gönül Kapısı",
+    desc: "Beyin ve kalp arasındaki bilinç köprüsü",
+    frequency: "Hatırlama",
+    locked: true
+  },
+  {
+    id: "XII",
+    title: "His Kodları",
+    desc: "Duyguların taşıdığı kozmik bilgi alanı",
+    frequency: "Algı",
+    locked: true
+  },
+  {
+    id: "XIII",
+    title: "Sezgi Alanı",
+    desc: "Kuantum sıçrama ve içsel rehberlik",
+    frequency: "Sezgi",
+    locked: true
+  },
+  {
+    id: "XIV",
+    title: "Kozmik Anten",
+    desc: "Evrensel bilinç bağlantı noktası",
+    frequency: "Bağlantı",
+    locked: true
+  }
+];
+
 // CAELINUS Response Component
 const CaelinusResponseText = ({ text }) => {
   const paragraphs = text.split('\n\n').filter(p => p.trim());
