@@ -132,9 +132,21 @@ const SanriyaSorPage = () => {
   const [sessionId, setSessionId] = useState(null);
   const [error, setError] = useState(null);
   const [activeMode, setActiveMode] = useState(readingModes.MIRROR);
+  const [selectedDomain, setSelectedDomain] = useState(null); // null = auto-detect
   const [uploadedImage, setUploadedImage] = useState(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  // Content Domains
+  const domainsList = [
+    { id: null, label: t('sanri.domainAuto'), emoji: "✨" },
+    { id: "awakened_cities", label: t('sanri.domains.awakened_cities.name'), emoji: "🏛️" },
+    { id: "consciousness_field", label: t('sanri.domains.consciousness_field.name'), emoji: "🧠" },
+    { id: "frequency_field", label: t('sanri.domains.frequency_field.name'), emoji: "〰️" },
+    { id: "ritual_space", label: t('sanri.domains.ritual_space.name'), emoji: "🕯️" },
+    { id: "neural_ecstasy", label: t('sanri.domains.neural_ecstasy.name'), emoji: "⚡" },
+    { id: "book_112", label: t('sanri.domains.book_112.name'), emoji: "📖" }
+  ];
 
   // Update activeMode when language changes
   useEffect(() => {
