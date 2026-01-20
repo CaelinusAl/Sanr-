@@ -29,7 +29,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { 
-  kapilar, 
+  getKapilar,
   ritueller, 
   girisEsigi, 
   rituelAsamalari,
