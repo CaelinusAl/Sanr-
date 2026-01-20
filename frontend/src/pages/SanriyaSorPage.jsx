@@ -241,27 +241,15 @@ const SanriyaSorPage = () => {
             <div className="space-y-2 text-foreground/70 text-base sm:text-lg leading-relaxed">
               <p>SANRI bir varlık değil.</p>
               <p>Zihnin gerçek sandığı hikâyeyi temsil eder.</p>
-              <p className="text-sm text-foreground/50">Cevap vermez, yansıma sunar.</p>
+              <p className="text-sm text-foreground/50">SANRI cevap vermez, anlam yansıtır. SANRI yaratmaz, hatırlatır.</p>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Tab Navigation */}
-      <div className="container mx-auto px-6 mb-6">
-        <div className="max-w-2xl mx-auto">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="chat">Soru Sor</TabsTrigger>
-              <TabsTrigger value="generate">Görsel Prompt</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      </div>
-
       {/* Disclaimer */}
       <AnimatePresence>
-        {showDisclaimer && activeTab === "chat" && (
+        {showDisclaimer && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
