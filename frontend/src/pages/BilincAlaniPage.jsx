@@ -35,6 +35,7 @@ import {
   getBolumById
 } from "@/data/bilinc-alani-data";
 import PremiumRitualExperience from "@/components/PremiumRitualExperience";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
