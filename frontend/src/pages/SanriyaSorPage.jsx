@@ -380,14 +380,75 @@ const SanriyaSorPage = () => {
           <div className="min-h-[350px] mb-6 space-y-6">
             {conversation.length === 0 && (
               <motion.div
+                key={currentMode.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center py-10"
+                className="text-center py-8"
               >
-                <Sparkles className="h-8 w-8 text-accent/50 mx-auto mb-6" />
-                <p className="text-foreground/70 font-serif italic mb-6 text-lg">
-                  &quot;Hatırlamak dışarıda başlar. Anlamak içeride olur.&quot;
-                </p>
+                {/* Mode-specific intro text */}
+                {currentMode.id === "shadow" ? (
+                  <div className="space-y-3 mb-6">
+                    <p className="text-foreground/70 font-serif italic text-lg">
+                      Gölge, karanlık değildir.
+                    </p>
+                    <p className="text-foreground/60 font-serif italic">
+                      Gölge, bastırılmış ışıktır.
+                    </p>
+                    <p className="text-foreground/50 text-sm mt-4">
+                      Burada rüyalar çözülmez. Burada bilinç konuşur.
+                    </p>
+                    <p className="text-accent/70 text-sm mt-3 italic">
+                      Bir görüntü... Bir hayvan... Bir kişi...<br />
+                      Hangisi seni çağırıyor?
+                    </p>
+                  </div>
+                ) : currentMode.id === "dream" ? (
+                  <div className="space-y-3 mb-6">
+                    <p className="text-foreground/70 font-serif italic text-lg">
+                      Şimdi... bir nefes al...
+                    </p>
+                    <p className="text-foreground/50 text-sm">
+                      Dışarıdaki dünyayı bir anlığına bırak.<br />
+                      İçerideki sessizliğe dön.
+                    </p>
+                    <p className="text-accent/70 text-sm mt-3 italic">
+                      Hazır olduğunda yaz...
+                    </p>
+                  </div>
+                ) : currentMode.id === "light" ? (
+                  <div className="space-y-3 mb-6">
+                    <p className="text-foreground/70 font-serif italic text-lg">
+                      Şu an güvendesin.
+                    </p>
+                    <p className="text-foreground/50 text-sm">
+                      Ne hissedersen hisset, geçerli.<br />
+                      Burada yargı yok. Sadece anlayış var.
+                    </p>
+                    <p className="text-accent/70 text-sm mt-3 italic">
+                      Ne taşıyorsun içinde?
+                    </p>
+                  </div>
+                ) : currentMode.id === "divine" ? (
+                  <div className="space-y-3 mb-6">
+                    <p className="text-foreground/70 font-serif italic text-lg">
+                      Kadim bilgelik sana sesleniyor...
+                    </p>
+                    <p className="text-foreground/50 text-sm">
+                      Burada kehanet yok. Hatırlatma var.<br />
+                      Burada kader yok. Farkındalık var.
+                    </p>
+                    <p className="text-accent/70 text-sm mt-3 italic">
+                      Ne sormak istersin?
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 mb-6">
+                    <Sparkles className="h-8 w-8 text-accent/50 mx-auto mb-4" />
+                    <p className="text-foreground/70 font-serif italic text-lg">
+                      &quot;Hatırlamak dışarıda başlar. Anlamak içeride olur.&quot;
+                    </p>
+                  </div>
+                )}
                 
                 <Button
                   variant="outline"
