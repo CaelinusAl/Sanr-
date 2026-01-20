@@ -928,6 +928,44 @@ const translations = {
       generateError: 'Error in image generation'
     },
 
+    // ==================== BILINC PAGE ====================
+    bilinc: {
+      title: 'Consciousness Field',
+      subtitle: 'Where perception reorganizes itself',
+      placeholder: 'You are not required to answer...',
+      skip: 'Skip',
+      ok: 'OK',
+      breathe: 'Take a breath.',
+      next: 'Next',
+      footer: 'This space does not answer. It opens perspective.'
+    },
+
+    // ==================== FREKANS PAGE ====================
+    frekans: {
+      title: 'Frequency',
+      subtitle: 'Vibration field',
+      navigation: '← → or spacebar to continue'
+    },
+
+    // ==================== SEHIRLER / CITIES PAGE ====================
+    cities: {
+      title: '81 Cities Map',
+      subtitle: 'Every city is a symbol, every symbol a memory',
+      searchPlaceholder: 'Search city or symbol',
+      allElements: 'All Elements',
+      elements: {
+        fire: 'Fire',
+        water: 'Water',
+        earth: 'Earth',
+        air: 'Air',
+        spirit: 'Spirit'
+      },
+      askSanri: 'Ask SANRI about this city',
+      goddess: 'Goddess',
+      frequency: 'Frequency',
+      symbolicRole: 'Symbolic Role'
+    },
+
     // ==================== FOOTER ====================
     footer: {
       quote: 'Remembering begins outside. Understanding happens within.',
