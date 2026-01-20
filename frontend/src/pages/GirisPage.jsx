@@ -13,7 +13,7 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
 
 const GirisPage = () => {
   const navigate = useNavigate();
-  const { loginWithGoogle, loginWithEmail, registerWithEmail } = useAuth();
+  const { loginWithGoogle, loginWithApple, loginWithEmail, registerWithEmail } = useAuth();
   const { language } = useLanguage();
   
   const [mode, setMode] = useState('welcome'); // welcome, login, register
