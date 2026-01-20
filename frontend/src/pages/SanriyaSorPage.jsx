@@ -185,14 +185,14 @@ const SanriyaSorPage = () => {
       messageToSend = `[Kullanıcı bir görsel paylaştı]\n\nKullanıcının sorusu: ${userInput}`;
     }
 
-    // SANRI 5 Bilinç Modu - direkt mod gönder
+    // SANRI 5 Bilinç Modu - object-based mod gönder
     setInput("");
     setError(null);
     setConversation(prev => [...prev, { 
       type: "user", 
       content: userInput,
       image: uploadedImage?.preview,
-      mode: selectedMode
+      mode: currentMode.id
     }]);
     setIsThinking(true);
     handleRemoveImage();
@@ -204,7 +204,7 @@ const SanriyaSorPage = () => {
         body: JSON.stringify({
           message: messageToSend,
           session_id: sessionId,
-          mode: selectedMode  // Yeni mod sistemi
+          mode: currentMode.id  // Object'ten id al
         }),
       });
 
