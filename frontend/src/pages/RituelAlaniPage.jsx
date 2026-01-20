@@ -871,7 +871,7 @@ const RituelAlaniPage = () => {
               </TabsContent>
 
               <TabsContent value="moduller">
-                <RituelModulleri onStartRituel={handleStartRituel} />
+                <RituelModulleri onStartRituel={handleStartRituel} t={t} />
               </TabsContent>
 
               <TabsContent value="112">
@@ -891,9 +891,9 @@ const RituelAlaniPage = () => {
                 className="mb-6"
               >
                 <ChevronLeft className="h-4 w-4 mr-2" />
-                Geri
+                {t('common.back')}
               </Button>
-              <GirisEsigi onReady={handleReady} />
+              <GirisEsigi onReady={handleReady} t={t} />
             </motion.div>
           )}
           
@@ -905,7 +905,7 @@ const RituelAlaniPage = () => {
                 className="mb-6"
               >
                 <ChevronLeft className="h-4 w-4 mr-2" />
-                Geri
+                {t('common.back')}
               </Button>
               <KapiSecimi onSelectKapi={handleSelectKapi} />
             </motion.div>
