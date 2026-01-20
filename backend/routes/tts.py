@@ -1,10 +1,11 @@
-# OpenAI TTS Integration for Caelinus Rituals
-# Voice: Feminine, warm, slow, poetic Turkish
+# CAELINUS AI - SANRI VOICE SYSTEM
+# Ana rehber ses sistemi: Ritüel, Bilinç ve Meditasyon deneyimleri için
+# İki ana ses profili: SANRI_VOICE ve CAELINUS_BOOK_VOICE
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Literal
 from emergentintegrations.llm.openai import OpenAITextToSpeech
 import os
 import logging
@@ -23,13 +24,45 @@ def get_tts_client():
         return None
     return OpenAITextToSpeech(api_key=api_key)
 
-# Voice options for Caelinus
-# nova: Energetic but can be calming with slow speed
-# shimmer: Bright, cheerful - good for gentle guidance
-# For Turkish feminine warm voice, shimmer or nova work best
-CAELINUS_VOICE = "nova"  # Warm, can be soft with low speed
-CAELINUS_MODEL = "tts-1-hd"  # High quality for rituals
-CAELINUS_SPEED = 0.85  # Slower for meditation
+# ============== SANRI VOICE PROFILES ==============
+# CAELINUS AI'nin iki ana ses kimliği
+
+# SANRI_VOICE: Ana rehber sesi - Ritüeller ve bilinç deneyimleri için
+# Karakteristik: Kadın sesi, yumuşak, sakin, derin, güven veren, hipnotik
+# Amaç: Kullanıcının zihnini yavaşlatan, güven veren, içe döndüren ses
+SANRI_VOICE_CONFIG = {
+    "voice": "nova",           # Sıcak, derin kadın sesi
+    "model": "tts-1-hd",       # Yüksek kalite - ritüeller için şart
+    "speed": 0.78,             # Çok yavaş - hipnotik etki için
+    "description_tr": "SANRI - Rehber, bilge, bilinç açıcı kadın sesi",
+    "description_en": "SANRI - Guide, wise, consciousness-opening female voice",
+    "characteristics": {
+        "tone": "warm, deep, hypnotic",
+        "pace": "very slow, rhythmic",
+        "emotion": "calm, nurturing, confident",
+        "purpose": "rituals, consciousness guidance, inner work"
+    }
+}
+
+# CAELINUS_BOOK_VOICE: Anlatıcı sesi - Kitap ve meditasyon okumaları için
+# Karakteristik: Daha nötr, akıcı, uzun dinlemelerde yormayan
+# Amaç: Kitap okumalarına ve meditasyonlara uygun, sıcak anlatıcı
+CAELINUS_BOOK_VOICE_CONFIG = {
+    "voice": "shimmer",        # Daha hafif, akıcı ses
+    "model": "tts-1-hd",       # Yüksek kalite
+    "speed": 0.85,             # Biraz daha hızlı ama yine yavaş
+    "description_tr": "CAELINUS - Kitap ve meditasyon anlatıcısı",
+    "description_en": "CAELINUS - Book and meditation narrator",
+    "characteristics": {
+        "tone": "neutral, warm, flowing",
+        "pace": "moderate, steady",
+        "emotion": "gentle, non-tiring",
+        "purpose": "book readings, long meditations, narration"
+    }
+}
+
+# Varsayılan (genel kullanım) - SANRI sesi
+DEFAULT_VOICE_CONFIG = SANRI_VOICE_CONFIG
 
 class TTSRequest(BaseModel):
     text: str
@@ -37,12 +70,23 @@ class TTSRequest(BaseModel):
     model: Optional[str] = None  # tts-1 or tts-1-hd
     speed: Optional[float] = None  # 0.25 to 4.0
     format: Optional[str] = "mp3"
+    voice_profile: Optional[Literal["sanri", "book", "custom"]] = "sanri"
 
 class TTSResponse(BaseModel):
     audio_url: str
     text: str
     voice: str
     model: str
+    voice_profile: str
+
+class RitualVoiceRequest(BaseModel):
+    ritual_id: str
+    language: Literal["tr", "en"] = "tr"
+
+class BookVoiceRequest(BaseModel):
+    chapter_id: str
+    language: Literal["tr", "en"] = "tr"
+    section: Optional[str] = None  # Optional section within chapter
 
 @router.post("/generate", response_model=TTSResponse)
 async def generate_tts(request: TTSRequest):
