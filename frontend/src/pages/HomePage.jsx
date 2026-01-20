@@ -6,9 +6,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import SplashScreen from '@/components/SplashScreen';
 
 // Sacred Section Card Component
-const SacredCard = ({ section, isMain, isNew, onClick, delay }) => {
-  const { t } = useLanguage();
-  const sectionData = t(`sections.${section}`);
+const SacredCard = ({ section, isMain, isNew, onClick, delay, t }) => {
+  const sectionData = t(`home.sections.${section}`);
   
   const icons = {
     bilinc: (
@@ -99,7 +98,9 @@ const SacredCard = ({ section, isMain, isNew, onClick, delay }) => {
         {/* NEW badge */}
         {isNew && (
           <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30">
-            <span className="text-[10px] tracking-wider text-emerald-400 uppercase font-medium">Yeni</span>
+            <span className="text-[10px] tracking-wider text-emerald-400 uppercase font-medium">
+              {t('common.new')}
+            </span>
           </div>
         )}
 
@@ -172,7 +173,7 @@ const HomePage = () => {
       sanri: '/sanriya-sor',
       gorselin: '/gorselin',
       rituel: '/rituel',
-      profil: '/bilinc-alani', // Profile leads to user area
+      profil: '/bilinc-alani',
     };
     navigate(routes[section]);
   };
@@ -280,11 +281,11 @@ const HomePage = () => {
             >
               <p className="text-lg sm:text-xl text-indigo-200/70 font-light italic"
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                Hoş geldin.
+                {t('home.welcome')}
               </p>
               <p className="text-sm sm:text-base text-white/40 leading-relaxed max-w-md mx-auto">
-                Burada sana ne olacağını söylemeyeceğiz.<br />
-                Burada sana kim olduğunu hatırlatacağız.
+                {t('home.welcomeDesc1')}<br />
+                {t('home.welcomeDesc2')}
               </p>
             </motion.div>
 
@@ -295,7 +296,7 @@ const HomePage = () => {
               transition={{ delay: 0.8 }}
               className="text-sm text-white/30 tracking-wider italic"
             >
-              Bir rüya... Bir duygu... Bir sembol... Bir soru...
+              {t('home.subMotto')}
             </motion.p>
           </motion.div>
 
@@ -307,6 +308,7 @@ const HomePage = () => {
                 section="bilinc" 
                 onClick={() => handleSectionClick('bilinc')}
                 delay={0.4}
+                t={t}
               />
               
               {/* Frekans */}
@@ -314,6 +316,7 @@ const HomePage = () => {
                 section="frekans" 
                 onClick={() => handleSectionClick('frekans')}
                 delay={0.5}
+                t={t}
               />
               
               {/* SANRI - Main Feature (Center) */}
@@ -322,6 +325,7 @@ const HomePage = () => {
                 isMain={true}
                 onClick={() => handleSectionClick('sanri')}
                 delay={0.6}
+                t={t}
               />
               
               {/* GÖRSELİN - NEW */}
@@ -330,6 +334,7 @@ const HomePage = () => {
                 isNew={true}
                 onClick={() => handleSectionClick('gorselin')}
                 delay={0.65}
+                t={t}
               />
               
               {/* Ritüel */}
@@ -337,6 +342,7 @@ const HomePage = () => {
                 section="rituel" 
                 onClick={() => handleSectionClick('rituel')}
                 delay={0.7}
+                t={t}
               />
               
               {/* Profil */}
@@ -344,6 +350,7 @@ const HomePage = () => {
                 section="profil" 
                 onClick={() => handleSectionClick('profil')}
                 delay={0.8}
+                t={t}
               />
             </div>
           </div>
@@ -356,7 +363,7 @@ const HomePage = () => {
             className="mt-16 text-center"
           >
             <p className="text-xs text-white/20 tracking-[0.3em] uppercase">
-              {t('tagline')}
+              {t('home.tagline')}
             </p>
           </motion.div>
         </div>
