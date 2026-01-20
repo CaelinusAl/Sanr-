@@ -193,8 +193,11 @@ const PremiumRitualLines = ({ onSelectRitual }) => {
 // YENİ: Ritüel Modülleri Componenti
 // ============================================
 
-const RituelModulleri = ({ onStartRituel, t }) => {
-  const bugunRitueli = getBugunRitueli();
+const RituelModulleri = ({ onStartRituel, t, language }) => {
+  const bugunRitueli = getBugunRitueli(language);
+  const mikroRitueller = getMikroRitueller(language);
+  const derinRitueller = getDerinRitueller(language);
+  const kapanisRituelleri = getKapanisRitueller(language);
 
   return (
     <div className="space-y-8">
