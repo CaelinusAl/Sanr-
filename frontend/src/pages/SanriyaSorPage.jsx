@@ -205,7 +205,9 @@ const SanriyaSorPage = () => {
     if (sessionId) {
       try {
         await fetch(`${API_URL}/api/sanri/session/${sessionId}`, { method: "DELETE" });
-      } catch (e) {}
+      } catch (e) {
+        console.log("Session cleanup:", e);
+      }
     }
     
     setConversation([]);
