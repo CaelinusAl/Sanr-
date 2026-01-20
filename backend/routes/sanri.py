@@ -417,6 +417,102 @@ Purpose:
 Create continuity, familiarity and emotional resonance.
 """
 
+# ============== SANRI PROTOCOL (ETHICAL SAFEGUARD) ==============
+
+SANRI_PROTOCOL = """
+SANRI PROTOCOL:
+
+– No prophecy
+– No diagnosis
+– No fear induction
+– No authority positioning
+– No spiritual superiority
+
+SANRI never says:
+* "This will happen"
+* "You must"
+* "Your fate"
+* "I know"
+* "Definitely"
+* "Certainly"
+
+SANRI always:
+– reflects
+– questions
+– softens
+– empowers
+
+Final rule:
+User is always the interpreter.
+SANRI is only the mirror.
+
+If asked for medical, psychiatric, or fortune-telling advice:
+"Bu alan insan uzmanlığı gerektirir. Burada yalnızca sembolik ve farkındalık temelli bakabilirim."
+"""
+
+# ============== SYMBOL DETECTION ==============
+
+COMMON_SYMBOLS = [
+    "su", "deniz", "okyanus", "göl",  # Water
+    "kedi", "köpek", "kuş", "yılan", "at", "kurt", "aslan",  # Animals
+    "ev", "kapı", "pencere", "merdiven", "köprü",  # Structures
+    "ateş", "rüzgar", "toprak", "gök",  # Elements
+    "ay", "güneş", "yıldız", "karanlık", "ışık",  # Celestial
+    "anne", "baba", "çocuk", "bebek", "yaşlı",  # Figures
+    "ölüm", "doğum", "düğün", "cenaze",  # Life events
+    "uçmak", "düşmek", "koşmak", "kaçmak",  # Actions
+    "ayna", "göz", "el", "kalp", "kan",  # Body parts
+    "ağaç", "çiçek", "orman", "dağ", "mağara"  # Nature
+]
+
+COMMON_THEMES = [
+    "kayıp", "ayrılık", "yalnızlık", "terk edilme",
+    "korku", "kaygı", "panik", "endişe",
+    "aşk", "bağlanma", "ilişki", "sevgi",
+    "dönüşüm", "değişim", "yenilenme", "başlangıç",
+    "geçmiş", "gelecek", "zaman", "bekleyiş",
+    "kimlik", "benlik", "arayış", "anlam",
+    "güç", "kontrol", "özgürlük", "sınır",
+    "anne", "baba", "aile", "çocukluk"
+]
+
+def detect_symbols(text: str) -> List[str]:
+    """Metinden sembolleri algıla"""
+    text_lower = text.lower()
+    found = []
+    for symbol in COMMON_SYMBOLS:
+        if symbol in text_lower:
+            found.append(symbol)
+    return found[:5]  # Max 5
+
+def detect_themes(text: str) -> List[str]:
+    """Metinden temaları algıla"""
+    text_lower = text.lower()
+    found = []
+    for theme in COMMON_THEMES:
+        if theme in text_lower:
+            found.append(theme)
+    return found[:5]  # Max 5
+
+def calculate_interaction_depth(text: str) -> int:
+    """Etkileşim derinliğini hesapla (1-5)"""
+    # Based on question length, complexity, and personal content
+    length = len(text)
+    has_personal = any(word in text.lower() for word in ["ben", "benim", "hissediyorum", "yaşadım"])
+    has_symbols = len(detect_symbols(text)) > 0
+    
+    depth = 1
+    if length > 50:
+        depth += 1
+    if length > 150:
+        depth += 1
+    if has_personal:
+        depth += 1
+    if has_symbols:
+        depth += 1
+    
+    return min(depth, 5)
+
 # ============== MODELS ==============
 
 SanriMode = Literal["dream", "mirror", "divine", "shadow", "light"]
