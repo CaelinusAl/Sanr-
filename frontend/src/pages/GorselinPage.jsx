@@ -147,6 +147,21 @@ const GorselinPage = () => {
 
     setIsAnalyzing(true);
     setAnalysisResult(null);
+    setAnalysisError(null);
+    
+    // Progress animation
+    const progressSteps = [
+      'Görsel okunuyor…',
+      'Semboller ayrıştırılıyor…',
+      'Sanrı yorumluyor…'
+    ];
+    let stepIndex = 0;
+    setAnalysisProgress(progressSteps[0]);
+    
+    const progressInterval = setInterval(() => {
+      stepIndex = (stepIndex + 1) % progressSteps.length;
+      setAnalysisProgress(progressSteps[stepIndex]);
+    }, 2500);
 
     try {
       const formData = new FormData();
@@ -155,17 +170,57 @@ const GorselinPage = () => {
       formData.append('is_premium', IS_PREMIUM);
 
       const response = await axios.post(`${API_URL}/api/visual/analyze`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 120000  // 2 minute timeout for AI processing
       });
 
+      clearInterval(progressInterval);
+
+      // Check response structure
+      if (response.data.ok === false) {
+        // Backend returned error
+        const errorMsg = response.data.error?.message || 'Analiz başarısız oldu';
+        setAnalysisError({
+          message: errorMsg,
+          code: response.data.error?.code,
+          request_id: response.data.request_id
+        });
+        toast.error(errorMsg);
+        return;
+      }
+
+      // Success - set result
       setAnalysisResult(response.data);
-      toast.success('Analiz tamamlandı');
+      toast.success('Sanrı yorumu tamamlandı');
+      
     } catch (error) {
+      clearInterval(progressInterval);
       console.error('Analysis error:', error);
-      toast.error('Görsel analizinde hata oluştu');
+      
+      let errorMsg = 'Görsel analizinde hata oluştu';
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        errorMsg = 'İstek zaman aşımına uğradı. Lütfen tekrar deneyin.';
+      } else if (error.response?.data?.error?.message) {
+        errorMsg = error.response.data.error.message;
+      } else if (error.response?.data?.detail) {
+        errorMsg = error.response.data.detail;
+      }
+      
+      setAnalysisError({
+        message: errorMsg,
+        code: error.response?.data?.error?.code || 'NETWORK_ERROR',
+        request_id: error.response?.data?.request_id
+      });
+      toast.error(errorMsg);
     } finally {
       setIsAnalyzing(false);
+      setAnalysisProgress('');
     }
+  };
+
+  const handleRetryAnalysis = () => {
+    setAnalysisError(null);
+    handleAnalyze();
   };
 
   const downloadImage = (base64, index) => {
