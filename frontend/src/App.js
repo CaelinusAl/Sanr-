@@ -133,6 +133,8 @@ function App() {
                     <Route path="/gorselin" element={<GorselinPage />} />
                     <Route path="/hakkinda" element={<AboutPage />} />
                     <Route path="/premium" element={<SubscriptionPage />} />
+                    <Route path="/profil" element={<ProfilePage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
                     
                     {/* Auth Routes */}
                     <Route path="/giris" element={<GirisPage />} />
