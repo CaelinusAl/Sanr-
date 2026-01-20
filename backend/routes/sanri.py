@@ -814,8 +814,9 @@ Use it only to adapt your tone, depth, and approach.
                 logger.warning(f"Profile update warning: {str(profile_error)}")
                 # Continue without profile - graceful degradation
         
-        # Build full prompt with profile context
-        full_prompt = build_full_prompt(mode, emotional_tone, profile_context)
+        # Build full prompt with profile context and language
+        system_language = request.system_language or "tr"
+        full_prompt = build_full_prompt(mode, emotional_tone, profile_context, system_language)
         
         chat = LlmChat(
             api_key=api_key,
@@ -838,33 +839,41 @@ Use it only to adapt your tone, depth, and approach.
             "mode": mode,
             "emotional_tone": emotional_tone,
             "symbols": detected_symbols,
-            "themes": detected_themes
+            "themes": detected_themes,
+            "language": system_language
         })
         sessions[session_id].append({
             "role": "assistant",
             "content": response,
             "timestamp": timestamp,
-            "mode": mode
+            "mode": mode,
+            "language": system_language
         })
         
         mode_config = MODE_PROMPTS.get(mode, MODE_PROMPTS["mirror"])
         
-        logger.info(f"SANRI: mode={mode}, tone={emotional_tone}, user={user_id[:8]}..., profile_updated={profile_updated}")
+        logger.info(f"SANRI: mode={mode}, tone={emotional_tone}, lang={system_language}, user={user_id[:8]}..., profile_updated={profile_updated}")
         
         return SanriResponse(
             response=response,
             session_id=session_id,
             mode=mode,
             mode_name_tr=mode_config["name_tr"],
+            mode_name_en=mode_config.get("name_en", mode_config["name"]),
             timestamp=timestamp,
+            language=system_language,
             profile_updated=profile_updated
         )
         
     except Exception as e:
         logger.error(f"SANRI error: {str(e)}")
+        # Error message based on language (default to TR for safety)
+        error_msg = "SANRI şu an dinlenme halinde... Bir nefes al ve tekrar dene."
+        if hasattr(request, 'system_language') and request.system_language == "en":
+            error_msg = "SANRI is resting now... Take a breath and try again."
         raise HTTPException(
             status_code=500,
-            detail="SANRI şu an dinlenme halinde... Bir nefes al ve tekrar dene."
+            detail=error_msg
         )
 
 # ============== MODE-SPECIFIC ENDPOINTS ==============
