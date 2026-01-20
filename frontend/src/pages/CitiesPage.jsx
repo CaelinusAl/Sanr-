@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, MapPin, Filter, Grid, List, Sparkles } from "lucide-react";
+import { Search, MapPin, Filter, Grid, List, Sparkles, Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,12 +15,25 @@ import {
 } from "@/components/ui/select";
 import { getCitiesByLanguage, getElements } from "@/data/cities";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePremium, FEATURES } from "@/contexts/PremiumContext";
+import { UpgradeModal } from "@/components/premium/PremiumComponents";
 
 const CitiesPage = () => {
   const { language, t } = useLanguage();
+  const { 
+    isPremium, 
+    getContentLimit, 
+    showUpgradeModal,
+    isUpgradeModalOpen,
+    hideUpgradeModal 
+  } = usePremium();
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedElement, setSelectedElement] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
+  
+  // Get content limit for cities
+  const citiesLimit = getContentLimit('cities_list');
 
   // Get cities and elements based on current language
   const citiesData = useMemo(() => getCitiesByLanguage(language), [language]);
@@ -34,6 +47,14 @@ const CitiesPage = () => {
       return matchesSearch && matchesElement;
     });
   }, [citiesData, searchQuery, selectedElement]);
+  
+  // Limit cities for free users
+  const displayCities = useMemo(() => {
+    if (citiesLimit === -1) return filteredCities;
+    return filteredCities.slice(0, citiesLimit);
+  }, [filteredCities, citiesLimit]);
+  
+  const lockedCount = filteredCities.length - displayCities.length;
 
   return (
     <div className="min-h-screen pt-24 pb-16">
