@@ -516,6 +516,7 @@ def calculate_interaction_depth(text: str) -> int:
 # ============== MODELS ==============
 
 SanriMode = Literal["dream", "mirror", "divine", "shadow", "light"]
+SystemLanguage = Literal["tr", "en"]
 
 class SanriRequest(BaseModel):
     message: str
@@ -523,13 +524,16 @@ class SanriRequest(BaseModel):
     user_id: Optional[str] = None  # For profile tracking
     mode: Optional[SanriMode] = None
     message_type: Optional[str] = "general"
+    system_language: Optional[SystemLanguage] = "tr"  # TR/EN bilingual support
 
 class SanriResponse(BaseModel):
     response: str
     session_id: str
     mode: str
     mode_name_tr: str
+    mode_name_en: str  # Added for bilingual support
     timestamp: str
+    language: str  # Response language
     profile_updated: bool = False  # Indicates if consciousness profile was updated
 
 class ConversationMessage(BaseModel):
