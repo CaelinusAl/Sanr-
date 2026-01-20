@@ -244,16 +244,17 @@ Kapsamlı kullanıcı sistemi:
 - Session yönetimi: httpOnly cookie, 7 gün expiry
 - Password hashing: SHA256 with salt
 
-**Bilinç Profili (Onboarding):**
+**Bilinç Profili (Onboarding) - YENİ SİSTEM:**
 4 sorulu bilinç profili:
-1. "Bu alana neden geldin?" (dreams, self_discovery, turning_point, curiosity)
-2. "Şu an hayatında en baskın duygu ne?" (seeking, confused, calm, tired, curious, love)
+1. **Zaman Algısı:** (present_aware, past_affected, non_linear, time_worker)
+2. **Kimlik Algısı:** (seeker, transforming, pathmaker, silence_finder)
 3. "SANRI seninle nasıl konuşsun?" (soft, wise, direct, symbolic)
 4. "Bu alanı hangi amaçla kullanacaksın?" (dreams, rituals, frequencies, self_knowledge, all)
 
 **SANRI Kişiselleştirme:**
 - Dinamik context builder (build_sanri_context)
 - Her kullanıcı için farklı SANRI deneyimi
+- Bilinç seviyesine göre derinlik ayarı (başlangıç, orta, ileri)
 - Context DB'de saklanmaz, istekte oluşturulur
 
 **Admin Kullanıcı Yönetimi:**
