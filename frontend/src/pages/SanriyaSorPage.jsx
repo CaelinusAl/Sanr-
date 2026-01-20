@@ -306,19 +306,19 @@ const SanriyaSorPage = () => {
       <section className="container mx-auto px-6">
         <div className="max-w-2xl mx-auto">
           
-          {/* Okuma Modları */}
+          {/* SANRI 5 Bilinç Modu */}
           <div className="mb-6">
-            <Label className="text-sm text-foreground/60 mb-3 block">Okuma Modu Seç:</Label>
+            <Label className="text-sm text-foreground/60 mb-3 block">Bilinç Modu Seç:</Label>
             <div className="flex flex-wrap gap-2">
-              {readingModes.map((mode) => (
+              {consciousnessModes.map((mode) => (
                 <Button
                   key={mode.id}
                   variant={selectedMode === mode.id ? "default" : "outline"}
                   size="sm"
-                  className={`rounded-full gap-2 ${
+                  className={`rounded-full gap-2 transition-all duration-300 ${
                     selectedMode === mode.id 
-                      ? "bg-accent hover:bg-accent/90" 
-                      : "border-border/50"
+                      ? `bg-gradient-to-r ${mode.color} ${mode.borderColor} border` 
+                      : "border-border/50 hover:border-accent/50"
                   }`}
                   onClick={() => setSelectedMode(mode.id)}
                   data-testid={`mode-${mode.id}`}
@@ -329,7 +329,7 @@ const SanriyaSorPage = () => {
               ))}
             </div>
             <p className="text-xs text-foreground/40 mt-2">
-              {readingModes.find(m => m.id === selectedMode)?.description}
+              {consciousnessModes.find(m => m.id === selectedMode)?.description}
             </p>
           </div>
 
