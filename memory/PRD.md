@@ -11,61 +11,86 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 
 ---
 
-## 💎 Premium Monetization System ✅ IMPLEMENTED
-**20 Ocak 2026**
+## 💎 Premium Monetization System ✅ FULLY IMPLEMENTED
+**20 Ocak 2026 - Updated with New Tier Naming**
 
 ### 4-Tier Consciousness Initiation Architecture
 
 | Tier | Name | Price (TR) | Price (Global) | Target |
 |------|------|------------|----------------|--------|
-| L0 | FREE - Uyanış | Ücretsiz | Free | Discovery, onboarding |
-| L1 | Premium Soul | ₺199/ay | $9.99/mo | Main revenue tier |
-| L2 | Premium Initiation | ₺499/ay | $24.99/mo | Advanced users |
-| L3 | Oracle Circle | ₺9,000/yıl | $499/yr | Invite-only elite |
+| L0 | **Arayıcı (Seeker)** | Ücretsiz | Free | Discovery, curiosity |
+| L1 | **İnisiye (Initiate)** | ₺199/ay | €9.99/mo | Main revenue tier |
+| L2 | **Soul** | ₺499/ay | €24.99/mo | Deep consciousness users |
+| L3 | **Oracle** | ₺6,660 + ₺590/ay | €333 + €29/mo | Invite-only elite |
 
-### Feature Gating Matrix
+### Tier Philosophy
 
-| Feature | FREE | SOUL | INITIATION | ORACLE |
-|---------|------|------|------------|--------|
+**Arayıcı (FREE)**
+- "Begin Your Journey"
+- Feel the depth before you see it
+- Creates "there is more here" feeling
+
+**İnisiye (Main Tier)**  
+- "You are no longer searching. You are remembering."
+- Full symbolic analysis
+- Core revenue generator
+
+**Soul (Advanced)**
+- "Your consciousness is evolving. A deeper layer is now accessible."
+- Timeline + fate layer
+- Weekly soul messages
+
+**Oracle (Elite)**
+- "This layer is protected by invitation only."
+- Hidden layers, collective readings
+- One-time access fee + maintenance
+
+### Feature Gating Matrix (Updated)
+
+| Feature | ARAYICI | İNİSİYE | SOUL | ORACLE |
+|---------|---------|---------|------|--------|
 | SANRI Questions | 3/day | Unlimited | Unlimited | Unlimited |
+| SANRI Preview Only | ✅ | ❌ | ❌ | ❌ |
 | Deep Analysis | ❌ | ✅ | ✅ | ✅ |
 | Visual Analysis | ❌ | ❌ | ✅ | ✅ |
 | Fate Layer | ❌ | ❌ | ✅ | ✅ |
-| High Consciousness | ❌ | ❌ | ❌ | ✅ |
+| Oracle Mode | ❌ | ❌ | ❌ | ✅ |
 | Consciousness Field | 6 cards | Full | Full | Full |
 | Frequency Field | 5 items | Full | Full | Full |
-| Micro Rituals | ✅ | ✅ | ✅ | ✅ |
+| Ritual Preview Only | ✅ | ❌ | ❌ | ❌ |
 | Deep Rituals | ❌ | ✅ | ✅ | ✅ |
 | Neural Ecstasy | ❌ | ❌ | ✅ | ✅ |
 | Book 112 | ❌ | ❌ | ✅ | ✅ |
-| Cities | 20 limited | Full | Full | Full |
-| Profile Mirror | ❌ | ❌ | ✅ | ✅ |
+| Cities Preview Only | ✅ | ❌ | ❌ | ❌ |
+| Cities Full | ❌ | ✅ | ✅ | ✅ |
+| Cities SANRI | ❌ | ❌ | ✅ | ✅ |
+| Profile Mirror | ❌ | ✅ | ✅ | ✅ |
+| Consciousness Map | ❌ | ❌ | ✅ | ✅ |
 | Voice SANRI | ❌ | ❌ | ✅ | ✅ |
 | Watermark | ON | OFF | OFF | OFF |
-| Weekly Private Ritual | ❌ | ❌ | ❌ | ✅ |
-| Consciousness Report | ❌ | ❌ | ❌ | ✅ |
+| Soul Weekly Message | ❌ | ❌ | ✅ | ✅ |
+| Hidden Layer | ❌ | ❌ | ❌ | ✅ |
 
-### Backend Implementation
-- `routes/subscription.py` - Plan definitions, upgrade endpoints
-- `middleware/feature_gate.py` - Centralized access control
-- Database fields: `plan_type`, `premium_until`, `oracle_invited`
-
-### Frontend Implementation
-- `contexts/PremiumContext.jsx` - Subscription state management
-- `components/premium/PremiumComponents.jsx` - UI components
-- `pages/SubscriptionPage.jsx` - Plan comparison page
-- Route: `/premium`
+### Admin Panel - Subscription Management ✅
+- `/admin/subscriptions` - Full subscription management
+- **Features:**
+  - View all users with plan status
+  - Manual plan upgrade/downgrade
+  - Oracle activation with special code
+  - Invite code creation & tracking
+  - Upgrade flow configuration
+  - Subscription logs
 
 ### Upgrade Flow (Admin Configurable)
-- Day 3: Soft teaser ("Your consciousness wants to open...")
-- Day 7: Main premium offer
-- Soul Day 3: Initiation preview
-- Initiation Day 14: Oracle invitation teaser
+- **Day 3**: Soft teaser - "Bazı katmanlar hâlâ senden gizli..."
+- **Day 7**: Main offer - "İlk kapıya ulaştın. Bu noktanın ötesinde, hatırlama başlıyor."
+- **Initiate +10 days**: Soul preview
+- **Soul +14 days**: Oracle teaser (never auto-offered)
 
 ### Oracle Invite System
-- ✅ Admin manual invite via `/api/subscription/admin/invite-user`
+- ✅ Admin manual invite via `/api/subscription/admin/activate-oracle`
 - ✅ Invite codes via `/api/subscription/admin/create-invite-code`
-- Codes format: `CAELINUS-XXXX`
+- Codes format: `CAELINUS-XXXX` (regular) / `ORACLE-XXXX` (oracle specific)
 
 ### Payment Integration
 - 🔄 **MOCK MODE** - Architecture ready, real payments later
