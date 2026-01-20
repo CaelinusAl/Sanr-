@@ -43,25 +43,23 @@ const OnboardingPage = () => {
       finish: "Tamamla",
       skip: "Daha Sonra",
       
-      // Question 1
-      q1_title: "Bu alana neden geldin?",
-      q1_subtitle: "Niyetini fark et...",
-      q1_opt1: "Rüyalarımı anlamak istiyorum",
-      q1_opt2: "Kendimi tanımak istiyorum",
-      q1_opt3: "Hayatımda bir dönüm noktasındayım",
-      q1_opt4: "Sadece merak ediyorum",
+      // Question 1 - ZAMAN ALGISI (bilinç seviyesi)
+      q1_title: "Hayatında şu an en çok hangi cümle sana yakın?",
+      q1_subtitle: "Zaman algını fark et...",
+      q1_opt1: "Geleceği merak ediyorum ama şimdide kalmak istiyorum",
+      q1_opt2: "Geçmişim beni hâlâ etkiliyor",
+      q1_opt3: "Zamanın doğrusal olduğuna pek inanmıyorum",
+      q1_opt4: "Zamanla çalıştığımı hissediyorum",
       
-      // Question 2
-      q2_title: "Şu an hayatında en baskın duygu ne?",
-      q2_subtitle: "Hislerini dinle...",
-      q2_opt1: "Arayış",
-      q2_opt2: "Kafa karışıklığı",
-      q2_opt3: "Huzur",
-      q2_opt4: "Yorgunluk",
-      q2_opt5: "Merak",
-      q2_opt6: "Aşk / Bağ",
+      // Question 2 - KİMLİK ALGISI (ego / öz ayrımı)
+      q2_title: "Kendini en çok nasıl tanımlarsın?",
+      q2_subtitle: "Kim olduğunu hisset...",
+      q2_opt1: "Hayatını anlamaya çalışan biri",
+      q2_opt2: "Dönüşüm sürecinde olan biri",
+      q2_opt3: "Kendi yolunu çizen biri",
+      q2_opt4: "Sessizlikte kendini bulan biri",
       
-      // Question 3
+      // Question 3 - SANRI ile iletişim tarzı
       q3_title: "SANRI seninle nasıl konuşsun?",
       q3_subtitle: "Rehberlik tarzını seç...",
       q3_opt1: "Yumuşak & Şefkatli",
@@ -69,7 +67,7 @@ const OnboardingPage = () => {
       q3_opt3: "Sade & Net",
       q3_opt4: "Spiritüel & Sembolik",
       
-      // Question 4
+      // Question 4 - Kullanım amacı
       q4_title: "Bu alanı hangi amaçla kullanacaksın?",
       q4_subtitle: "Yolculuğunu tanımla...",
       q4_opt1: "Rüya yorumları",
@@ -96,22 +94,23 @@ const OnboardingPage = () => {
       finish: "Complete",
       skip: "Later",
       
-      q1_title: "Why did you come to this space?",
-      q1_subtitle: "Notice your intention...",
-      q1_opt1: "I want to understand my dreams",
-      q1_opt2: "I want to know myself",
-      q1_opt3: "I'm at a turning point in my life",
-      q1_opt4: "Just curious",
+      // Question 1 - TIME PERCEPTION (consciousness level)
+      q1_title: "Which statement feels closest to you right now?",
+      q1_subtitle: "Notice your perception of time...",
+      q1_opt1: "I'm curious about the future but want to stay in the present",
+      q1_opt2: "My past still affects me",
+      q1_opt3: "I don't quite believe time is linear",
+      q1_opt4: "I feel like I'm working with time",
       
-      q2_title: "What's your dominant emotion right now?",
-      q2_subtitle: "Listen to your feelings...",
-      q2_opt1: "Seeking",
-      q2_opt2: "Confusion",
-      q2_opt3: "Peace",
-      q2_opt4: "Tiredness",
-      q2_opt5: "Curiosity",
-      q2_opt6: "Love / Connection",
+      // Question 2 - IDENTITY PERCEPTION (ego / self distinction)
+      q2_title: "How do you most define yourself?",
+      q2_subtitle: "Feel who you are...",
+      q2_opt1: "Someone trying to understand life",
+      q2_opt2: "Someone in transformation",
+      q2_opt3: "Someone carving their own path",
+      q2_opt4: "Someone who finds themselves in silence",
       
+      // Question 3 - Communication style with SANRI
       q3_title: "How should SANRI talk to you?",
       q3_subtitle: "Choose your guidance style...",
       q3_opt1: "Soft & Compassionate",
@@ -119,6 +118,7 @@ const OnboardingPage = () => {
       q3_opt3: "Simple & Clear",
       q3_opt4: "Spiritual & Symbolic",
       
+      // Question 4 - Purpose
       q4_title: "What will you use this space for?",
       q4_subtitle: "Define your journey...",
       q4_opt1: "Dream interpretations",
