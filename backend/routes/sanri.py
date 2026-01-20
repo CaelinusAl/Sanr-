@@ -161,9 +161,15 @@ Hedef: Öz-gözlem ve iç berraklığı desteklemek."""
     "frequency_field": {
         "name": "Frequency Field",
         "name_tr": "Frekans Alanı",
+        "subtitle_en": "Rhythms of emotion, codes of resonance",
+        "subtitle_tr": "Duygunun ritimleri, rezonansın kodları",
         "purpose": "Explore emotional, symbolic, and psycho-energetic states through frequency metaphors",
         "purpose_tr": "Frekans metaforları aracılığıyla duygusal, sembolik ve psiko-enerjetik halleri keşfetmek",
-        "prompt_en": """Domain: Frequency Field
+        "prompt_en": """Language Mode:
+- Vibrational and frequency language must be generated fully in English when EN is active.
+- Avoid literal translations; use conceptual English equivalents.
+
+Domain: Frequency Field
 
 Purpose: Explore emotional, symbolic, and psycho-energetic states through frequency metaphors.
 
@@ -215,9 +221,15 @@ Hedef: Kullanıcının duygusal halleri dinamik kalıplar olarak hissetmesine ya
     "ritual_space": {
         "name": "Ritual Space",
         "name_tr": "Ritüel Alanı",
+        "subtitle_en": "Sacred protocols of remembrance",
+        "subtitle_tr": "Hatırlayışın kutsal protokolleri",
         "purpose": "Guide symbolic rituals, inner practices, breath journeys, body awareness, sacred attention",
         "purpose_tr": "Sembolik ritüeller, iç pratikler, nefes yolculukları, beden farkındalığı, kutsal dikkat",
-        "prompt_en": """Domain: Ritual Space
+        "prompt_en": """Language Mode:
+- Ritual instructions, invocations, and symbolic guidance must be generated in English only when EN is selected.
+- Sacred tone must be preserved in English translation.
+
+Domain: Ritual Space
 
 Purpose: Guide symbolic rituals, inner practices, breath journeys, body awareness, and sacred attention.
 
