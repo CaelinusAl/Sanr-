@@ -14,7 +14,9 @@ from datetime import datetime, timezone
 from routes.sanri import router as sanri_router
 from routes.bilinc_alani import router as bilinc_alani_router
 from routes.ritual import router as ritual_router
-from routes.tts import router as tts_router
+# OLD TTS disabled - replaced by SANRI Voice (ElevenLabs)
+# from routes.tts import router as tts_router
+from routes.sanri_voice import router as sanri_voice_router  # NEW: ElevenLabs SANRI Dream
 from routes.admin import router as admin_router, set_database as set_admin_db
 from routes.visual import router as visual_router, set_database as set_visual_db
 from routes.premium_ritual import router as premium_ritual_router, set_database as set_premium_ritual_db
