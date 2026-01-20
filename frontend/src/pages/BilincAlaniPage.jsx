@@ -90,37 +90,84 @@ const getIcon = (iconName) => {
   return icons[iconName] || Sparkles;
 };
 
-// Premium Ritüeller - Backend'e bağlanabilir yapı
-const premiumRitueler = [
+// Premium Ritüeller - 6 Seed Ritüel (Backend-ready yapı)
+const premiumRitueller = [
   {
-    id: "XI",
-    title: "Zihin–Gönül Kapısı",
-    desc: "Beyin ve kalp arasındaki bilinç köprüsü",
-    frequency: "Hatırlama",
+    id: "ritual-hatırlama",
+    chapter: "I", // Algı ve Hatırlama bölümüyle ilişkili
+    title: "Hatırlama Kapısı",
+    desc: "Bilinç frekansına giriş ritüeli. Kim olduğunu hatırlamak için ilk adım.",
+    duration: "8 dk",
+    level: "Başlangıç",
+    tags: ["hatırlama", "farkındalık", "nefes"],
+    audioUrl: null,
+    steps: 7,
     locked: true
   },
   {
-    id: "XII",
-    title: "His Kodları",
-    desc: "Duyguların taşıdığı kozmik bilgi alanı",
-    frequency: "Algı",
+    id: "ritual-zihin-kalp",
+    chapter: "II", // Zihin ve Duygu bölümüyle ilişkili
+    title: "Zihin–Kalp Senkronu",
+    desc: "Beyin ve kalp arasındaki bilinç köprüsünü kurar. His ve zihin hizalama alanı.",
+    duration: "12 dk",
+    level: "Orta",
+    tags: ["kalp", "zihin", "denge", "senkron"],
+    audioUrl: null,
+    steps: 9,
     locked: true
   },
   {
-    id: "XIII",
-    title: "Sezgi Alanı",
-    desc: "Kuantum sıçrama ve içsel rehberlik",
-    frequency: "Sezgi",
+    id: "ritual-kaynak",
+    chapter: "III", // Yaratım ve Kaynak bölümüyle ilişkili
+    title: "Kaynak Frekansı",
+    desc: "İçsel kaynağa bağlanma ritüeli. Yaratım enerjisini aktive eder.",
+    duration: "15 dk",
+    level: "Orta",
+    tags: ["kaynak", "yaratım", "enerji"],
+    audioUrl: null,
+    steps: 11,
     locked: true
   },
   {
-    id: "XIV",
+    id: "ritual-his-kodlari",
+    chapter: "IV", // His Kodları bölümüyle ilişkili
+    title: "His Kodlarını Çözme",
+    desc: "Duyguların taşıdığı kozmik bilgi alanına erişim. Hislerin dilini anlama.",
+    duration: "10 dk",
+    level: "İleri",
+    tags: ["his", "duygu", "çözümleme"],
+    audioUrl: null,
+    steps: 8,
+    locked: true
+  },
+  {
+    id: "ritual-sezgi",
+    chapter: "V", // Sezgi ve İçgörü bölümüyle ilişkili
+    title: "Sezgi Alanı Aktivasyonu",
+    desc: "Kuantum sıçrama ve içsel rehberlik. Sezgisel bilgi kanalını açar.",
+    duration: "18 dk",
+    level: "İleri",
+    tags: ["sezgi", "içgörü", "kuantum"],
+    audioUrl: null,
+    steps: 13,
+    locked: true
+  },
+  {
+    id: "ritual-kozmik-anten",
+    chapter: "VI", // Bağlantı ve Birlik bölümüyle ilişkili
     title: "Kozmik Anten",
-    desc: "Evrensel bilinç bağlantı noktası",
-    frequency: "Bağlantı",
+    desc: "Evrensel bilinç bağlantı noktası. Yüksek frekans alıcısını aktive eder.",
+    duration: "20 dk",
+    level: "Usta",
+    tags: ["kozmik", "bağlantı", "evrensel"],
+    audioUrl: null,
+    steps: 15,
     locked: true
   }
 ];
+
+// Güvenli erişim için fallback
+const getPremiumRitueller = () => premiumRitueller ?? [];
 
 // CAELINUS Response Component
 const CaelinusResponseText = ({ text }) => {
