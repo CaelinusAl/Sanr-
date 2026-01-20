@@ -560,7 +560,7 @@ const translations = {
       introLine6: 'it opens the door within your question.',
       introReady: 'When ready, write.',
       
-      disclaimer: 'SANRI does not offer prophecy, diagnosis, or judgment. It generates symbolic meaning and open-ended questions. Meaning always takes shape within you.',
+      disclaimer: 'SANRI does not offer prophecy, diagnosis, or judgment.\nIt generates symbolic meaning and open-ended questions.\nMeaning always takes shape within you.\n\n— SANRI',
       disclaimerButton: 'I understand',
       
       modeSelect: 'Which one would you like to start with?',
