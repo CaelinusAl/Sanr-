@@ -521,9 +521,89 @@ export const UpgradeModal = () => {
 export default {
   PremiumBadge,
   FeatureLock,
+  FeatureGate,
+  LockedContent,
   ContentLimiter,
   UpgradePromptBanner,
   DailyLimitIndicator,
   PlanCard,
   UpgradeModal
+};
+
+/**
+ * Feature Gate - Simple wrapper that checks feature access
+ */
+export const FeatureGate = ({ feature, children, fallback = null }) => {
+  const { hasFeature } = usePremium();
+  
+  if (hasFeature(feature)) {
+    return <>{children}</>;
+  }
+  
+  return fallback || null;
+};
+
+/**
+ * Locked Content - Beautiful locked state display
+ */
+export const LockedContent = ({ 
+  title, 
+  description, 
+  onUpgrade,
+  icon = Lock 
+}) => {
+  const { language } = useLanguage();
+  const IconComponent = icon;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative"
+    >
+      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 overflow-hidden">
+        <CardContent className="p-8 text-center">
+          {/* Decorative background */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-4 left-4 w-32 h-32 rounded-full bg-primary blur-3xl" />
+            <div className="absolute bottom-4 right-4 w-40 h-40 rounded-full bg-accent blur-3xl" />
+          </div>
+          
+          <div className="relative z-10">
+            {/* Lock Icon */}
+            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+              <IconComponent className="w-8 h-8 text-primary" />
+            </div>
+            
+            {/* Title */}
+            <h3 className="font-serif text-xl text-foreground mb-3">
+              {title}
+            </h3>
+            
+            {/* Description */}
+            <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed">
+              {description}
+            </p>
+            
+            {/* CTA */}
+            <Button 
+              onClick={onUpgrade}
+              className="rounded-full bg-gradient-to-r from-primary to-accent hover:opacity-90 px-8"
+            >
+              <Crown className="w-4 h-4 mr-2" />
+              {language === 'en' ? 'Unlock Access' : 'Erişimi Aç'}
+            </Button>
+            
+            {/* Soft note */}
+            <p className="text-xs text-muted-foreground mt-4 italic">
+              {language === 'en' 
+                ? '"You are ready to go deeper. This field opens when you choose to remember more."'
+                : '"Derine inmeye hazırsın. Bu alan, daha fazlasını hatırlamayı seçtiğinde açılır."'
+              }
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
 };
