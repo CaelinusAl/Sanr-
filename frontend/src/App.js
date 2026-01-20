@@ -42,6 +42,8 @@ import { Footer } from "@/components/layout/Footer";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { AdminProvider, useAdmin } from "@/contexts/AdminContext";
 import { UpgradeModal } from "@/components/premium/PremiumComponents";
+import { UpgradeFlowModal } from "@/components/premium/UpgradeFlowModal";
+import { useUpgradeFlow } from "@/hooks/useUpgradeFlow";
 
 // Loading component
 const PageLoader = () => (
