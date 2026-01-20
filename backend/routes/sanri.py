@@ -899,6 +899,116 @@ def calculate_interaction_depth(text: str) -> int:
     
     return min(depth, 5)
 
+# ============== DOMAIN DETECTION ==============
+
+def detect_domain(message: str, city_data: Optional[dict] = None) -> str:
+    """
+    Hybrid domain detection system.
+    Priority: Manual > City Context > Automatic > Default
+    """
+    message_lower = message.lower()
+    
+    # If city data provided, use awakened_cities domain
+    if city_data:
+        return "awakened_cities"
+    
+    # Domain keywords for automatic detection
+    domain_keywords = {
+        "awakened_cities": [
+            # Turkish
+            "şehir", "kent", "tanrıça", "anadolu", "coğrafya", "yer", "toprak",
+            # English
+            "city", "cities", "goddess", "anatolia", "geography", "place", "land",
+            # City names
+            "istanbul", "ankara", "izmir", "ephesus", "efes", "göbeklitepe", "kapadokya",
+            "hattuşa", "çatalhöyük", "nemrut", "pamukkale", "truva", "troy"
+        ],
+        "consciousness_field": [
+            # Turkish
+            "bilinç", "farkındalık", "benlik", "kimlik", "gözlemci", "algı", "öz",
+            "uyanış", "kim olduğum", "kendimi tanı", "iç ses",
+            # English
+            "consciousness", "awareness", "identity", "self", "observer", "perception",
+            "awakening", "who am i", "know myself", "inner voice"
+        ],
+        "frequency_field": [
+            # Turkish
+            "frekans", "titreşim", "enerji", "ritim", "uyum", "rezonans", "dalga",
+            "kalp atışı", "sinir", "duygu enerjisi",
+            # English
+            "frequency", "vibration", "energy", "rhythm", "coherence", "resonance", "wave",
+            "heartbeat", "nervous", "emotional energy"
+        ],
+        "ritual_space": [
+            # Turkish
+            "ritüel", "nefes", "meditasyon", "pratik", "tören", "niyet", "beden tarama",
+            "gevşeme", "sinir sistemi", "kutsal",
+            # English
+            "ritual", "breath", "meditation", "practice", "ceremony", "intention", "body scan",
+            "relaxation", "nervous system", "sacred"
+        ],
+        "neural_ecstasy": [
+            # Turkish
+            "berraklık", "içgörü", "vecd", "zirve", "aydınlanma anı", "estetik haz",
+            "zihin açılması", "sevinç", "bilişsel", "eureka",
+            # English
+            "clarity", "insight", "ecstasy", "peak", "enlightenment moment", "aesthetic pleasure",
+            "mind opening", "joy", "cognitive", "eureka"
+        ],
+        "book_112": [
+            # Turkish
+            "kendini yaratan", "112", "dişil", "tanrıça", "hatırlayış", "öz-yaratım",
+            "kadim", "epik", "efsane", "kutsal dişil",
+            # English
+            "self-creating", "112", "feminine", "goddess", "remembrance", "self-creation",
+            "ancient", "epic", "legend", "sacred feminine", "divine feminine"
+        ]
+    }
+    
+    # Score each domain
+    domain_scores = {}
+    for domain, keywords in domain_keywords.items():
+        score = sum(1 for kw in keywords if kw in message_lower)
+        domain_scores[domain] = score
+    
+    # Find domain with highest score
+    max_score = max(domain_scores.values())
+    if max_score > 0:
+        for domain, score in domain_scores.items():
+            if score == max_score:
+                return domain
+    
+    # Default fallback
+    return "consciousness_field"
+
+def get_domain_prompt(domain: str, system_language: str, city_data: Optional[dict] = None) -> str:
+    """Get domain-specific prompt based on language"""
+    domain_config = DOMAIN_CONFIGS.get(domain, DOMAIN_CONFIGS["consciousness_field"])
+    
+    if system_language == "en":
+        prompt = domain_config["prompt_en"]
+    else:
+        prompt = domain_config["prompt_tr"]
+    
+    # Add city context if provided
+    if city_data and domain == "awakened_cities":
+        city_context = f"""
+CITY CONTEXT:
+- City Name: {city_data.get('city_name', 'Unknown')}
+- Goddess Archetype: {city_data.get('goddess_archetype', 'Not specified')}
+- Frequency Signature: {city_data.get('frequency_signature', 'Not specified')}
+- Symbolic Role: {city_data.get('symbolic_role', 'Not specified')}
+
+When discussing this city:
+- Integrate the provided metadata naturally
+- Speak about the city as a living consciousness node
+- Avoid historical claims, focus on symbolic meaning
+- Connect the goddess archetype to the user's question
+"""
+        prompt += city_context
+    
+    return prompt
+
 # ============== MODELS ==============
 
 SanriMode = Literal["dream", "mirror", "divine", "shadow", "light"]
