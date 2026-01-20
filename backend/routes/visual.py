@@ -559,6 +559,25 @@ async def generate_hologram(request: GenerateRequest):
 
 # ============== IMAGE ANALYSIS ==============
 
+def detect_image_mimetype(image_bytes: bytes) -> str:
+    """Detect real mime-type from image file bytes (magic numbers)"""
+    if len(image_bytes) < 12:
+        return None
+    
+    # Check magic bytes
+    if image_bytes[:8] == b'\x89PNG\r\n\x1a\n':
+        return "image/png"
+    elif image_bytes[:2] == b'\xff\xd8':
+        return "image/jpeg"
+    elif image_bytes[:4] == b'RIFF' and image_bytes[8:12] == b'WEBP':
+        return "image/webp"
+    elif image_bytes[:4] == b'GIF8':
+        return "image/gif"
+    elif image_bytes[4:12] == b'ftypheic' or image_bytes[4:12] == b'ftypmif1':
+        return "image/heic"
+    
+    return None
+
 @router.post("/analyze")
 async def analyze_image(
     image: UploadFile = File(...),
@@ -582,10 +601,9 @@ async def analyze_image(
                 "request_id": request_id
             }
         
-        # Read and encode image
+        # Read image content
         image_content = await image.read()
         image_size = len(image_content)
-        logger.info(f"[{request_id}] Image size: {image_size} bytes, type: {image.content_type}")
         
         if image_size > 10 * 1024 * 1024:  # 10MB limit
             return {
@@ -594,12 +612,34 @@ async def analyze_image(
                 "request_id": request_id
             }
         
-        image_base64 = base64.b64encode(image_content).decode('utf-8')
+        # CRITICAL: Detect REAL mime-type from file bytes, not from header
+        detected_mime = detect_image_mimetype(image_content)
         
-        # Determine content type - ensure it's a valid image type
-        content_type = image.content_type or "image/jpeg"
-        if content_type not in ["image/jpeg", "image/png", "image/gif", "image/webp"]:
-            content_type = "image/jpeg"  # Default to jpeg
+        # Supported types for Claude vision
+        supported_types = ["image/jpeg", "image/png", "image/webp", "image/gif"]
+        
+        if detected_mime not in supported_types:
+            if detected_mime == "image/heic":
+                return {
+                    "ok": False,
+                    "error": {
+                        "code": "UNSUPPORTED_FORMAT",
+                        "message": "HEIC formatı desteklenmiyor. Lütfen JPEG, PNG veya WebP formatında bir görsel yükleyin."
+                    },
+                    "request_id": request_id
+                }
+            return {
+                "ok": False,
+                "error": {
+                    "code": "UNSUPPORTED_FORMAT",
+                    "message": f"Görsel formatı tanınamadı veya desteklenmiyor. Desteklenen formatlar: JPEG, PNG, WebP, GIF"
+                },
+                "request_id": request_id
+            }
+        
+        logger.info(f"[{request_id}] Image size: {image_size} bytes, detected_mime: {detected_mime}, header_mime: {image.content_type}")
+        
+        image_base64 = base64.b64encode(image_content).decode('utf-8')
         
         # Build user message with context
         user_text = "Bu görseli sembolik olarak oku."
@@ -611,7 +651,7 @@ async def analyze_image(
         
         # Initialize chat with Claude for vision
         model_name = "claude-sonnet-4-5-20250929"
-        logger.info(f"[{request_id}] Using model: anthropic/{model_name}")
+        logger.info(f"[{request_id}] Using model: anthropic/{model_name}, mime: {detected_mime}")
         
         chat = LlmChat(
             api_key=api_key,
@@ -619,7 +659,7 @@ async def analyze_image(
             system_message=system_prompt
         ).with_model("anthropic", model_name)
         
-        # Create message with image - use ImageContent for vision
+        # Create message with image - ImageContent handles base64 internally
         user_message = UserMessage(
             text=user_text,
             file_contents=[ImageContent(
@@ -635,24 +675,11 @@ async def analyze_image(
         logger.info(f"[{request_id}] SANRI response received in {latency_ms}ms")
         logger.info(f"[{request_id}] Response length: {len(response)} chars")
         
-        # Parse the response into sections
-        sections = parse_analysis_response(response, is_premium)
+        # Parse the response into sections (new 3-layer format)
+        sections = parse_analysis_response_v2(response, is_premium)
         
         analysis_id = request_id
         timestamp = datetime.now(timezone.utc).isoformat()
-        
-        # Build full analysis text for display
-        analysis_text = f"""**Gördüğüm**
-{sections.get('seen', '')}
-
-**Sembolik Okuma**
-{sections.get('symbolic', '')}
-
-**Yansıma Soruları**
-{chr(10).join(f"• {q}" for q in sections.get('questions', []))}
-
-**Mini Ritüel**
-{sections.get('ritual', '')}"""
         
         # Store analysis in history
         await db.visual_analyses.insert_one({
@@ -661,6 +688,7 @@ async def analyze_image(
             "is_premium": is_premium,
             "response": response,
             "image_size": image_size,
+            "image_mime": detected_mime,
             "latency_ms": latency_ms,
             "timestamp": timestamp
         })
@@ -669,17 +697,18 @@ async def analyze_image(
         
         return {
             "ok": True,
-            "seen": sections.get("seen", ""),
-            "symbolic": sections.get("symbolic", ""),
-            "questions": sections.get("questions", []),
-            "ritual": sections.get("ritual", ""),
+            "surface": sections.get("surface", ""),
+            "consciousness": sections.get("consciousness", ""),
+            "destiny": sections.get("destiny", ""),
+            "reminder": sections.get("reminder", ""),
+            "analysis_text": response,  # Full raw response for display
             "analysis_id": analysis_id,
-            "analysis_text": analysis_text,
             "meta": {
                 "model": f"anthropic/{model_name}",
                 "latency_ms": latency_ms,
                 "request_id": request_id,
-                "is_premium": is_premium
+                "is_premium": is_premium,
+                "image_mime": detected_mime
             },
             "timestamp": timestamp
         }
@@ -698,6 +727,43 @@ async def analyze_image(
             },
             "request_id": request_id
         }
+
+
+def parse_analysis_response_v2(response: str, is_premium: bool) -> dict:
+    """Parse SANRI's 3-layer response into sections"""
+    sections = {
+        "surface": "",
+        "consciousness": "",
+        "destiny": "",
+        "reminder": ""
+    }
+    
+    # Try to extract sections by markers
+    import re
+    
+    # Surface layer: 🜂 YÜZEY
+    surface_match = re.search(r'🜂\s*YÜZEY[^🜁]*', response, re.DOTALL | re.IGNORECASE)
+    if surface_match:
+        sections["surface"] = surface_match.group(0).strip()
+    
+    # Consciousness layer: 🜁 BİLİNÇ
+    consciousness_match = re.search(r'🜁\s*BİLİNÇ[^🜃]*', response, re.DOTALL | re.IGNORECASE)
+    if consciousness_match:
+        sections["consciousness"] = consciousness_match.group(0).strip()
+    
+    # Destiny layer: 🜃 KADER
+    destiny_match = re.search(r'🜃\s*KADER.*?(?=Bu görüntü|Bu görsel|$)', response, re.DOTALL | re.IGNORECASE)
+    if destiny_match:
+        sections["destiny"] = destiny_match.group(0).strip()
+    
+    # Reminder: "Bu görüntü sana şunu hatırlatıyor: ..."
+    reminder_match = re.search(r'Bu görüntü sana şunu hatırlatıyor:.*', response, re.DOTALL | re.IGNORECASE)
+    if not reminder_match:
+        reminder_match = re.search(r'Bu görsel sana.*hatırlatıyor:.*', response, re.DOTALL | re.IGNORECASE)
+    if reminder_match:
+        sections["reminder"] = reminder_match.group(0).strip()
+    
+    return sections
 
 def parse_analysis_response(response: str, is_premium: bool) -> dict:
     """Parse SANRI's response into structured sections"""
