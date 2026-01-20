@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime, timezone
 
 # Import routes
-from routes.sanri import router as sanri_router
+from routes.sanri import router as sanri_router, set_database as set_sanri_db
 from routes.bilinc_alani import router as bilinc_alani_router
 from routes.ritual import router as ritual_router
 # OLD TTS disabled - replaced by SANRI Voice (ElevenLabs)
@@ -23,6 +23,7 @@ from routes.premium_ritual import router as premium_ritual_router, set_database 
 from routes.user_auth import router as user_auth_router, set_database as set_user_auth_db
 from routes.user_management import router as user_management_router, set_database as set_user_management_db
 from routes.admin_users import router as admin_users_router, set_database as set_admin_users_db
+from routes.consciousness_profile import router as consciousness_router, set_database as set_consciousness_db
 
 
 ROOT_DIR = Path(__file__).parent
