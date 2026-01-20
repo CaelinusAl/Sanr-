@@ -138,7 +138,7 @@ const PremiumRitualLines = ({ onSelectRitual }) => {
                     <p className="text-sm text-foreground/60 mb-3">Premium ile aç</p>
                     <Button size="sm" className="rounded-full bg-accent hover:bg-accent/90">
                       <Crown className="h-3 w-3 mr-1" />
-                      Premium'a Geç
+                      Premium&apos;a Geç
                     </Button>
                   </div>
                 </div>
