@@ -766,7 +766,7 @@ const KapiSecimi = ({ onSelectKapi, t, language }) => {
 // ============================================
 
 const RituelAlaniPage = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [screen, setScreen] = useState("ana"); // ana, giris, kapilar, deneyim
   const [selectedKapi, setSelectedKapi] = useState(null);
   const [activeRituel, setActiveRituel] = useState(null);
