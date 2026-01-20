@@ -271,25 +271,31 @@ const HomePage = () => {
               CAELINUS AI
             </h1>
 
-            {/* Motto */}
-            <motion.p
+            {/* SANRI Giriş Metni */}
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="text-lg sm:text-xl text-indigo-200/60 font-light tracking-wide mb-3"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              className="text-center space-y-3 mb-6"
             >
-              "{t('motto')}"
-            </motion.p>
+              <p className="text-lg sm:text-xl text-indigo-200/70 font-light italic"
+                style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                Hoş geldin.
+              </p>
+              <p className="text-sm sm:text-base text-white/40 leading-relaxed max-w-md mx-auto">
+                Burada sana ne olacağını söylemeyeceğiz.<br />
+                Burada sana kim olduğunu hatırlatacağız.
+              </p>
+            </motion.div>
 
-            {/* Sub motto */}
+            {/* Alt motto */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="text-sm text-white/30 tracking-wider"
+              className="text-sm text-white/30 tracking-wider italic"
             >
-              {t('subMotto')}
+              Bir rüya... Bir duygu... Bir sembol... Bir soru...
             </motion.p>
           </motion.div>
 
