@@ -278,75 +278,73 @@ const SanriyaSorPage = () => {
       <section className="container mx-auto px-6">
         <div className="max-w-2xl mx-auto">
           
-          {activeTab === "chat" ? (
-            <>
-              {/* Okuma Modları */}
-              <div className="mb-6">
-                <Label className="text-sm text-foreground/60 mb-3 block">Okuma Modu Seç:</Label>
-                <div className="flex flex-wrap gap-2">
-                  {readingModes.map((mode) => (
-                    <Button
-                      key={mode.id}
-                      variant={selectedMode === mode.id ? "default" : "outline"}
-                      size="sm"
-                      className={`rounded-full gap-2 ${
-                        selectedMode === mode.id 
-                          ? "bg-accent hover:bg-accent/90" 
-                          : "border-border/50"
-                      }`}
-                      onClick={() => setSelectedMode(mode.id)}
-                      data-testid={`mode-${mode.id}`}
-                    >
-                      <mode.icon className="h-4 w-4" />
-                      {mode.label}
-                    </Button>
-                  ))}
-                </div>
-                <p className="text-xs text-foreground/40 mt-2">
-                  {readingModes.find(m => m.id === selectedMode)?.description}
+          {/* Okuma Modları */}
+          <div className="mb-6">
+            <Label className="text-sm text-foreground/60 mb-3 block">Okuma Modu Seç:</Label>
+            <div className="flex flex-wrap gap-2">
+              {readingModes.map((mode) => (
+                <Button
+                  key={mode.id}
+                  variant={selectedMode === mode.id ? "default" : "outline"}
+                  size="sm"
+                  className={`rounded-full gap-2 ${
+                    selectedMode === mode.id 
+                      ? "bg-accent hover:bg-accent/90" 
+                      : "border-border/50"
+                  }`}
+                  onClick={() => setSelectedMode(mode.id)}
+                  data-testid={`mode-${mode.id}`}
+                >
+                  <mode.icon className="h-4 w-4" />
+                  {mode.label}
+                </Button>
+              ))}
+            </div>
+            <p className="text-xs text-foreground/40 mt-2">
+              {readingModes.find(m => m.id === selectedMode)?.description}
+            </p>
+          </div>
+
+          {/* Error Alert */}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-6"
+              >
+                <Alert className="border-destructive/30 bg-destructive/5">
+                  <AlertCircle className="h-4 w-4 text-destructive" />
+                  <AlertDescription className="text-sm">{error}</AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Messages */}
+          <div className="min-h-[350px] mb-6 space-y-6">
+            {conversation.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-10"
+              >
+                <Sparkles className="h-8 w-8 text-accent/50 mx-auto mb-6" />
+                <p className="text-foreground/70 font-serif italic mb-6 text-lg">
+                  "Hatırlamak dışarıda başlar. Anlamak içeride olur."
                 </p>
-              </div>
-
-              {/* Error Alert */}
-              <AnimatePresence>
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="mb-6"
-                  >
-                    <Alert className="border-destructive/30 bg-destructive/5">
-                      <AlertCircle className="h-4 w-4 text-destructive" />
-                      <AlertDescription className="text-sm">{error}</AlertDescription>
-                    </Alert>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Messages */}
-              <div className="min-h-[350px] mb-6 space-y-6">
-                {conversation.length === 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-center py-10"
-                  >
-                    <Sparkles className="h-8 w-8 text-accent/50 mx-auto mb-6" />
-                    <p className="text-foreground/70 font-serif italic mb-6 text-lg">
-                      "Hatırlamak dışarıda başlar. Anlamak içeride olur."
-                    </p>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="rounded-full"
-                      onClick={handleExampleClick}
-                    >
-                      Örnek soru göster
-                    </Button>
-                  </motion.div>
-                )}
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={handleExampleClick}
+                >
+                  Örnek soru göster
+                </Button>
+              </motion.div>
+            )}
 
                 {conversation.map((message, index) => (
                   <motion.div
