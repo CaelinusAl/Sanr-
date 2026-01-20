@@ -927,6 +927,7 @@ const RituelAlaniPage = () => {
             rituel={activeRituel}
             onClose={handleCloseRituel}
             onComplete={handleCloseRituel}
+            t={t}
           />
         )}
       </AnimatePresence>
@@ -937,7 +938,7 @@ const RituelAlaniPage = () => {
         isOpen={premiumRitualPlayer.open}
         onClose={handleClosePremiumRitual}
         isPremium={IS_PREMIUM}
-        language="tr"
+        language={language}
       />
     </div>
   );
