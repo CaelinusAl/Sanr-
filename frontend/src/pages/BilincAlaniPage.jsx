@@ -94,7 +94,7 @@ const getIcon = (iconName) => {
 const premiumRitueller = [
   {
     id: "ritual-hatırlama",
-    chapter: "I", // Algı ve Hatırlama bölümüyle ilişkili
+    chapter: "XI", // Zihin-Gönül Portalı
     title: "Hatırlama Kapısı",
     desc: "Bilinç frekansına giriş ritüeli. Kim olduğunu hatırlamak için ilk adım.",
     duration: "8 dk",
@@ -106,7 +106,7 @@ const premiumRitueller = [
   },
   {
     id: "ritual-zihin-kalp",
-    chapter: "II", // Zihin ve Duygu bölümüyle ilişkili
+    chapter: "XII", // His Kodları
     title: "Zihin–Kalp Senkronu",
     desc: "Beyin ve kalp arasındaki bilinç köprüsünü kurar. His ve zihin hizalama alanı.",
     duration: "12 dk",
@@ -118,48 +118,48 @@ const premiumRitueller = [
   },
   {
     id: "ritual-kaynak",
-    chapter: "III", // Yaratım ve Kaynak bölümüyle ilişkili
+    chapter: "XIII", // Sezgi Alanı
     title: "Kaynak Frekansı",
-    desc: "İçsel kaynağa bağlanma ritüeli. Yaratım enerjisini aktive eder.",
+    desc: "İçsel kaynağa bağlanma ritüeli. Sezgisel bilgi akışını aktive eder.",
     duration: "15 dk",
     level: "Orta",
-    tags: ["kaynak", "yaratım", "enerji"],
+    tags: ["kaynak", "sezgi", "enerji"],
     audioUrl: null,
     steps: 11,
     locked: true
   },
   {
-    id: "ritual-his-kodlari",
-    chapter: "IV", // His Kodları bölümüyle ilişkili
-    title: "His Kodlarını Çözme",
-    desc: "Duyguların taşıdığı kozmik bilgi alanına erişim. Hislerin dilini anlama.",
+    id: "ritual-kozmik-anten",
+    chapter: "XIV", // Beyin: Kozmik Bir Anten
+    title: "Kozmik Anten Aktivasyonu",
+    desc: "Evrensel bilinç bağlantı noktası. Yüksek frekans alıcısını aktive eder.",
     duration: "10 dk",
     level: "İleri",
-    tags: ["his", "duygu", "çözümleme"],
+    tags: ["kozmik", "bağlantı", "frekans"],
     audioUrl: null,
     steps: 8,
     locked: true
   },
   {
-    id: "ritual-sezgi",
-    chapter: "V", // Sezgi ve İçgörü bölümüyle ilişkili
-    title: "Sezgi Alanı Aktivasyonu",
-    desc: "Kuantum sıçrama ve içsel rehberlik. Sezgisel bilgi kanalını açar.",
+    id: "ritual-bilgi-orgazmi",
+    chapter: "XV", // Bilgi Orgazmı
+    title: "Bilinç Genişlemesi Pratiği",
+    desc: "Bilginin bedene inmesi. Tüm hücrelerin titreşimi için alan açar.",
     duration: "18 dk",
     level: "İleri",
-    tags: ["sezgi", "içgörü", "kuantum"],
+    tags: ["genişleme", "bilinç", "hücresel"],
     audioUrl: null,
     steps: 13,
     locked: true
   },
   {
-    id: "ritual-kozmik-anten",
-    chapter: "VI", // Bağlantı ve Birlik bölümüyle ilişkili
-    title: "Kozmik Anten",
-    desc: "Evrensel bilinç bağlantı noktası. Yüksek frekans alıcısını aktive eder.",
+    id: "ritual-enerji-akisi",
+    chapter: "XVI", // Tantra ve Kozmik Sinir Sistemi
+    title: "Enerji Yolu Meditasyonu",
+    desc: "Enerjiyi yükseltme sanatı. Bilinçli enerji akışı için rehberlik.",
     duration: "20 dk",
     level: "Usta",
-    tags: ["kozmik", "bağlantı", "evrensel"],
+    tags: ["enerji", "tantra", "akış"],
     audioUrl: null,
     steps: 15,
     locked: true
