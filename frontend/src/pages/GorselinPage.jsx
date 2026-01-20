@@ -14,6 +14,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -21,6 +22,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 const IS_PREMIUM = process.env.REACT_APP_DEMO_PREMIUM === 'true';
 
 const GorselinPage = () => {
+  const { language, t } = useLanguage();
   const [activeTab, setActiveTab] = useState('generate');
   const [presets, setPresets] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
@@ -65,7 +67,7 @@ const GorselinPage = () => {
 
   const handleGenerate = async () => {
     if (!intention.trim()) {
-      toast.error('Lütfen bir niyet/tema yazın');
+      toast.error(t('errors.intentionRequired'));
       return;
     }
 
@@ -77,9 +79,9 @@ const GorselinPage = () => {
     
     // Progress animation
     const progressSteps = [
-      'Niyet alınıyor…',
-      'Hologram oluşturuluyor…',
-      'Frekans ayarlanıyor…'
+      t('gorselin.generate.progress.step1'),
+      t('gorselin.generate.progress.step2'),
+      t('gorselin.generate.progress.step3')
     ];
     let stepIndex = 0;
     setGenerateProgress(progressSteps[0]);
@@ -109,14 +111,14 @@ const GorselinPage = () => {
       if (response.data.prompt_used) {
         setPromptUsed(response.data.prompt_used);
       }
-      toast.success('Hologram başarıyla üretildi!');
+      toast.success(t('gorselin.generate.success'));
     } catch (error) {
       clearInterval(progressInterval);
       console.error('Generation error:', error);
       
-      let errorMsg = 'Görsel üretiminde hata oluştu';
+      let errorMsg = t('errors.generateError');
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
-        errorMsg = 'İstek zaman aşımına uğradı. Lütfen tekrar deneyin.';
+        errorMsg = t('errors.timeout');
       } else if (error.response?.data?.detail) {
         errorMsg = error.response.data.detail;
       }
@@ -136,20 +138,20 @@ const GorselinPage = () => {
     
     const shareData = {
       title: 'CAELINUS AI Hologram',
-      text: generatedCaption || 'Bu görsel bir cevap değildir. Bir hatırlatmadır. ✨',
+      text: generatedCaption || (language === 'en' ? 'This image is not an answer. It is a reminder. ✨' : 'Bu görsel bir cevap değildir. Bir hatırlatmadır. ✨'),
       files: [file]
     };
 
     try {
       if (navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
-        toast.success('Paylaşıldı!');
+        toast.success(language === 'en' ? 'Shared!' : 'Paylaşıldı!');
       } else {
         // Fallback: copy image to clipboard or download
         await navigator.clipboard.write([
           new ClipboardItem({ 'image/png': blob })
         ]);
-        toast.success('Görsel panoya kopyalandı!');
+        toast.success(language === 'en' ? 'Image copied to clipboard!' : 'Görsel panoya kopyalandı!');
       }
     } catch (error) {
       console.error('Share error:', error);
@@ -173,7 +175,7 @@ const GorselinPage = () => {
 
   const handleAnalyze = async () => {
     if (!uploadedImage) {
-      toast.error('Lütfen bir görsel yükleyin');
+      toast.error(t('errors.imageUploadRequired'));
       return;
     }
 
@@ -183,9 +185,9 @@ const GorselinPage = () => {
     
     // Progress animation
     const progressSteps = [
-      'Görsel okunuyor…',
-      'Semboller ayrıştırılıyor…',
-      'Sanrı yorumluyor…'
+      t('gorselin.analyze.progress.step1'),
+      t('gorselin.analyze.progress.step2'),
+      t('gorselin.analyze.progress.step3')
     ];
     let stepIndex = 0;
     setAnalysisProgress(progressSteps[0]);
@@ -211,7 +213,7 @@ const GorselinPage = () => {
       // Check response structure
       if (response.data.ok === false) {
         // Backend returned error
-        const errorMsg = response.data.error?.message || 'Analiz başarısız oldu';
+        const errorMsg = response.data.error?.message || (language === 'en' ? 'Analysis failed' : 'Analiz başarısız oldu');
         setAnalysisError({
           message: errorMsg,
           code: response.data.error?.code,
@@ -223,15 +225,15 @@ const GorselinPage = () => {
 
       // Success - set result
       setAnalysisResult(response.data);
-      toast.success('Sanrı yorumu tamamlandı');
+      toast.success(t('gorselin.analyze.success'));
       
     } catch (error) {
       clearInterval(progressInterval);
       console.error('Analysis error:', error);
       
-      let errorMsg = 'Görsel analizinde hata oluştu';
+      let errorMsg = t('errors.analysisError');
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
-        errorMsg = 'İstek zaman aşımına uğradı. Lütfen tekrar deneyin.';
+        errorMsg = t('errors.timeout');
       } else if (error.response?.data?.error?.message) {
         errorMsg = error.response.data.error.message;
       } else if (error.response?.data?.detail) {
@@ -280,16 +282,16 @@ const GorselinPage = () => {
       >
         <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20">
           <Sparkles className="w-4 h-4 text-indigo-400" />
-          <span className="text-sm text-indigo-300 tracking-wider">GÖRSELİN</span>
+          <span className="text-sm text-indigo-300 tracking-wider">{t('gorselin.subtitle')}</span>
         </div>
         <h1 
           className="text-4xl sm:text-5xl font-light text-white mb-4 tracking-wide"
           style={{ fontFamily: "'Cormorant Garamond', serif" }}
         >
-          Görsel Bilinç Alanı
+          {t('gorselin.title')}
         </h1>
         <p className="text-white/50 max-w-lg mx-auto">
-          Hologram üret veya görsellerin sembolik anlamını keşfet
+          {t('gorselin.description')}
         </p>
       </motion.div>
 
@@ -303,7 +305,7 @@ const GorselinPage = () => {
               data-testid="tab-generate"
             >
               <Wand2 className="w-4 h-4 mr-2" />
-              Hologram Üret
+              {t('gorselin.tabs.generate')}
             </TabsTrigger>
             <TabsTrigger 
               value="analyze"
@@ -311,7 +313,7 @@ const GorselinPage = () => {
               data-testid="tab-analyze"
             >
               <Eye className="w-4 h-4 mr-2" />
-              Görsel Yorumla
+              {t('gorselin.tabs.analyze')}
             </TabsTrigger>
           </TabsList>
 
@@ -320,7 +322,7 @@ const GorselinPage = () => {
             {/* Preset Selection */}
             <Card className="bg-white/[0.03] border-white/10 backdrop-blur-xl">
               <CardContent className="p-6">
-                <Label className="text-white/70 mb-3 block">Stil Seç</Label>
+                <Label className="text-white/70 mb-3 block">{t('gorselin.generate.styleSelect')}</Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {presets.map((preset) => (
                     <button
@@ -340,10 +342,10 @@ const GorselinPage = () => {
                       )}
                       <span className="text-2xl mb-2 block">{preset.icon}</span>
                       <span className="text-sm text-white/90 font-medium block truncate">
-                        {preset.name_tr.split(' – ')[0]}
+                        {(language === 'en' ? preset.name_en : preset.name_tr)?.split(' – ')[0] || preset.name_tr?.split(' – ')[0]}
                       </span>
                       <span className="text-xs text-white/40 block truncate">
-                        {preset.description_tr.slice(0, 40)}...
+                        {(language === 'en' ? preset.description_en : preset.description_tr)?.slice(0, 40) || preset.description_tr?.slice(0, 40)}...
                       </span>
                     </button>
                   ))}
@@ -354,9 +356,9 @@ const GorselinPage = () => {
             {/* Intention Input */}
             <Card className="bg-white/[0.03] border-white/10 backdrop-blur-xl">
               <CardContent className="p-6">
-                <Label className="text-white/70 mb-3 block">Niyet / Tema</Label>
+                <Label className="text-white/70 mb-3 block">{t('gorselin.generate.intention')}</Label>
                 <Textarea
-                  placeholder="Örn: dönüşüm, yeniden doğuş, iç huzur, kozmik bilinç..."
+                  placeholder={t('gorselin.generate.intentionPlaceholder')}
                   value={intention}
                   onChange={(e) => setIntention(e.target.value)}
                   className="bg-white/5 border-white/10 text-white placeholder:text-white/30 min-h-[100px] resize-none"
@@ -371,16 +373,16 @@ const GorselinPage = () => {
                 <div className="grid sm:grid-cols-3 gap-4">
                   {/* Aspect Ratio */}
                   <div>
-                    <Label className="text-white/70 mb-2 block">Oran</Label>
+                    <Label className="text-white/70 mb-2 block">{t('gorselin.generate.ratio')}</Label>
                     <Select value={aspectRatio} onValueChange={setAspectRatio}>
                       <SelectTrigger className="bg-white/5 border-white/10 text-white">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-900 border-white/10">
-                        <SelectItem value="1:1">1:1 (Kare)</SelectItem>
-                        <SelectItem value="4:5">4:5 (Dikey)</SelectItem>
-                        <SelectItem value="9:16">9:16 (Story)</SelectItem>
-                        <SelectItem value="16:9">16:9 (Yatay)</SelectItem>
+                        <SelectItem value="1:1">{t('gorselin.ratios.1:1')}</SelectItem>
+                        <SelectItem value="4:5">{t('gorselin.ratios.4:5')}</SelectItem>
+                        <SelectItem value="9:16">{t('gorselin.ratios.9:16')}</SelectItem>
+                        <SelectItem value="16:9">{t('gorselin.ratios.16:9')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -388,7 +390,7 @@ const GorselinPage = () => {
                   {/* Number of Images */}
                   <div>
                     <Label className="text-white/70 mb-2 block">
-                      Görsel Sayısı {!IS_PREMIUM && <span className="text-amber-400">(Free: max 1)</span>}
+                      {t('gorselin.generate.imageCount')} {!IS_PREMIUM && <span className="text-amber-400">{t('gorselin.generate.freeMax')}</span>}
                     </Label>
                     <Select 
                       value={numImages.toString()} 
@@ -399,11 +401,11 @@ const GorselinPage = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-900 border-white/10">
-                        <SelectItem value="1">1 Görsel</SelectItem>
+                        <SelectItem value="1">{t('gorselin.imageCounts.1')}</SelectItem>
                         {IS_PREMIUM && (
                           <>
-                            <SelectItem value="2">2 Görsel</SelectItem>
-                            <SelectItem value="4">4 Görsel</SelectItem>
+                            <SelectItem value="2">{t('gorselin.imageCounts.2')}</SelectItem>
+                            <SelectItem value="4">{t('gorselin.imageCounts.4')}</SelectItem>
                           </>
                         )}
                       </SelectContent>
@@ -418,7 +420,7 @@ const GorselinPage = () => {
                       id="show-prompt"
                     />
                     <Label htmlFor="show-prompt" className="text-white/70 text-sm">
-                      Detay göster
+                      {t('gorselin.generate.showDetails')}
                     </Label>
                   </div>
 
@@ -431,7 +433,7 @@ const GorselinPage = () => {
                         id="add-watermark"
                       />
                       <Label htmlFor="add-watermark" className="text-white/70 text-sm">
-                        İmza ekle
+                        {t('gorselin.generate.addSignature')}
                       </Label>
                     </div>
                   )}
@@ -442,8 +444,7 @@ const GorselinPage = () => {
                   <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
                     <p className="text-xs text-amber-300/80">
                       <Crown className="w-3 h-3 inline mr-1" />
-                      Free kullanıcılarda "CAELINUS AI • SANRI" imzası eklenir. 
-                      Premium ile kaldırabilirsiniz.
+                      {t('gorselin.generate.freeNote')}
                     </p>
                   </div>
                 )}
@@ -461,14 +462,14 @@ const GorselinPage = () => {
                 <div className="flex flex-col items-center gap-1">
                   <div className="flex items-center gap-2">
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>{generateProgress || 'Hologram Oluşturuluyor...'}</span>
+                    <span>{generateProgress || t('gorselin.generate.generating')}</span>
                   </div>
-                  <span className="text-xs text-white/60">Bu işlem 30-60 saniye sürebilir</span>
+                  <span className="text-xs text-white/60">{t('gorselin.generate.timeNote')}</span>
                 </div>
               ) : (
                 <>
                   <Wand2 className="w-5 h-5 mr-2" />
-                  Görsel Üret
+                  {t('gorselin.generate.button')}
                 </>
               )}
             </Button>
@@ -492,7 +493,7 @@ const GorselinPage = () => {
                     className="bg-red-500/10 border-red-500/30 text-red-300 hover:bg-red-500/20"
                   >
                     <RefreshCw className="w-4 h-4 mr-1" />
-                    Tekrar
+                    {t('common.retry')}
                   </Button>
                 </div>
               </motion.div>
@@ -510,7 +511,7 @@ const GorselinPage = () => {
                   {showPrompt && promptUsed && (
                     <Card className="bg-white/[0.02] border-white/10">
                       <CardContent className="p-4">
-                        <Label className="text-white/50 text-xs mb-2 block">Kullanılan Prompt</Label>
+                        <Label className="text-white/50 text-xs mb-2 block">{t('gorselin.generate.promptUsed')}</Label>
                         <p className="text-white/70 text-sm font-mono">{promptUsed}</p>
                       </CardContent>
                     </Card>
@@ -602,7 +603,7 @@ const GorselinPage = () => {
                       className="absolute top-3 right-3 bg-black/50 hover:bg-black/70"
                     >
                       <RefreshCw className="w-4 h-4 mr-1" />
-                      Değiştir
+                      {t('gorselin.analyze.change')}
                     </Button>
                   </div>
                 ) : (
@@ -617,8 +618,8 @@ const GorselinPage = () => {
                       <Upload className="w-8 h-8 text-indigo-400" />
                     </div>
                     <div className="text-center">
-                      <p className="text-white/80 font-medium mb-1">Görsel Yükle</p>
-                      <p className="text-white/40 text-sm">Kamera veya galeriden seç</p>
+                      <p className="text-white/80 font-medium mb-1">{t('gorselin.analyze.upload')}</p>
+                      <p className="text-white/40 text-sm">{t('gorselin.analyze.uploadSub')}</p>
                     </div>
                   </button>
                 )}
@@ -629,9 +630,9 @@ const GorselinPage = () => {
             {uploadedImagePreview && (
               <Card className="bg-white/[0.03] border-white/10 backdrop-blur-xl">
                 <CardContent className="p-6">
-                  <Label className="text-white/70 mb-3 block">Bağlam (Opsiyonel)</Label>
+                  <Label className="text-white/70 mb-3 block">{t('gorselin.analyze.context')}</Label>
                   <Textarea
-                    placeholder="Örn: Bu rüyamdaki sahne... / Bu fotoğrafı çekerken..."
+                    placeholder={t('gorselin.analyze.contextPlaceholder')}
                     value={analysisContext}
                     onChange={(e) => setAnalysisContext(e.target.value)}
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/30 min-h-[80px] resize-none"
@@ -653,14 +654,14 @@ const GorselinPage = () => {
                   <div className="flex flex-col items-center gap-1">
                     <div className="flex items-center gap-2">
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>{analysisProgress || 'Sanrı Okuyor...'}</span>
+                      <span>{analysisProgress || t('gorselin.analyze.analyzing')}</span>
                     </div>
-                    <span className="text-xs text-white/60">Bu işlem 10-30 saniye sürebilir</span>
+                    <span className="text-xs text-white/60">{t('gorselin.analyze.timeNote')}</span>
                   </div>
                 ) : (
                   <>
                     <Eye className="w-5 h-5 mr-2" />
-                    Sanrı Oku
+                    {t('gorselin.analyze.button')}
                   </>
                 )}
               </Button>
@@ -678,7 +679,7 @@ const GorselinPage = () => {
                     <Eye className="w-5 h-5 text-red-400" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-red-300 font-medium mb-1">Yorum gelmedi</p>
+                    <p className="text-red-300 font-medium mb-1">{t('gorselin.analyze.errorTitle')}</p>
                     <p className="text-red-200/70 text-sm mb-3">{analysisError.message}</p>
                     <Button
                       onClick={handleRetryAnalysis}
@@ -687,7 +688,7 @@ const GorselinPage = () => {
                       className="bg-red-500/10 border-red-500/30 text-red-300 hover:bg-red-500/20"
                     >
                       <RefreshCw className="w-4 h-4 mr-2" />
-                      Tekrar Dene
+                      {t('common.retry')}
                     </Button>
                   </div>
                 </div>
@@ -717,7 +718,7 @@ const GorselinPage = () => {
                       className="text-2xl text-white/90 font-light"
                       style={{ fontFamily: "'Cormorant Garamond', serif" }}
                     >
-                      Sanrı Okuması
+                      {t('gorselin.analyze.resultTitle')}
                     </h2>
                     <p className="text-white/40 text-sm mt-1">
                       {analysisResult.meta?.latency_ms ? `${(analysisResult.meta.latency_ms / 1000).toFixed(1)}s` : ''}
@@ -735,13 +736,13 @@ const GorselinPage = () => {
                         <CardContent className="p-6">
                           <div className="flex items-center gap-2 mb-4">
                             <span className="text-xl">🜂</span>
-                            <Label className="text-indigo-300 font-medium text-base">YÜZEY – GÖRÜNEN KATMAN</Label>
+                            <Label className="text-indigo-300 font-medium text-base">{t('gorselin.analyze.layers.surface')}</Label>
                           </div>
                           <div 
                             className="text-white/80 leading-relaxed whitespace-pre-line"
                             style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
                           >
-                            {analysisResult.surface.replace(/🜂\s*YÜZEY[^\n]*\n?/gi, '').replace(/---+/g, '').trim()}
+                            {analysisResult.surface.replace(/🜂\s*YÜZEY[^\n]*\n?/gi, '').replace(/🜂\s*SURFACE[^\n]*\n?/gi, '').replace(/---+/g, '').trim()}
                           </div>
                         </CardContent>
                       </Card>
@@ -759,13 +760,13 @@ const GorselinPage = () => {
                         <CardContent className="p-6">
                           <div className="flex items-center gap-2 mb-4">
                             <span className="text-xl">🜁</span>
-                            <Label className="text-violet-300 font-medium text-base">BİLİNÇ – GİZLİ AKIŞ</Label>
+                            <Label className="text-violet-300 font-medium text-base">{t('gorselin.analyze.layers.consciousness')}</Label>
                           </div>
                           <div 
                             className="text-white/90 leading-relaxed whitespace-pre-line" 
                             style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
                           >
-                            {analysisResult.consciousness.replace(/🜁\s*BİLİNÇ[^\n]*\n?/gi, '').replace(/---+/g, '').trim()}
+                            {analysisResult.consciousness.replace(/🜁\s*BİLİNÇ[^\n]*\n?/gi, '').replace(/🜁\s*CONSCIOUSNESS[^\n]*\n?/gi, '').replace(/---+/g, '').trim()}
                           </div>
                         </CardContent>
                       </Card>
@@ -783,13 +784,13 @@ const GorselinPage = () => {
                         <CardContent className="p-6">
                           <div className="flex items-center gap-2 mb-4">
                             <span className="text-xl">🜃</span>
-                            <Label className="text-purple-300 font-medium text-base">KADER – YÖN VE ZAMAN</Label>
+                            <Label className="text-purple-300 font-medium text-base">{t('gorselin.analyze.layers.destiny')}</Label>
                           </div>
                           <div 
                             className="text-white/90 leading-relaxed whitespace-pre-line" 
                             style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem' }}
                           >
-                            {analysisResult.destiny.replace(/🜃\s*KADER[^\n]*\n?/gi, '').replace(/---+/g, '').trim()}
+                            {analysisResult.destiny.replace(/🜃\s*KADER[^\n]*\n?/gi, '').replace(/🜃\s*DESTINY[^\n]*\n?/gi, '').replace(/---+/g, '').trim()}
                           </div>
                         </CardContent>
                       </Card>
@@ -837,19 +838,17 @@ const GorselinPage = () => {
                     </motion.div>
                   )}
 
-                  {/* Old format compatibility removed for cleaner code */}
-
                   {/* Premium CTA */}
                   {!IS_PREMIUM && (
                     <Card className="bg-gradient-to-r from-indigo-900/30 to-violet-900/30 border-indigo-500/30">
                       <CardContent className="p-6 text-center">
                         <Crown className="w-8 h-8 text-amber-400 mx-auto mb-3" />
-                        <h3 className="text-white font-medium mb-2">Daha Derin Okuma İster misin?</h3>
+                        <h3 className="text-white font-medium mb-2">{t('gorselin.premiumCTA.title')}</h3>
                         <p className="text-white/60 text-sm mb-4">
-                          Premium ile derin katman analizi ve Frekans Kartı export'u al
+                          {t('gorselin.premiumCTA.description')}
                         </p>
                         <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400">
-                          Premium'a Geç
+                          {t('gorselin.premiumCTA.button')}
                         </Button>
                       </CardContent>
                     </Card>
