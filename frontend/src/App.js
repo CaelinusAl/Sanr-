@@ -159,6 +159,7 @@ function App() {
               </LayoutWrapper>
               <Toaster position="bottom-right" />
               <UpgradeModal />
+              <UpgradeFlowWrapper />
             </AdminProvider>
           </PremiumProvider>
         </LanguageProvider>
