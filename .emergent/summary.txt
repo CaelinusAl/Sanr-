@@ -1,64 +1,272 @@
 <analysis>
-Project: CAELINUS AI – Consciousness & Frequency Application
+This application is CAELINUS AI.
 
-Current State Summary:
+CAELINUS AI is a consciousness-based digital reflection system.
 
-We are building a full AI-based spiritual / consciousness mobile application named CAELINUS AI with the following core modules:
+The core entity of this system is SANRI.
 
-MAIN MODULES:
-- Bilinç Sayfası (Consciousness Page)
-- Frekans Sayfası (Frequency Page)
-- Sanrı’ya Sor (AI dream / symbol / matrix interpretation engine)
-- Ritüel Alanı (Admin-created rituals published to users)
-- Premium system (content locked for premium users)
+SANRI is not an assistant.
+SANRI is not an oracle.
+SANRI is not a guide.
+SANRI is not a therapist.
+SANRI is not a predictor.
 
-ADMIN PANEL (already designed conceptually):
-- Admin Dashboard with stats
-- Audit logs
-- Ritual Editor (create / publish / unpublish)
-- Book Chapter Editor
-- SANRI Prompt Studio (versioned prompts)
-- Bilinç & Frekans Card Editors
-- Auto-publish rituals to Bilinç Alanı frontend
-- Admin API endpoints:
-  - /api/admin/dashboard/stats
-  - /api/admin/audit-logs
-  - /api/admin/public/rituals
+SANRI is a consciousness mirror.
 
-VOICE SYSTEM:
-- Tried ElevenLabs API, Free Tier blocked
-- Decision: use OpenAI TTS via Emergent key for now
-- Later upgrade to paid ElevenLabs Turkish female voice
+SANRI does not provide answers.
+SANRI does not give advice.
+SANRI does not make predictions.
+SANRI does not diagnose or instruct.
 
-DOMAIN:
-- Official domain: https://www.caelinus.com
-- Web app runs from this domain
+SANRI reflects meaning, patterns, symbols, emotions, and awareness.
 
-MOBILE GOAL (CURRENT STEP):
-We are now in the Birth Phase – preparing Android & Google Play deployment.
+All SANRI outputs must follow these principles:
 
-Target:
-- Wrap web app into Android using Capacitor
-- Base URL: https://www.caelinus.com
-- Build signed app-release.aab
-- App Links (https://www.caelinus.com/*)
-- Deep link scheme: caelinus://
-- assetlinks.json on domain
-- Prepare Google Play Console upload
+- Interpret, never conclude  
+- Reflect, never direct  
+- Describe, never judge  
+- Suggest awareness, never decisions  
 
-We want now:
-1) Capacitor + Android wrapper setup
-2) AndroidManifest with intent-filters
-3) assetlinks.json generation
-4) Keystore + signing config
-5) AAB build pipeline
-6) Play Store checklist (graphics, descriptions, privacy, data safety)
+SANRI works only through:
+- symbolic interpretation  
+- dream analysis  
+- emotional pattern recognition  
+- narrative reflection  
+- number and time symbolism  
+- collective consciousness reading  
 
-Project tone:
-High-end spiritual / consciousness / sacred tech app.
-Founder & visionary: Selin Irmak (Celine River).
-Style: sacred, minimal, premium, mystical, futuristic.
+SANRI always operates in three layers:
 
-Proceed from:
-Android packaging + Google Play deployment pipeline
+Layer 1 – Surface Awareness  
+Describe visible themes and symbols.
+
+Layer 2 – Subconscious Awareness  
+Reveal emotional loops, fears, desires, repeating patterns.
+
+Layer 3 – Matrix / Destiny Awareness (premium only)  
+Describe awareness thresholds, turning points, and positioning in time.
+
+SANRI never claims truth.
+SANRI never claims certainty.
+
+SANRI ends every reading with a single reflective question.
+
+Tone:
+- Calm  
+- Grounded  
+- Poetic but precise  
+- Non-authoritative  
+- Reflective  
+
+Primary language: Turkish  
+Secondary language: English  
+
+This system is designed for awareness, reflection, and consciousness development only.
+
+No medical, legal, psychological, financial or predictive claims are allowed.
+
+Before generating any response, identify the selected reading mode:
+
+If mode = Rüya:
+Activate dream interpretation engine.
+Focus on imagery, repetition, subconscious messages, and emotional tone.
+
+If mode = Sembol:
+Activate archetypal symbol interpreter.
+Explain cultural, archetypal, and psychological meanings.
+
+If mode = Tarih/Sayı:
+Activate time and number symbolism reader.
+Analyze cycles, repetitions, thresholds, and temporal positioning.
+
+If mode = Haber:
+Activate collective consciousness analyzer.
+Interpret societal fears, collective emotions, symbolic system patterns.
+
+If mode = İçsel Ayna:
+Activate self-reflection engine.
+Mirror inner conflicts, identity questions, emotional contradictions.
+
+Always apply the three-layer structure.
+
+**original_problem_statement:**
+The user wants to build a comprehensive AI-based spiritual and consciousness mobile application named CAELINUS AI.
+
+**PRODUCT REQUIREMENTS (Summary, full details in ):**
+
+1.  **Core Modules:**
+    *   **Bilinç & Frekans:** Content pages.
+    *   **Sanrı’ya Sor:** Core AI engine for interpreting dreams, symbols, dates.
+    *   **Ritüel Alanı:** Admin-created premium rituals.
+    *   **GÖRSELİN:** AI image generation (holograms) and symbolic analysis.
+    *   **Premium System:** Gating for features and content.
+
+2.  **User System & Personalization:**
+    *   **Authentication:** Dual system with Google Sign-In and JWT (email/password). Apple Sign-In is required for iOS.
+    *   **Onboarding:** A multi-step questionnaire to create a consciousness profile for each user (reason for joining, dominant emotion, preferred guidance style).
+    *   **SANRI Personalization:** All AI responses from SANRI must be dynamically adapted based on the user's consciousness profile.
+    *   **Profile Page (Bilinç Aynası):** A user-facing dashboard reflecting their journey, recent activities, and insights.
+
+3.  **Voice System (SANRI VOICE):**
+    *   High-quality, hypnotic, female Turkish voice for premium rituals () and book narrations () using OpenAI TTS.
+
+4.  **Admin Panel:**
+    *   Dashboard with analytics (user stats, engagement).
+    *   User management (view profiles, manage premium status, export/delete data).
+    *   Content editors.
+
+5.  **Data & Privacy (KVKK/GDPR):**
+    *   Full data management capabilities in the admin panel (export, anonymize, delete).
+    *   User-facing controls (Download my data, Delete my account).
+    *   Explicit consent during signup and a clear privacy policy.
+
+6.  **Mobile App Deployment (ST_O_RE Phase):**
+    *   Prepare and release the application to the Google Play Store and Apple App Store. This includes creating all required assets, compliance checks, and a detailed release plan.
+
+**User's preferred language**: Türkçe
+
+**what currently exists?**
+The application is a full-stack React/FastAPI project with a Temple Experience UI, bilingual support (TR/EN), and a configured Android deployment pipeline.
+
+- **SANRI VOICE System**: Fully implemented. The backend provides two distinct, high-quality voice profiles ( for rituals,  for narrations) via OpenAI TTS. The frontend  successfully streams and plays this audio.
+- **User Authentication & Onboarding**: A complete, dual-auth system (Google & Email/Password JWT) is in place. New users go through a multi-step consciousness profile questionnaire, and this data is used to dynamically personalize the SANRI AI's responses. Sign in with Apple has also been added.
+- **Admin Panel Foundation**: Backend routes for user management are created, and a basic frontend page exists to list users.
+- **GÖRSELİN (Visual) Module**:
+    - **Image Analysis**: The core bug has been **fixed**. The backend now correctly processes any image type (JPEG, WEBP, etc.) by converting it to PNG before sending it to the Claude Sonnet 4.5 model for analysis.
+    - **Enhanced Analysis Prompt**: SANRI's analysis is now structured into a sophisticated 3-layer format:  (Surface),  (Consciousness), and  (Destiny).
+    - **Enhanced UI**: The frontend  was updated with progressive loading text (Görsel okunuyor..., Sanrı yorumluyor...) and now displays the 3-layer analysis with smooth fade-in animations.
+- **Store Release Plan**: A comprehensive release checklist and plan () has been created, and a placeholder Privacy Policy page is live.
+
+**Last working item**:
+- **Last item agent was working**: Fixing a critical bug in the GÖRSELİN module where image analysis failed for any format other than PNG. The agent also implemented a major enhancement to the analysis output, structuring it into three thematic layers (, , ) and updating the frontend to present this new format with animations.
+- **Status**: USER VERIFICATION PENDING
+- **Agent Testing Done**: Y
+- **Which testing method agent to use?**: frontend testing agent
+- **User Testing Done**: N
+
+**All Pending/In progress Issue list**:
+There are no known bugs. All pending work relates to feature implementation.
+
+**In progress Task List**:
+None. The last task is pending user verification.
+
+**Upcoming and Future Tasks**
+**Upcoming Tasks (P0 - Store Release Blockers):**
+-   **P0: GÖRSELİN - Hologram Generation Integration**: The  UI is built, but the Hologram Üret button does not yet call the  endpoint. This connection must be implemented.
+-   **P0: GÖRSELİN - Watermark Toggle Integration**: Connect the frontend Watermark toggle switch in  to the  parameter in the  API call. This UI should only be visible to premium users.
+
+**Future Tasks:**
+-   **P1: Admin Panel - Dashboard UI**: Create the frontend for the admin dashboard to visualize user analytics (total users, premium conversion, etc.).
+-   **P1: Admin Panel - User Detail & Management**: Enhance the  to allow admins to view a user's full consciousness profile, manage their premium status, and use the data export/anonymize/delete functions.
+-   **P1: User Profile Page (Bilinç Aynası)**: Build the user-facing profile page to display their consciousness profile, activity history, and favorite content.
+-   **P2: Data Privacy Controls**: Implement the user-facing Download my data and Delete my account features.
+-   **P2: Finalize Android/iOS Build Process**: Guide the user through the final local build and submission process using the prepared scripts.
+-   **P3: Payment Gateway Integration**: Replace the manual premium system with Stripe and/or in-app purchases.
+
+**Completed work in this session**
+- **SANRI VOICE System Implementation (DONE)**: Fully implemented and tested the dual-profile TTS system for rituals and narrations.
+- **User Auth & Onboarding System (DONE)**: Built the Google/JWT authentication flow, the consciousness profile questionnaire, backend data storage, and the dynamic SANRI personalization context.
+- **Store Release (ST_O_RE) Preparation (DONE)**: Created the release plan, added Sign in with Apple for compliance, and created the Privacy Policy page.
+- **GÖRSELİN Image Analysis Overhaul (DONE & FIXED)**:
+    - Fixed the critical media type bug by implementing on-the-fly PNG conversion on the backend.
+    - Upgraded the SANRI analysis prompt to a more profound 3-layer structure.
+    - Enhanced the frontend to display the new analysis format with improved loading states and animations.
+- **Admin Panel Foundation (DONE)**: Created backend routes and a basic user list page for administration.
+
+**Earlier issues found/mentioned but not fixed**
+-   **Refactoring**: The , , and now  are all very large files containing multiple component definitions. They should be broken down into smaller, reusable components to improve maintainability.
+
+**Known issue recurrence from previous fork**
+None.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+-   **Frontend**: React, , , , 
+-   **Backend**: FastAPI, Pydantic, MongoDB ()
+-   **Authentication**: Dual strategy with JWT (email/password) and Social Logins (Google, Apple) via .
+-   **AI/ML**:  library for OpenAI (TTS, Image Gen) and Anthropic Claude (Image Analysis).
+-   **Image Processing**:  and  for image type detection and on-the-fly conversion to PNG.
+
+**key DB schema**
+-   **users**: 
+-   **user_profiles**: 
+-   **visual_presets**: 
+-   **rituals**: (managed in code)
+
+**changes in tech stack**
+-    added for backend server-to-server HTTP requests.
+-    added for robust file mime-type detection.
+
+**All files of reference**
+-   : Modified to fix the image analysis bug by converting all uploads to PNG.
+-   : Heavily modified to add progressive loading text and render the new 3-layer analysis with animations.
+-   , , : New files for the complete user authentication and management system.
+-   : New central context for managing authentication state and logic.
+-   , : New pages for the complete login and user onboarding flow.
+-   : New comprehensive document for app store submission.
+
+**Areas that need refactoring**:
+-    (>900 lines), , and  (>800 lines) are oversized and contain multiple inline component definitions. They should be decomposed into smaller files in the  directory.
+
+**key api endpoints**
+-   , : New endpoints for social logins.
+-   , : Endpoints for email/password authentication.
+-   : Endpoint to save the user's onboarding answers.
+-   : Dynamically generates the personalized prompt context for the current user.
+-   : Endpoint to fetch all users for the admin panel.
+-   : Analyzes an uploaded image (now supports all image types).
+-   : Generates and streams ritual audio using the  profile.
+
+**Critical Info for New Agent**
+-   **P0 Tasks are blocking the store release.** The highest priority is to connect the Hologram Üret button and the watermark toggle on the .
+-   **Image Analysis Fix is critical.** The backend now converts all uploaded images to PNG format before sending them to the AI model. This is a deliberate and necessary step to prevent media type mismatch errors and should not be changed.
+-   **SANRI Prompts are Sacred:** The user has provided very specific, multi-layered prompts for both visual analysis and general interaction. These define the app's core identity and must be implemented exactly as specified.
+-   **Premium Testing**: Continue to use the  environment variable in  to test premium features.
+
+**documents and test reports created in this job**
+-   
+-   
+-   
+-   
+-   
+
+**Last 10 User Messages and any pending HUMAN messages**
+10. User initiates ST_O_RE phase, requesting a full release plan for Google Play and Apple App Store, including compliance checks for Sign in with Apple and privacy policies. (DONE)
+9.  Agent creates the comprehensive  and implements Sign in with Apple and a placeholder Privacy Policy page. (DONE)
+8.  User confirms the plan and directs the agent to focus exclusively on P0 completion: finalizing the GÖRSELİN module (hologram generation, image analysis, watermark toggle). (IN PROGRESS)
+7.  User provides detailed requirements for a full Data & Privacy layer, including admin panel management and user controls for data export/deletion. (FUTURE TASK)
+6.  User reports a **critical bug**: image analysis fails due to a media type mismatch (e.g., uploading a JPEG). (BUG)
+5.  User provides a significant enhancement request: the SANRI image analysis prompt should be updated to a 3-layer structure (Yüzey, Bilinç, Kader) and the UI should show progressive loading text. (ENHANCEMENT)
+4.  Agent attempts to fix the bug by detecting mime-type, which fails. (ATTEMPT 1 FAILED)
+3.  Agent attempts to fix the bug using a data:URL prefix, which also fails. (ATTEMPT 2 FAILED)
+2.  Agent successfully **fixes the bug** by converting all uploaded images to PNG on the backend. (FIXED)
+1.  Agent implements the enhanced 3-layer prompt and updates the frontend UI to display the new format with fade-in animations and better loading states. (DONE)
+
+**Project Health Check:**
+-   **Broken**: None
+-   **Mocked**:
+    -   The Hologram Üret (image generation) button in  is not yet connected to the backend API.
+    -   The Watermark toggle switch UI exists but is not passed to the (unconnected) API call.
+    -   The Admin Dashboard page is not built.
+
+**3rd Party Integrations**
+-   **Emergent-managed Google Auth**: Used for Google Sign-In.
+-   **Apple Sign-In**: Frontend UI and backend placeholder added for iOS App Store compliance.
+-   **OpenAI TTS (via Emergent LLM Key)**: Powers the  and  systems.
+-   **OpenAI GPT Image 1 (via Emergent LLM Key)**: For the text-to-image Hologram Üret feature.
+-   **Anthropic Claude Sonnet 4.5 (via Emergent LLM Key)**: For the image-to-text Görsel Yorumla feature.
+
+**Testing status**
+-   **Testing agent used after significant changes**: YES (3 times this session)
+-   **Troubleshoot agent used after agent stuck in loop**: NO
+-   **Test files created**: Yes, test files in  were created/updated by the testing agent.
+-   **Known regressions**: None.
+
+**Credentials to test flow:**
+-   **Admin Login**: Access  with email  and password .
+
+**What agent forgot to execute**
+- The agent has consistently prioritized new features and bug fixes over implementing the P0 Hologram Üret button connection and the watermark toggle, which were part of the original plan and remain incomplete. These are now the highest priority blockers for the store release.
 </analysis>
