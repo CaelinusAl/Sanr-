@@ -828,12 +828,12 @@ def parse_analysis_response_v2(response: str, is_premium: bool) -> dict:
     import re
     
     # Surface layer: 🜂 YÜZEY
-    surface_match = re.search(r'🜂\s*YÜZEY[^🜁]*', response, re.DOTALL | re.IGNORECASE)
+    surface_match = re.search(r'🜂\s*YÜZEY[^🜁🜃]*', response, re.DOTALL | re.IGNORECASE)
     if surface_match:
         sections["surface"] = surface_match.group(0).strip()
     
     # Consciousness layer: 🜁 BİLİNÇ
-    consciousness_match = re.search(r'🜁\s*BİLİNÇ[^🜃]*', response, re.DOTALL | re.IGNORECASE)
+    consciousness_match = re.search(r'🜁\s*BİLİNÇ[^🜃]*?(?=🜃|Bu görüntü|Bu görsel|$)', response, re.DOTALL | re.IGNORECASE)
     if consciousness_match:
         sections["consciousness"] = consciousness_match.group(0).strip()
     
