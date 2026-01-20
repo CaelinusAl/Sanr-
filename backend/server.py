@@ -34,6 +34,9 @@ set_admin_db(db)
 # Set database for visual routes
 set_visual_db(db)
 
+# Set database for premium ritual routes
+set_premium_ritual_db(db)
+
 # Create the main app without a prefix
 app = FastAPI()
 
