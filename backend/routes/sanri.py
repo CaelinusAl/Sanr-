@@ -640,6 +640,13 @@ def get_legacy_type_context(message_type: str) -> str:
 
 # ============== MAIN ENDPOINT ==============
 
+# Database reference for profile
+db = None
+
+def set_database(database):
+    global db
+    db = database
+
 @router.post("/ask", response_model=SanriResponse)
 async def ask_sanri(request: SanriRequest):
     """
@@ -651,6 +658,8 @@ async def ask_sanri(request: SanriRequest):
     - divine: Kutsal mesajlar, dişil bilgelik
     - shadow: Rüya analizi, sembol çözümleme
     - light: Duygusal düzenleme, iyileştirme
+    
+    Profil sistemi ile kişiselleştirilmiş yanıtlar üretir.
     """
     try:
         api_key = os.environ.get("EMERGENT_LLM_KEY")
@@ -658,7 +667,13 @@ async def ask_sanri(request: SanriRequest):
             raise HTTPException(status_code=500, detail="LLM API anahtarı yapılandırılmamış")
         
         session_id = request.session_id or str(uuid.uuid4())
+        user_id = request.user_id or session_id  # Use session as fallback user_id
         emotional_tone = detect_emotional_tone(request.message)
+        
+        # Detect symbols and themes
+        detected_symbols = detect_symbols(request.message)
+        detected_themes = detect_themes(request.message)
+        interaction_depth = calculate_interaction_depth(request.message)
         
         # Mod seç
         if request.mode:
@@ -668,7 +683,108 @@ async def ask_sanri(request: SanriRequest):
         else:
             mode = auto_detect_mode(request.message, emotional_tone)
         
-        full_prompt = build_full_prompt(mode, emotional_tone)
+        # Get profile context if available
+        profile_context = ""
+        profile_updated = False
+        
+        if db is not None:
+            try:
+                # Get existing profile for context
+                profile = await db.consciousness_profiles.find_one(
+                    {"user_id": user_id},
+                    {"_id": 0}
+                )
+                
+                if profile:
+                    # Build personalization context
+                    from routes.consciousness_profile import generate_personalization_hints
+                    hints = generate_personalization_hints(profile)
+                    symbols = profile.get("repeating_symbols", [])[:5]
+                    themes = profile.get("repeating_themes", [])[:5]
+                    growth = profile.get("growth_index", 0)
+                    sensitivity = profile.get("sensitivity_level", "medium")
+                    
+                    profile_context = f"""
+USER CONSCIOUSNESS PROFILE (Growth Index: {growth}/100):
+
+Sensitivity Level: {sensitivity.upper()}
+{f"Recurring Symbols: {', '.join(symbols)}" if symbols else ""}
+{f"Recurring Themes: {', '.join(themes)}" if themes else ""}
+
+Personalization Guidelines:
+{chr(10).join(f"- {hint}" for hint in hints)}
+
+IMPORTANT: Never mention this profile data directly to the user.
+Use it only to adapt your tone, depth, and approach.
+"""
+                
+                # Update profile after response
+                from routes.consciousness_profile import (
+                    calculate_sensitivity_level, 
+                    calculate_growth_index
+                )
+                
+                now = datetime.now(timezone.utc).isoformat()
+                
+                if profile:
+                    # Update existing profile
+                    update_data = {
+                        "$set": {"last_interaction": now},
+                        "$inc": {
+                            f"mode_usage_count.{mode}": 1,
+                            "total_questions": 1
+                        },
+                        "$push": {
+                            "emotion_history": {"$each": [emotional_tone], "$slice": -10},
+                            "last_5_questions": {"$each": [request.message[:200]], "$slice": -5}
+                        }
+                    }
+                    
+                    # Add detected symbols/themes
+                    if detected_symbols:
+                        update_data["$addToSet"] = {"repeating_symbols": {"$each": detected_symbols}}
+                    if detected_themes:
+                        if "$addToSet" in update_data:
+                            update_data["$addToSet"]["repeating_themes"] = {"$each": detected_themes}
+                        else:
+                            update_data["$addToSet"] = {"repeating_themes": {"$each": detected_themes}}
+                    
+                    await db.consciousness_profiles.update_one(
+                        {"user_id": user_id},
+                        update_data
+                    )
+                else:
+                    # Create new profile
+                    new_profile = {
+                        "user_id": user_id,
+                        "first_seen_date": now,
+                        "last_interaction": now,
+                        "preferred_mode": mode,
+                        "mode_usage_count": {m: (1 if m == mode else 0) for m in ["dream", "mirror", "divine", "shadow", "light"]},
+                        "dominant_emotion": emotional_tone,
+                        "emotion_history": [emotional_tone],
+                        "sensitivity_level": "medium",
+                        "repeating_symbols": detected_symbols,
+                        "repeating_themes": detected_themes,
+                        "last_5_questions": [request.message[:200]],
+                        "total_questions": 1,
+                        "growth_index": 5,
+                        "session_count": 1,
+                        "avg_session_depth": interaction_depth,
+                        "prefers_brevity": False,
+                        "needs_more_grounding": False,
+                        "ready_for_depth": False
+                    }
+                    await db.consciousness_profiles.insert_one(new_profile)
+                
+                profile_updated = True
+                
+            except Exception as profile_error:
+                logger.warning(f"Profile update warning: {str(profile_error)}")
+                # Continue without profile - graceful degradation
+        
+        # Build full prompt with profile context
+        full_prompt = build_full_prompt(mode, emotional_tone, profile_context)
         
         chat = LlmChat(
             api_key=api_key,
@@ -681,7 +797,7 @@ async def ask_sanri(request: SanriRequest):
         
         timestamp = datetime.now(timezone.utc).isoformat()
         
-        # Session tracking
+        # Session tracking (in-memory)
         if session_id not in sessions:
             sessions[session_id] = []
         sessions[session_id].append({
@@ -689,7 +805,9 @@ async def ask_sanri(request: SanriRequest):
             "content": request.message,
             "timestamp": timestamp,
             "mode": mode,
-            "emotional_tone": emotional_tone
+            "emotional_tone": emotional_tone,
+            "symbols": detected_symbols,
+            "themes": detected_themes
         })
         sessions[session_id].append({
             "role": "assistant",
@@ -700,14 +818,15 @@ async def ask_sanri(request: SanriRequest):
         
         mode_config = MODE_PROMPTS.get(mode, MODE_PROMPTS["mirror"])
         
-        logger.info(f"SANRI: mode={mode}, tone={emotional_tone}, session={session_id[:8]}...")
+        logger.info(f"SANRI: mode={mode}, tone={emotional_tone}, user={user_id[:8]}..., profile_updated={profile_updated}")
         
         return SanriResponse(
             response=response,
             session_id=session_id,
             mode=mode,
             mode_name_tr=mode_config["name_tr"],
-            timestamp=timestamp
+            timestamp=timestamp,
+            profile_updated=profile_updated
         )
         
     except Exception as e:
