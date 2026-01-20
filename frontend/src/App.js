@@ -30,6 +30,7 @@ const GizlilikPage = lazy(() => import("@/pages/GizlilikPage"));
 const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLoginPage"));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const AdminUsersPage = lazy(() => import("@/pages/admin/AdminUsersPage"));
+const AdminSubscriptionPage = lazy(() => import("@/pages/admin/AdminSubscriptionPage"));
 const RitualsList = lazy(() => import("@/pages/admin/RitualsList"));
 const RitualBuilder = lazy(() => import("@/pages/admin/RitualBuilder"));
 const VisualPresetsPage = lazy(() => import("@/pages/admin/VisualPresetsPage"));
