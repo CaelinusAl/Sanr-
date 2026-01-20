@@ -378,7 +378,7 @@ async def list_voices():
 @router.get("/status")
 async def tts_status():
     """
-    Check TTS service status
+    Check TTS service status with voice profiles
     """
     client = get_tts_client()
     
@@ -392,13 +392,29 @@ async def tts_status():
     return {
         "status": "active",
         "provider": "openai",
-        "model": CAELINUS_MODEL,
-        "voice": CAELINUS_VOICE,
-        "speed": CAELINUS_SPEED,
+        "voice_profiles": {
+            "sanri": {
+                "voice": SANRI_VOICE_CONFIG["voice"],
+                "speed": SANRI_VOICE_CONFIG["speed"],
+                "description": SANRI_VOICE_CONFIG["description_tr"]
+            },
+            "book": {
+                "voice": CAELINUS_BOOK_VOICE_CONFIG["voice"],
+                "speed": CAELINUS_BOOK_VOICE_CONFIG["speed"],
+                "description": CAELINUS_BOOK_VOICE_CONFIG["description_tr"]
+            }
+        },
         "features": {
             "turkish_support": True,
             "hd_quality": True,
-            "streaming": True
+            "streaming": True,
+            "ritual_voice": True,
+            "book_voice": True
+        },
+        "endpoints": {
+            "ritual": "/api/tts/ritual/play",
+            "book": "/api/tts/book/play",
+            "general": "/api/tts/generate"
         }
     }
 
