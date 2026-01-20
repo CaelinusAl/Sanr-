@@ -12,7 +12,8 @@ import {
   Eye,
   Sun,
   Cloud,
-  Heart
+  Heart,
+  Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +21,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePremium, FEATURES } from "@/contexts/PremiumContext";
+import { UpgradeModal, FeatureGate, DailyLimitIndicator } from "@/components/premium/PremiumComponents";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
