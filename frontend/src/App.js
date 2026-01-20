@@ -131,6 +131,8 @@ function App() {
                   <Route path="/giris" element={<GirisPage />} />
                   <Route path="/onboarding" element={<OnboardingPage />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="/gizlilik" element={<GizlilikPage />} />
+                  <Route path="/privacy" element={<GizlilikPage />} />
                   
                   {/* Admin Routes */}
                   <Route path="/admin/login" element={<AdminLoginPage />} />
