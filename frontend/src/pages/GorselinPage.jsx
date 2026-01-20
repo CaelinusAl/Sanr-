@@ -73,6 +73,21 @@ const GorselinPage = () => {
     setGeneratedImages([]);
     setPromptUsed('');
     setGeneratedCaption('');
+    setGenerateError(null);
+    
+    // Progress animation
+    const progressSteps = [
+      'Niyet alınıyor…',
+      'Hologram oluşturuluyor…',
+      'Frekans ayarlanıyor…'
+    ];
+    let stepIndex = 0;
+    setGenerateProgress(progressSteps[0]);
+    
+    const progressInterval = setInterval(() => {
+      stepIndex = (stepIndex + 1) % progressSteps.length;
+      setGenerateProgress(progressSteps[stepIndex]);
+    }, 3000);
 
     try {
       const response = await axios.post(`${API_URL}/api/visual/generate`, {
@@ -82,9 +97,13 @@ const GorselinPage = () => {
         num_images: numImages,
         show_prompt: showPrompt,
         is_premium: IS_PREMIUM,
-        add_watermark: IS_PREMIUM ? addWatermark : true  // Free users always get watermark
+        add_watermark: IS_PREMIUM ? addWatermark : true
+      }, {
+        timeout: 180000  // 3 minute timeout for image generation
       });
 
+      clearInterval(progressInterval);
+      
       setGeneratedImages(response.data.images);
       setGeneratedCaption(response.data.caption || '');
       if (response.data.prompt_used) {
@@ -92,10 +111,21 @@ const GorselinPage = () => {
       }
       toast.success('Hologram başarıyla üretildi!');
     } catch (error) {
+      clearInterval(progressInterval);
       console.error('Generation error:', error);
-      toast.error('Görsel üretiminde hata oluştu');
+      
+      let errorMsg = 'Görsel üretiminde hata oluştu';
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        errorMsg = 'İstek zaman aşımına uğradı. Lütfen tekrar deneyin.';
+      } else if (error.response?.data?.detail) {
+        errorMsg = error.response.data.detail;
+      }
+      
+      setGenerateError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setIsGenerating(false);
+      setGenerateProgress('');
     }
   };
 
