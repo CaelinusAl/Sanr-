@@ -983,13 +983,17 @@ async def get_sanri_modes():
             "id": mode_key,
             "name": mode_data["name"],
             "name_tr": mode_data["name_tr"],
-            "purpose": mode_data["purpose"]
+            "name_en": mode_data.get("name_en", mode_data["name"]),
+            "purpose": mode_data["purpose"],
+            "purpose_en": mode_data.get("purpose_en", mode_data["purpose"])
         })
     
     return {
         "modes": modes_info,
         "default_mode": DEFAULT_MODE,
-        "note": "SANRI kullanıcının mesajına göre modu otomatik seçer. Manuel seçim de yapılabilir."
+        "supported_languages": ["tr", "en"],
+        "note": "SANRI kullanıcının mesajına göre modu otomatik seçer. Manuel seçim de yapılabilir.",
+        "note_en": "SANRI automatically selects mode based on user message. Manual selection also available."
     }
 
 @router.get("/status")
