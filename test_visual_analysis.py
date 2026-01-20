@@ -33,8 +33,7 @@ def test_parser():
     print("\n=== TESTING PARSER ===")
     
     # Mock response in new format
-    test_response = """
-🜂 YÜZEY – GÖRÜNEN KATMAN
+    test_response = """🜂 YÜZEY – GÖRÜNEN KATMAN
 Bu görselde güçlü bir dönüşüm enerjisi hissediyorum. Formlar akışkan ve değişken.
 
 🜁 BİLİNÇ – GİZLİ AKIŞ
@@ -43,22 +42,21 @@ Bu görselde güçlü bir dönüşüm enerjisi hissediyorum. Formlar akışkan v
 🜃 KADER – YÖN VE ZAMAN
 Bu görsel yeni bir dönemin başlangıcına işaret ediyor. Geçmişin ağırlığı bırakılıyor.
 
-Bu görüntü sana şunu hatırlatıyor: Değişim zamanı geldi ve sen hazırsın.
-"""
+Bu görüntü sana şunu hatırlatıyor: Değişim zamanı geldi ve sen hazırsın."""
     
     result = parse_analysis_response_v2(test_response, False)
     
     # Check all sections are parsed
-    assert result["surface"], "Surface section should be parsed"
-    assert result["consciousness"], "Consciousness section should be parsed"
-    assert result["destiny"], "Destiny section should be parsed"
-    assert result["reminder"], "Reminder section should be parsed"
+    assert result["surface"], f"Surface section should be parsed, got: {result['surface']}"
+    assert result["consciousness"], f"Consciousness section should be parsed, got: {result['consciousness']}"
+    assert result["destiny"], f"Destiny section should be parsed, got: {result['destiny']}"
+    assert result["reminder"], f"Reminder section should be parsed, got: {result['reminder']}"
     
     # Check content (more flexible checks)
-    assert "dönüşüm" in result["surface"].lower()
-    assert "uyanış" in result["consciousness"].lower()
-    assert "dönem" in result["destiny"].lower()
-    assert "değişim" in result["reminder"].lower()
+    assert "dönüşüm" in result["surface"].lower(), f"Surface should contain 'dönüşüm', got: {result['surface']}"
+    assert "uyanış" in result["consciousness"].lower(), f"Consciousness should contain 'uyanış', got: {result['consciousness']}"
+    assert "dönem" in result["destiny"].lower(), f"Destiny should contain 'dönem', got: {result['destiny']}"
+    assert "değişim" in result["reminder"].lower(), f"Reminder should contain 'değişim', got: {result['reminder']}"
     
     print("✓ Parser correctly extracts all 4 sections")
     print(f"✓ Surface: {len(result['surface'])} chars")
