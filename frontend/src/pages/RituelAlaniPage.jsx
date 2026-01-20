@@ -562,7 +562,7 @@ const RituelDeneyimi = ({ rituel, onClose, onComplete }) => {
 // MEVCUT: Giriş Eşiği Component
 // ============================================
 
-const GirisEsigi = ({ onReady }) => {
+const GirisEsigi = ({ onReady, t }) => {
   const [breathPhase, setBreathPhase] = useState("in");
   const [breathCount, setBreathCount] = useState(0);
   const [showInvitation, setShowInvitation] = useState(false);
@@ -586,12 +586,6 @@ const GirisEsigi = ({ onReady }) => {
       setTimeout(() => setShowInvitation(true), 2000);
     }
   }, [breathPhase, breathCount, showInvitation]);
-
-  const breathText = {
-    in: "Nefes al...",
-    hold: "Tut...",
-    out: "Bırak..."
-  };
 
   return (
     <motion.div
@@ -626,7 +620,7 @@ const GirisEsigi = ({ onReady }) => {
         animate={{ opacity: 0.6 }}
         className="text-sm text-muted-foreground mb-12 h-6"
       >
-        {breathText[breathPhase]}
+        {t(`rituel.breath.${breathPhase === 'in' ? 'in' : breathPhase === 'hold' ? 'hold' : 'out'}`)}
       </motion.p>
 
       <AnimatePresence>
@@ -638,14 +632,10 @@ const GirisEsigi = ({ onReady }) => {
             className="text-center max-w-md"
           >
             <h1 className="font-serif text-3xl text-foreground mb-2">
-              {girisEsigi.baslik}
+              {t('rituel.entry.title')}
             </h1>
             <p className="text-sm text-muted-foreground mb-8">
-              {girisEsigi.altBaslik}
-            </p>
-
-            <p className="font-serif text-lg text-foreground whitespace-pre-line mb-8 leading-relaxed">
-              {girisEsigi.metin}
+              {t('rituel.entry.subtitle')}
             </p>
 
             <motion.div
@@ -654,9 +644,8 @@ const GirisEsigi = ({ onReady }) => {
               transition={{ delay: 0.8 }}
               className="bg-primary/5 rounded-lg p-4 mb-8 border-l-2 border-primary/20"
             >
-              <p className="text-xs text-muted-foreground mb-2">Niyet:</p>
               <p className="text-foreground font-serif italic">
-                "Bu alana açık kalp ve sessiz zihinle giriyorum."
+                {t('rituel.entry.intention')}
               </p>
             </motion.div>
 
@@ -666,11 +655,11 @@ const GirisEsigi = ({ onReady }) => {
               className="rounded-full px-12 mb-8"
               data-testid="giris-hazir-btn"
             >
-              {girisEsigi.buton}
+              {t('rituel.entry.button')}
             </Button>
 
             <p className="text-xs text-muted-foreground/50 max-w-sm mx-auto">
-              {girisEsigi.uyari}
+              {t('rituel.entry.warning')}
             </p>
           </motion.div>
         )}
