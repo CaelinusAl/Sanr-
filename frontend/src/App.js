@@ -144,6 +144,7 @@ function App() {
                     <Route path="/admin/login" element={<AdminLoginPage />} />
                     <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
                     <Route path="/admin/users" element={<AdminRoute><AdminUsersPage /></AdminRoute>} />
+                    <Route path="/admin/subscriptions" element={<AdminRoute><AdminSubscriptionPage /></AdminRoute>} />
                     <Route path="/admin/rituals" element={<AdminRoute><RitualsList /></AdminRoute>} />
                     <Route path="/admin/rituals/new" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
                     <Route path="/admin/rituals/:id" element={<AdminRoute><RitualBuilder /></AdminRoute>} />
