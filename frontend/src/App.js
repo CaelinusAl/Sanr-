@@ -106,8 +106,9 @@ function App() {
   return (
     <div className="min-h-screen bg-background">
       <BrowserRouter>
-        <LanguageProvider>
-          <AdminProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <AdminProvider>
             <LayoutWrapper isDark={isDark} toggleTheme={toggleTheme}>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
