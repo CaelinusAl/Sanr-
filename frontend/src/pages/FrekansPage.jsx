@@ -1,18 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import { frekansTexts, getRandomFrekansText, getNextText } from "@/data/bilinc-frekans";
+import { getRandomFrekansText, getFrekansTexts } from "@/data/bilinc-frekans";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const FrekansPage = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [currentText, setCurrentText] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [breathPhase, setBreathPhase] = useState("in"); // in, hold, out
 
   useEffect(() => {
-    setCurrentText(getRandomFrekansText());
-  }, []);
+    setCurrentText(getRandomFrekansText(language));
+  }, [language]);
 
   // Nefes döngüsü
   useEffect(() => {
@@ -31,10 +31,13 @@ const FrekansPage = () => {
     setIsTransitioning(true);
     
     setTimeout(() => {
-      setCurrentText(prev => getNextText(prev.id, frekansTexts));
+      const texts = getFrekansTexts(language);
+      const currentIndex = texts.findIndex(t => t.id === currentText?.id);
+      const nextIndex = (currentIndex + 1) % texts.length;
+      setCurrentText(texts[nextIndex]);
       setIsTransitioning(false);
     }, 800);
-  }, []);
+  }, [currentText, language]);
 
   // Klavye ile geçiş
   useEffect(() => {
