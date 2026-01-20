@@ -732,8 +732,29 @@ const SanriyaSorPage = () => {
               {t('sanri.footerNote')}
             </p>
           </div>
+          
+          {/* Daily Limit Indicator for Free Users */}
+          {!isPremium && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6"
+            >
+              <DailyLimitIndicator 
+                feature="sanri_daily" 
+                showUpgrade={true}
+              />
+            </motion.div>
+          )}
         </div>
       </section>
+      
+      {/* Upgrade Modal */}
+      <UpgradeModal 
+        isOpen={isUpgradeModalOpen}
+        onClose={hideUpgradeModal}
+        feature={FEATURES.SANRI_UNLIMITED}
+      />
     </div>
   );
 };
