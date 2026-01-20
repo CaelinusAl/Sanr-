@@ -559,20 +559,41 @@ async def generate_hologram(request: GenerateRequest):
 
 # ============== IMAGE ANALYSIS ==============
 
-@router.post("/analyze", response_model=AnalyzeResponse)
+@router.post("/analyze")
 async def analyze_image(
     image: UploadFile = File(...),
     context: str = Form(default=""),
     is_premium: bool = Form(default=False)
 ):
     """Analyze an uploaded image with SANRI's symbolic interpretation"""
+    import time
+    start_time = time.time()
+    request_id = str(uuid.uuid4())
+    
+    logger.info(f"[{request_id}] Image analysis started - is_premium: {is_premium}")
+    
     try:
         api_key = os.environ.get("EMERGENT_LLM_KEY")
         if not api_key:
-            raise HTTPException(status_code=500, detail="API anahtarı yapılandırılmamış")
+            logger.error(f"[{request_id}] API key not configured")
+            return {
+                "ok": False,
+                "error": {"code": "API_KEY_MISSING", "message": "API anahtarı yapılandırılmamış"},
+                "request_id": request_id
+            }
         
         # Read and encode image
         image_content = await image.read()
+        image_size = len(image_content)
+        logger.info(f"[{request_id}] Image size: {image_size} bytes, type: {image.content_type}")
+        
+        if image_size > 10 * 1024 * 1024:  # 10MB limit
+            return {
+                "ok": False,
+                "error": {"code": "IMAGE_TOO_LARGE", "message": "Görsel 10MB'dan büyük olamaz"},
+                "request_id": request_id
+            }
+        
         image_base64 = base64.b64encode(image_content).decode('utf-8')
         
         # Determine content type
@@ -587,11 +608,14 @@ async def analyze_image(
         system_prompt = SANRI_VISUAL_PROMPT_PREMIUM if is_premium else SANRI_VISUAL_PROMPT
         
         # Initialize chat with Claude for vision
+        model_name = "claude-sonnet-4-5-20250929"
+        logger.info(f"[{request_id}] Using model: anthropic/{model_name}")
+        
         chat = LlmChat(
             api_key=api_key,
-            session_id=str(uuid.uuid4()),
+            session_id=request_id,
             system_message=system_prompt
-        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+        ).with_model("anthropic", model_name)
         
         # Create message with image
         user_message = UserMessage(
@@ -603,13 +627,31 @@ async def analyze_image(
         )
         
         # Get response
+        logger.info(f"[{request_id}] Sending image to SANRI for analysis...")
         response = await chat.send_message(user_message)
+        
+        latency_ms = int((time.time() - start_time) * 1000)
+        logger.info(f"[{request_id}] SANRI response received in {latency_ms}ms")
+        logger.info(f"[{request_id}] Response length: {len(response)} chars")
         
         # Parse the response into sections
         sections = parse_analysis_response(response, is_premium)
         
-        analysis_id = str(uuid.uuid4())
+        analysis_id = request_id
         timestamp = datetime.now(timezone.utc).isoformat()
+        
+        # Build full analysis text for display
+        analysis_text = f"""**Gördüğüm**
+{sections.get('seen', '')}
+
+**Sembolik Okuma**
+{sections.get('symbolic', '')}
+
+**Yansıma Soruları**
+{chr(10).join(f"• {q}" for q in sections.get('questions', []))}
+
+**Mini Ritüel**
+{sections.get('ritual', '')}"""
         
         # Store analysis in history
         await db.visual_analyses.insert_one({
@@ -617,21 +659,44 @@ async def analyze_image(
             "context": context,
             "is_premium": is_premium,
             "response": response,
+            "image_size": image_size,
+            "latency_ms": latency_ms,
             "timestamp": timestamp
         })
         
-        return AnalyzeResponse(
-            seen=sections.get("seen", ""),
-            symbolic=sections.get("symbolic", ""),
-            questions=sections.get("questions", []),
-            ritual=sections.get("ritual", ""),
-            analysis_id=analysis_id,
-            timestamp=timestamp
-        )
+        logger.info(f"[{request_id}] Analysis completed successfully")
+        
+        return {
+            "ok": True,
+            "seen": sections.get("seen", ""),
+            "symbolic": sections.get("symbolic", ""),
+            "questions": sections.get("questions", []),
+            "ritual": sections.get("ritual", ""),
+            "analysis_id": analysis_id,
+            "analysis_text": analysis_text,
+            "meta": {
+                "model": f"anthropic/{model_name}",
+                "latency_ms": latency_ms,
+                "request_id": request_id,
+                "is_premium": is_premium
+            },
+            "timestamp": timestamp
+        }
         
     except Exception as e:
-        logger.error(f"Image analysis error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Görsel analizinde hata: {str(e)}")
+        latency_ms = int((time.time() - start_time) * 1000)
+        error_msg = str(e)
+        logger.error(f"[{request_id}] Image analysis error after {latency_ms}ms: {error_msg}")
+        logger.exception(f"[{request_id}] Full traceback:")
+        
+        return {
+            "ok": False,
+            "error": {
+                "code": "ANALYSIS_FAILED",
+                "message": f"Görsel analizinde hata: {error_msg}"
+            },
+            "request_id": request_id
+        }
 
 def parse_analysis_response(response: str, is_premium: bool) -> dict:
     """Parse SANRI's response into structured sections"""
