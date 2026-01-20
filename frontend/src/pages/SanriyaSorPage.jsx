@@ -135,10 +135,13 @@ const SanriyaSorPage = () => {
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [sessionId, setSessionId] = useState(null);
   const [error, setError] = useState(null);
-  const [selectedMode, setSelectedMode] = useState("mirror"); // Varsayılan: AYNA modu
+  const [activeMode, setActiveMode] = useState(readingModes.MIRROR); // Object-based state
   const [uploadedImage, setUploadedImage] = useState(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  // Güvenlik - null kontrol
+  const currentMode = activeMode || readingModes.MIRROR;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
