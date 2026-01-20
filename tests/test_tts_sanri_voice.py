@@ -276,11 +276,14 @@ class TestPremiumRitualEndpoints:
         assert response.status_code == 200
         
         data = response.json()
-        assert isinstance(data, list)
-        assert len(data) >= 3  # At least 3 lines
+        # Response is object with 'lines' key
+        assert "lines" in data
+        lines = data["lines"]
+        assert isinstance(lines, list)
+        assert len(lines) >= 3  # At least 3 lines
         
         # Check line structure
-        line_ids = [line["id"] for line in data]
+        line_ids = [line["id"] for line in lines]
         assert "zihin" in line_ids
         assert "bilinc" in line_ids
         assert "yaratim" in line_ids
@@ -291,10 +294,13 @@ class TestPremiumRitualEndpoints:
         assert response.status_code == 200
         
         data = response.json()
-        assert isinstance(data, list)
+        # Response is object with 'grouped' key containing rituals by line
+        assert "grouped" in data
+        grouped = data["grouped"]
         
-        # Should have at least zihin-sessizligi ritual
-        ritual_ids = [r["id"] for r in data]
+        # Should have zihin-sessizligi ritual in zihin group
+        assert "zihin" in grouped
+        ritual_ids = [r["id"] for r in grouped["zihin"]]
         assert "zihin-sessizligi" in ritual_ids
         
     def test_get_ritual_by_id(self):
@@ -303,9 +309,12 @@ class TestPremiumRitualEndpoints:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["id"] == "zihin-sessizligi"
-        assert "steps" in data
-        assert len(data["steps"]) > 0
+        # Response is object with 'ritual' key
+        assert "ritual" in data
+        ritual = data["ritual"]
+        assert ritual["id"] == "zihin-sessizligi"
+        assert "steps" in ritual
+        assert len(ritual["steps"]) > 0
 
 
 if __name__ == "__main__":
