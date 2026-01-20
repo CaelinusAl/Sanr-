@@ -32,14 +32,22 @@ When UI language = EN:
 ✅ Footer ve hata mesajları
 
 ### Çeviri Kapsamı - BEKLEYEN (Data i18n)
-⚠️ Static content data files:
-- `bilinc-frekans.js` - Consciousness/Frequency card texts
-- `rituel-data.js` - Ritual names and descriptions
-- `rituel-112-data.js` - Book 112 ritual content
+✅ **TAMAMLANDI** - Static content data files bilingual yapıya çevrildi:
+- `bilinc-frekans.js` - Consciousness/Frequency card texts (TR/EN)
+- `rituel-112-data.js` - Ritual names, durations, steps (TR/EN)
 
-Bu dosyalar JSON/JS data, runtime i18n değil. Tam çeviri için:
-1. Her data dosyasına `text_tr` ve `text_en` alanları eklenebilir
-2. Veya ayrı EN data dosyaları oluşturulabilir
+### Data i18n Mimarisi
+```javascript
+// Her data dosyası şu yapıda:
+export const dataName = {
+  tr: [{ id, title, text, ... }],
+  en: [{ id, title, text, ... }]
+};
+
+// Component'lerde kullanım:
+const { language } = useLanguage();
+const items = getData(language); // "tr" veya "en"
+```
 
 ## 6 Content Domains (Hybrid Routing) ✅
 **20 Ocak 2026 - Güncellendi**
