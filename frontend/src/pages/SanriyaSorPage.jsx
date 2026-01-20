@@ -334,7 +334,7 @@ const SanriyaSorPage = () => {
               >
                 <Sparkles className="h-8 w-8 text-accent/50 mx-auto mb-6" />
                 <p className="text-foreground/70 font-serif italic mb-6 text-lg">
-                  "Hatırlamak dışarıda başlar. Anlamak içeride olur."
+                  &quot;Hatırlamak dışarıda başlar. Anlamak içeride olur.&quot;
                 </p>
                 
                 <Button
