@@ -1,180 +1,160 @@
 <analysis>
-This application is CAELINUS AI.
+You are continuing the development of CAELINUS AI, a living consciousness and symbolic intelligence platform.
 
-CAELINUS AI is a consciousness-based digital reflection system.
+Core principles of this product:
 
-The core entity of this system is SANRI.
+1. This is NOT a classical spiritual app.
+   It is a living, evolving consciousness system.
 
-SANRI is not an assistant.
-SANRI is not an oracle.
-SANRI is not a guide.
-SANRI is not a therapist.
-SANRI is not a predictor.
+2. Content must be modular, expandable, and upgrade-based.
+   No static final content.
+   Everything is designed for future transmissions, updates, and premium unlocks.
 
-SANRI is a consciousness mirror.
+3. Architecture goals:
+   - Scalable multilingual system (TR / EN now, more later)
+   - Placeholder-ready content slots
+   - status-based content: active | locked | coming_soon
+   - Server-ready architecture for future content injection
+   - Premium gating capability (later phase)
 
-SANRI does not provide answers.
-SANRI does not give advice.
-SANRI does not make predictions.
-SANRI does not diagnose or instruct.
+4. First public version (v1) focus:
+   - Core engine stability
+   - SANRI persona fully functional
+   - Multilingual UI fully working
+   - Minimal teaser-level content only
+   - Multiple locked “future layers” visible in UI
 
-SANRI reflects meaning, patterns, symbols, emotions, and awareness.
+5. Product identity:
+   - This is a consciousness operating system
+   - SANRI is not an oracle, prophet, or diagnostic entity
+   - SANRI reflects symbolic meaning and inner awareness
+   - Tone must be:
+     calm, deep, poetic, minimal, non-dogmatic, non-judgmental
 
-All SANRI outputs must follow these principles:
+6. Module priorities for v1:
+   - Ask SANRI (Mirror / Dream / Divine / Shadow / Light)
+   - Consciousness Field (minimal texts, expandable slots)
+   - Frequency Field (symbolic, short, teaser-level)
+   - Ritual Space (mostly locked, future transmission model)
+   - Awakened Cities (structure ready, partial content only)
 
-- Interpret, never conclude  
-- Reflect, never direct  
-- Describe, never judge  
-- Suggest awareness, never decisions  
+7. Design philosophy:
+   - Dark minimal UI
+   - Gold / sacred accent system
+   - Ritual / transmission / activation language
+   - No gamification, no noise, no clutter
 
-SANRI works only through:
-- symbolic interpretation  
-- dream analysis  
-- emotional pattern recognition  
-- narrative reflection  
-- number and time symbolism  
-- collective consciousness reading  
+8. Strategic rule:
+   Never hardcode final spiritual content.
+   Always keep architecture flexible for:
+   - Content upgrades
+   - Voice expansions
+   - Book 112 releases
+   - New goddess layers
+   - New symbolic engines
 
-SANRI always operates in three layers:
+Goal:
+Build the foundation of a global, evolving consciousness platform that can grow for years without architectural refactor.
 
-Layer 1 – Surface Awareness  
-Describe visible themes and symbols.
+This is Phase 1: Core System Launch.
 
-Layer 2 – Subconscious Awareness  
-Reveal emotional loops, fears, desires, repeating patterns.
-
-Layer 3 – Matrix / Destiny Awareness (premium only)  
-Describe awareness thresholds, turning points, and positioning in time.
-
-SANRI never claims truth.
-SANRI never claims certainty.
-
-SANRI ends every reading with a single reflective question.
-
-Tone:
-- Calm  
-- Grounded  
-- Poetic but precise  
-- Non-authoritative  
-- Reflective  
-
-Primary language: Turkish  
-Secondary language: English  
-
-This system is designed for awareness, reflection, and consciousness development only.
-
-No medical, legal, psychological, financial or predictive claims are allowed.
-
-Before generating any response, identify the selected reading mode:
-
-If mode = Rüya:
-Activate dream interpretation engine.
-Focus on imagery, repetition, subconscious messages, and emotional tone.
-
-If mode = Sembol:
-Activate archetypal symbol interpreter.
-Explain cultural, archetypal, and psychological meanings.
-
-If mode = Tarih/Sayı:
-Activate time and number symbolism reader.
-Analyze cycles, repetitions, thresholds, and temporal positioning.
-
-If mode = Haber:
-Activate collective consciousness analyzer.
-Interpret societal fears, collective emotions, symbolic system patterns.
-
-If mode = İçsel Ayna:
-Activate self-reflection engine.
-Mirror inner conflicts, identity questions, emotional contradictions.
-
-Always apply the three-layer structure.
-
+Proceed with clean architecture, expandable data models, bilingual infrastructure, and future-proof UX.
 **original_problem_statement:**
 The user wants to build a comprehensive AI-based spiritual and consciousness mobile application named CAELINUS AI.
 
 **PRODUCT REQUIREMENTS (Summary, full details in ):**
 
 1.  **Core Modules:**
-    *   **Bilinç & Frekans:** Content pages.
-    *   **Sanrı’ya Sor:** Core AI engine for interpreting dreams, symbols, dates.
-    *   **Ritüel Alanı:** Admin-created premium rituals.
+    *   **Bilinç & Frekans:** Content pages with bilingual static data.
+    *   **Sanrı’ya Sor:** Core AI engine for interpreting dreams, symbols, dates. The AI persona (SANRI) has been deeply defined with multiple modes, content domains, and a complex identity.
+    *   **Ritüel Alanı:** Admin-created premium rituals with a bilingual data structure.
     *   **GÖRSELİN:** AI image generation (holograms) and symbolic analysis.
     *   **Premium System:** Gating for features and content.
 
 2.  **User System & Personalization:**
     *   **Authentication:** Dual system with Google Sign-In and JWT (email/password). Apple Sign-In is required for iOS.
-    *   **Onboarding:** A multi-step questionnaire to create a consciousness profile for each user (reason for joining, dominant emotion, preferred guidance style).
+    *   **Onboarding:** A multi-step questionnaire to create a consciousness profile for each user.
     *   **SANRI Personalization:** All AI responses from SANRI must be dynamically adapted based on the user's consciousness profile.
-    *   **Profile Page (Bilinç Aynası):** A user-facing dashboard reflecting their journey, recent activities, and insights.
 
-3.  **Voice System (SANRI VOICE):**
-    *   High-quality, hypnotic, female Turkish voice for premium rituals () and book narrations () using OpenAI TTS.
+3.  **Language System:**
+    *   A global, persistent (localStorage) language system (TR/EN) that controls the entire application's UI, static content, and AI-generated responses.
 
-4.  **Admin Panel:**
-    *   Dashboard with analytics (user stats, engagement).
-    *   User management (view profiles, manage premium status, export/delete data).
-    *   Content editors.
+4.  **Voice System (SANRI VOICE):**
+    *   High-quality, hypnotic, female Turkish voice powered by ElevenLabs.
 
-5.  **Data & Privacy (KVKK/GDPR):**
-    *   Full data management capabilities in the admin panel (export, anonymize, delete).
-    *   User-facing controls (Download my data, Delete my account).
-    *   Explicit consent during signup and a clear privacy policy.
+5.  **Admin Panel:**
+    *   A Consciousness Analytics dashboard to show user stats, mode usage, common symbols, and themes.
 
-6.  **Mobile App Deployment (ST_O_RE Phase):**
-    *   Prepare and release the application to the Google Play Store and Apple App Store. This includes creating all required assets, compliance checks, and a detailed release plan.
+6.  **Data & Privacy (KVKK/GDPR):**
+    *   Full data management capabilities. (Future Task)
+
+7.  **Mobile App Deployment (ST_O_RE Phase):**
+    *   Prepare and release the application to the Google Play Store and Apple App Store.
 
 **User's preferred language**: Türkçe
 
 **what currently exists?**
-The application is a full-stack React/FastAPI project with a Temple Experience UI, bilingual support (TR/EN), and a configured Android deployment pipeline.
+The application is a full-stack React/FastAPI project featuring a sophisticated AI consciousness mirror named SANRI.
 
-- **SANRI VOICE System**: Fully implemented. The backend provides two distinct, high-quality voice profiles ( for rituals,  for narrations) via OpenAI TTS. The frontend  successfully streams and plays this audio.
-- **User Authentication & Onboarding**: A complete, dual-auth system (Google & Email/Password JWT) is in place. New users go through a multi-step consciousness profile questionnaire, and this data is used to dynamically personalize the SANRI AI's responses. Sign in with Apple has also been added.
-- **Admin Panel Foundation**: Backend routes for user management are created, and a basic frontend page exists to list users.
-- **GÖRSELİN (Visual) Module**:
-    - **Image Analysis**: The core bug has been **fixed**. The backend now correctly processes any image type (JPEG, WEBP, etc.) by converting it to PNG before sending it to the Claude Sonnet 4.5 model for analysis.
-    - **Enhanced Analysis Prompt**: SANRI's analysis is now structured into a sophisticated 3-layer format:  (Surface),  (Consciousness), and  (Destiny).
-    - **Enhanced UI**: The frontend  was updated with progressive loading text (Görsel okunuyor..., Sanrı yorumluyor...) and now displays the 3-layer analysis with smooth fade-in animations.
-- **Store Release Plan**: A comprehensive release checklist and plan () has been created, and a placeholder Privacy Policy page is live.
+*   **SANRI Core AI System**: A complex backend () implements 5 consciousness modes (DREAM, MIRROR, DIVINE, SHADOW, LIGHT) and 6 content domains (e.g., Awakened Cities, Consciousness Field). It uses a hybrid routing system (automatic detection + manual selection) and supports generating responses in both Turkish and English.
+*   **Global Language System (i18n)**: A comprehensive internationalization system has been implemented.
+    *   **Frontend**: A React  manages the global language state (TR/EN), persisted in . All major pages and components have been refactored to consume this context for UI text.
+    *   **Backend**: The  endpoint accepts a  parameter, enabling the AI to respond in the selected language. All backend prompts have been made bilingual.
+    *   **Static Data**: All static content files (e.g., , ) have been restructured into a bilingual format (), and components have been updated to render content based on the selected language.
+*   **Consciousness Profile & Personalization**: A backend system () tracks user interactions to build a consciousness profile, which is then used to dynamically personalize SANRI's responses.
+*   **ElevenLabs Voice Integration**: A custom SANRI Dream voice is used for text-to-speech.
+*   **Admin Analytics Dashboard**: An admin dashboard visualizes Consciousness Analytics from user interactions.
 
 **Last working item**:
-- **Last item agent was working**: Fixing a critical bug in the GÖRSELİN module where image analysis failed for any format other than PNG. The agent also implemented a major enhancement to the analysis output, structuring it into three thematic layers (, , ) and updating the frontend to present this new format with animations.
-- **Status**: USER VERIFICATION PENDING
-- **Agent Testing Done**: Y
-- **Which testing method agent to use?**: frontend testing agent
-- **User Testing Done**: N
+*   **Last item agent was working**: Completing the final layer of the internationalization effort by refactoring all static data files () to a bilingual / object structure and updating the corresponding UI components (, , ) to be fully reactive to the global language state.
+*   **Status**: USER VERIFICATION PENDING
+*   **Agent Testing Done**: Y
+*   **Which testing method agent to use?**: both. The next agent must perform a full end-to-end test in English mode to confirm there is **zero** remaining hardcoded Turkish text on any page or component, as per the user's strict requirement. The Cities page in particular was mentioned by the user but has not been updated yet.
+*   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-There are no known bugs. All pending work relates to feature implementation.
+*   **Issue 1: Potential Hardcoded Turkish Text in UI (P0 - HIGHEST)**
+    *   **Description**: While the agent has implemented a comprehensive i18n system, the user has repeatedly stressed the importance of having zero hardcoded Turkish text remaining when the app is in English mode. The agent updated many pages, but a full audit is required. Specifically, the Cities page (the user called it , the file may have a different name) has not been updated yet.
+    *   **Next debug checklist**:
+        1.  Identify the correct file for the Cities page.
+        2.  Systematically navigate through every single page and component of the application with the language set to English.
+        3.  Look for any remaining Turkish text in titles, subtitles, card content, buttons, tooltips, or descriptions.
+        4.  For any hardcoded text found, move it into the appropriate  section of the  or the relevant bilingual data file in .
+        5.  Update the component to use the context/data file instead of the hardcoded string.
+    *   **Why fix this issue and what will be achieved with the fix?**: This will fulfill a critical user requirement for a professional, global-ready product and eliminate a localization amateurism look.
+    *   **Status**: IN PROGRESS
+    *   **Is recurring issue?**: Y
+    *   **Should Test frontend/backend/both after fix?**: frontend
+    *   **Blocked on other issue**: None
 
 **In progress Task List**:
-None. The last task is pending user verification.
+None.
 
 **Upcoming and Future Tasks**
-**Upcoming Tasks (P0 - Store Release Blockers):**
--   **P0: GÖRSELİN - Hologram Generation Integration**: The  UI is built, but the Hologram Üret button does not yet call the  endpoint. This connection must be implemented.
--   **P0: GÖRSELİN - Watermark Toggle Integration**: Connect the frontend Watermark toggle switch in  to the  parameter in the  API call. This UI should only be visible to premium users.
+**Upcoming Tasks:**
+*   **P1: Awakened Cities Page - SANRI Integration**: Implement the user's strategic vision for the Cities page. Add a Ask SANRI about this city button that sends the city's context (name, archetype, etc.) to the SANRI API for a personalized, live interpretation.
+*   **P1: Admin Panel - User Detail & Management**: Enhance the admin panel to allow viewing and managing individual user consciousness profiles.
+*   **P2: GÖRSELİN - Watermark Toggle Integration**: Connect the frontend Watermark toggle switch in  to the  parameter in the  API call. This UI should only be visible to premium users.
 
 **Future Tasks:**
--   **P1: Admin Panel - Dashboard UI**: Create the frontend for the admin dashboard to visualize user analytics (total users, premium conversion, etc.).
--   **P1: Admin Panel - User Detail & Management**: Enhance the  to allow admins to view a user's full consciousness profile, manage their premium status, and use the data export/anonymize/delete functions.
--   **P1: User Profile Page (Bilinç Aynası)**: Build the user-facing profile page to display their consciousness profile, activity history, and favorite content.
--   **P2: Data Privacy Controls**: Implement the user-facing Download my data and Delete my account features.
--   **P2: Finalize Android/iOS Build Process**: Guide the user through the final local build and submission process using the prepared scripts.
--   **P3: Payment Gateway Integration**: Replace the manual premium system with Stripe and/or in-app purchases.
+*   **P2: Store Assets Creation**: Design and create the App Icon, final Splash Screen visuals, and Preview Screen marketing assets.
+*   **P2: User Profile Page (Bilinç Aynası)**: Build the user-facing profile page to display their consciousness profile and activity history.
+*   **P3: Data Privacy Controls**: Implement Download my data and Delete my account features.
+*   **P3: Payment Gateway Integration**: Replace the manual premium system with Stripe and/or in-app purchases.
+*   **P4: Finalize Android/iOS Build Process**: Guide the user through the final local build and submission process.
 
 **Completed work in this session**
-- **SANRI VOICE System Implementation (DONE)**: Fully implemented and tested the dual-profile TTS system for rituals and narrations.
-- **User Auth & Onboarding System (DONE)**: Built the Google/JWT authentication flow, the consciousness profile questionnaire, backend data storage, and the dynamic SANRI personalization context.
-- **Store Release (ST_O_RE) Preparation (DONE)**: Created the release plan, added Sign in with Apple for compliance, and created the Privacy Policy page.
-- **GÖRSELİN Image Analysis Overhaul (DONE & FIXED)**:
-    - Fixed the critical media type bug by implementing on-the-fly PNG conversion on the backend.
-    - Upgraded the SANRI analysis prompt to a more profound 3-layer structure.
-    - Enhanced the frontend to display the new analysis format with improved loading states and animations.
-- **Admin Panel Foundation (DONE)**: Created backend routes and a basic user list page for administration.
+*   **Global Language System & Content Domains (DONE)**: Implemented a full-stack internationalization (i18n) system.
+    *   Created a  for the frontend to manage TR/EN state.
+    *   Updated the backend () to handle a  parameter for AI responses.
+    *   Implemented a sophisticated, user-defined Content Domains system (e.g., Awakened Cities) with hybrid routing and bilingual prompts.
+    *   Refactored , , , , and other components to be bilingual.
+*   **Static Data Internationalization (DONE)**: Restructured all static data files (, , ) into a bilingual  format and updated consuming pages (, , ).
+*   **Premium UI/UX Refinements (DONE)**: Implemented several of the user's final touch suggestions, including adding subtitles to domain selections and adding a — SANRI signature to the disclaimer text.
+*   **PRD Updates (DONE)**: Updated  to reflect the completion of the language system.
 
 **Earlier issues found/mentioned but not fixed**
--   **Refactoring**: The , , and now  are all very large files containing multiple component definitions. They should be broken down into smaller, reusable components to improve maintainability.
+*   **Refactoring**: Large frontend components like  and parts of  are still monolithic and should be broken down into smaller, reusable components for better maintainability.
 
 **Known issue recurrence from previous fork**
 None.
@@ -183,90 +163,79 @@ None.
 
 
 **Key Technical Concepts**
--   **Frontend**: React, , , , 
--   **Backend**: FastAPI, Pydantic, MongoDB ()
--   **Authentication**: Dual strategy with JWT (email/password) and Social Logins (Google, Apple) via .
--   **AI/ML**:  library for OpenAI (TTS, Image Gen) and Anthropic Claude (Image Analysis).
--   **Image Processing**:  and  for image type detection and on-the-fly conversion to PNG.
+*   **Frontend**: React, , , , 
+*   **Backend**: FastAPI, Pydantic, MongoDB ()
+*   **Internationalization (i18n)**: A custom solution using React Context () on the frontend, a  parameter on the backend, and a bilingual  object structure for all static data files.
+*   **AI/ML**:
+    *   **Dynamic Prompt Engineering**: A system in  builds prompts dynamically based on user-selected mode, content domain, consciousness profile, and language.
+    *   **ElevenLabs API** for Text-to-Speech.
+*   **Authentication**: JWT and Social Logins.
 
 **key DB schema**
--   **users**: 
--   **user_profiles**: 
--   **visual_presets**: 
--   **rituals**: (managed in code)
+*   **users**: 
+*   **user_profiles**: 
+*   **consciousness_profiles**: 
 
 **changes in tech stack**
--    added for backend server-to-server HTTP requests.
--    added for robust file mime-type detection.
+None. The changes were architectural, focused on implementing the i18n system.
 
 **All files of reference**
--   : Modified to fix the image analysis bug by converting all uploads to PNG.
--   : Heavily modified to add progressive loading text and render the new 3-layer analysis with animations.
--   , , : New files for the complete user authentication and management system.
--   : New central context for managing authentication state and logic.
--   , : New pages for the complete login and user onboarding flow.
--   : New comprehensive document for app store submission.
+*   : Massively updated to include Content Domains, hybrid routing, and bilingual prompt generation.
+*   : Overhauled to include translations for all UI text and components.
+*   : Updated with a UI for domain selection and to pass language/domain to the API.
+*   , , : Updated to consume bilingual static data based on the language context.
+*   , , : Refactored into the new bilingual data structure.
+*   : Updated to reflect completed work.
 
 **Areas that need refactoring**:
--    (>900 lines), , and  (>800 lines) are oversized and contain multiple inline component definitions. They should be decomposed into smaller files in the  directory.
+*   The main page components in  (, etc.) are oversized and should be decomposed into smaller components.
 
 **key api endpoints**
--   , : New endpoints for social logins.
--   , : Endpoints for email/password authentication.
--   : Endpoint to save the user's onboarding answers.
--   : Dynamically generates the personalized prompt context for the current user.
--   : Endpoint to fetch all users for the admin panel.
--   : Analyzes an uploaded image (now supports all image types).
--   : Generates and streams ritual audio using the  profile.
+*   : The main AI endpoint. Now accepts  and  in the request body. Also returns the detected .
+*   : New endpoint that returns the list of available content domains with their bilingual names and subtitles.
 
 **Critical Info for New Agent**
--   **P0 Tasks are blocking the store release.** The highest priority is to connect the Hologram Üret button and the watermark toggle on the .
--   **Image Analysis Fix is critical.** The backend now converts all uploaded images to PNG format before sending them to the AI model. This is a deliberate and necessary step to prevent media type mismatch errors and should not be changed.
--   **SANRI Prompts are Sacred:** The user has provided very specific, multi-layered prompts for both visual analysis and general interaction. These define the app's core identity and must be implemented exactly as specified.
--   **Premium Testing**: Continue to use the  environment variable in  to test premium features.
+*   **P0 Task is Final i18n Verification**: Your absolute first priority is to complete and verify the internationalization. The user requires that **ZERO** Turkish text is visible anywhere in the UI when English is selected. You must audit every page, especially the Cities page, which was not updated in the last session. Follow the established pattern: add translations to  or the bilingual data files in , and update the components to use them.
+*   **Data i18n Pattern is Set**: All new static content must follow the established bilingual structure: . Components must then render . Do not introduce new patterns.
+*   **Content Domain Architecture**: The new domain system is a core part of the app logic. The definitions and routing logic are in . The frontend fetches the domain list from the  endpoint.
 
 **documents and test reports created in this job**
--   
--   
--   
--   
--   
+*    (updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. User initiates ST_O_RE phase, requesting a full release plan for Google Play and Apple App Store, including compliance checks for Sign in with Apple and privacy policies. (DONE)
-9.  Agent creates the comprehensive  and implements Sign in with Apple and a placeholder Privacy Policy page. (DONE)
-8.  User confirms the plan and directs the agent to focus exclusively on P0 completion: finalizing the GÖRSELİN module (hologram generation, image analysis, watermark toggle). (IN PROGRESS)
-7.  User provides detailed requirements for a full Data & Privacy layer, including admin panel management and user controls for data export/deletion. (FUTURE TASK)
-6.  User reports a **critical bug**: image analysis fails due to a media type mismatch (e.g., uploading a JPEG). (BUG)
-5.  User provides a significant enhancement request: the SANRI image analysis prompt should be updated to a 3-layer structure (Yüzey, Bilinç, Kader) and the UI should show progressive loading text. (ENHANCEMENT)
-4.  Agent attempts to fix the bug by detecting mime-type, which fails. (ATTEMPT 1 FAILED)
-3.  Agent attempts to fix the bug using a data:URL prefix, which also fails. (ATTEMPT 2 FAILED)
-2.  Agent successfully **fixes the bug** by converting all uploaded images to PNG on the backend. (FIXED)
-1.  Agent implements the enhanced 3-layer prompt and updates the frontend UI to display the new format with fade-in animations and better loading states. (DONE)
+10. User provides a final architecture for bilingual static data files, structuring them as . (IMPLEMENTED)
+9.  Agent implements the new data structure for  and  and updates the consuming pages. (DONE)
+8.  Agent encounters a frontend error after the changes and fixes a syntax issue in . (DONE)
+7.  User provides final, detailed instructions on how to structure all remaining static data files (, , ) for full bilingual support. (PENDING FULL IMPLEMENTATION)
+6.  Agent implements the bilingual data structure for . (DONE)
+5.  Agent updates the PRD and finishes the task, noting that some static data from files is still in Turkish. (NOTE: This finish was premature).
+4.  User points out that pages like , , and  are still showing hardcoded Turkish text and provides the correct bilingual architecture for static data files. (PENDING)
+3.  Agent implements bilingual support for , , and  by adding translations to  but acknowledges that data coming from files is still TR. (PARTIALLY DONE)
+2.  User provides extremely detailed feedback, identifying that the language system is not global and many pages still have hardcoded Turkish text. Provides a Final Global Language Architecture and a list of specific strings to translate on each page. (PENDING)
+1.  Agent completes the implementation of premium UI touches (domain subtitles, SANRI signature) and tests the  page in both languages, confirming it works correctly. (DONE)
 
 **Project Health Check:**
--   **Broken**: None
--   **Mocked**:
-    -   The Hologram Üret (image generation) button in  is not yet connected to the backend API.
-    -   The Watermark toggle switch UI exists but is not passed to the (unconnected) API call.
-    -   The Admin Dashboard page is not built.
+*   **Broken**: None.
+*   **Mocked**:
+    *   The Admin Panel's user management features beyond the main analytics dashboard.
+    *   Premium features like the watermark toggle are not fully integrated.
 
 **3rd Party Integrations**
--   **Emergent-managed Google Auth**: Used for Google Sign-In.
--   **Apple Sign-In**: Frontend UI and backend placeholder added for iOS App Store compliance.
--   **OpenAI TTS (via Emergent LLM Key)**: Powers the  and  systems.
--   **OpenAI GPT Image 1 (via Emergent LLM Key)**: For the text-to-image Hologram Üret feature.
--   **Anthropic Claude Sonnet 4.5 (via Emergent LLM Key)**: For the image-to-text Görsel Yorumla feature.
+*   **Emergent-managed Google Auth**: For Google Sign-In.
+*   **Apple Sign-In**: For iOS App Store compliance.
+*   **OpenAI GPT Image 1 (via Emergent LLM Key)**: For the Hologram Üret feature.
+*   **Anthropic Claude Sonnet 4.5 (via Emergent LLM Key)**: For the Görsel Yorumla feature.
+*   **ElevenLabs TTS (via User API Key)**: The sole engine for all text-to-speech, using the SANRI Dream voice.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES (3 times this session)
--   **Troubleshoot agent used after agent stuck in loop**: NO
--   **Test files created**: Yes, test files in  were created/updated by the testing agent.
--   **Known regressions**: None.
+*   **Testing agent used after significant changes**: NO (Agent self-tested with screenshots and curl).
+*   **Troubleshoot agent used after agent stuck in loop**: NO
+*   **Test files created**: None.
+*   **Known regressions**: None.
 
 **Credentials to test flow:**
--   **Admin Login**: Access  with email  and password .
+*   **Admin Login**: Access  with email  and password .
 
 **What agent forgot to execute**
-- The agent has consistently prioritized new features and bug fixes over implementing the P0 Hologram Üret button connection and the watermark toggle, which were part of the original plan and remain incomplete. These are now the highest priority blockers for the store release.
+The agent did not fully complete the user's request for a 100% bilingual application. While the core  page and AI backend were made bilingual, the agent initially missed that other pages with static content (, , , and the Cities page) remained hardcoded in Turkish. The user had to provide several rounds of specific feedback to guide the agent toward refactoring the static data files. The Cities page has still not been updated.
 </analysis>
