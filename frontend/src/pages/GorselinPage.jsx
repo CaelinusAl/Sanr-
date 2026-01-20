@@ -590,10 +590,13 @@ const GorselinPage = () => {
                 data-testid="analyze-button"
               >
                 {isAnalyzing ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Sanrı Okuyor...
-                  </>
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>{analysisProgress || 'Sanrı Okuyor...'}</span>
+                    </div>
+                    <span className="text-xs text-white/60">Bu işlem 10-30 saniye sürebilir</span>
+                  </div>
                 ) : (
                   <>
                     <Eye className="w-5 h-5 mr-2" />
@@ -601,6 +604,37 @@ const GorselinPage = () => {
                   </>
                 )}
               </Button>
+            )}
+
+            {/* Analysis Error with Retry */}
+            {analysisError && !isAnalyzing && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-red-500/10 border border-red-500/30 rounded-xl p-4"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-red-500/20">
+                    <Eye className="w-5 h-5 text-red-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-red-300 font-medium mb-1">Yorum gelmedi</p>
+                    <p className="text-red-200/70 text-sm mb-3">{analysisError.message}</p>
+                    <Button
+                      onClick={handleRetryAnalysis}
+                      variant="outline"
+                      size="sm"
+                      className="bg-red-500/10 border-red-500/30 text-red-300 hover:bg-red-500/20"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Tekrar Dene
+                    </Button>
+                  </div>
+                </div>
+                {analysisError.request_id && (
+                  <p className="text-red-200/30 text-xs mt-3">ID: {analysisError.request_id}</p>
+                )}
+              </motion.div>
             )}
 
             {/* Analysis Result */}
