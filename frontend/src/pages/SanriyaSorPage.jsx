@@ -399,7 +399,7 @@ const SanriyaSorPage = () => {
                             )}
                             <p className="text-foreground text-base">{message.content}</p>
                             <span className="text-xs text-foreground/40 mt-2 block">
-                              {readingModes.find(m => m.id === message.mode)?.label} modu
+                              {modesList.find(m => m.id === message.mode)?.label || message.mode} modu
                             </span>
                           </CardContent>
                         </Card>
