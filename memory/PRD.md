@@ -152,7 +152,30 @@ Bu bir uygulama değil, **bilinç aktarım alanıdır**. "Anadolu'nun Uyanan Tan
 
 ## Son Güncelleme: 20 Ocak 2026
 
-### Store Release Hazırlığı (YENİ) ✅
+### P0 Completion - GÖRSELİN Module (DONE) ✅
+**20 Ocak 2026**
+
+**Tamamlanan:**
+- ✅ Image Analysis API düzeltildi (ImageContent class)
+- ✅ Response schema: `{ok, analysis_text, meta, seen, symbolic, questions, ritual}`
+- ✅ Error schema: `{ok: false, error: {code, message}, request_id}`
+- ✅ Loading progress: "Görsel okunuyor… semboller ayrıştırılıyor… Sanrı yorumluyor…"
+- ✅ Error state: "Yorum gelmedi" + Retry butonu
+- ✅ Hologram generation çalışıyor
+- ✅ Watermark toggle (premium vs free)
+
+**Test Sonuçları:**
+- Backend: 92% (12/13 tests passed)
+- Frontend: 100% working
+
+**Response Schema:**
+```json
+// Success
+{ok: true, analysis_text, seen, symbolic, questions[], ritual, meta: {model, latency_ms, request_id}}
+
+// Error
+{ok: false, error: {code, message}, request_id}
+```
 **20 Ocak 2026**
 
 **Tamamlanan:**
