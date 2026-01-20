@@ -5,21 +5,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { cities, getCityById } from "@/data/cities";
+import { getCitiesByLanguage, getCityById } from "@/data/cities";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const CityDetailPage = () => {
   const { cityId } = useParams();
-  const city = getCityById(cityId);
+  const { language, t } = useLanguage();
+  
+  const city = getCityById(cityId, language);
+  const allCities = getCitiesByLanguage(language);
   
   if (!city) {
     return (
       <div className="min-h-screen pt-24 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="font-serif text-3xl text-foreground mb-4">Şehir Bulunamadı</h1>
+          <h1 className="font-serif text-3xl text-foreground mb-4">
+            {language === 'en' ? 'City Not Found' : 'Şehir Bulunamadı'}
+          </h1>
           <Button asChild variant="outline">
             <Link to="/sehirler">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Şehirlere Dön
+              {language === 'en' ? 'Back to Cities' : 'Şehirlere Dön'}
             </Link>
           </Button>
         </div>
@@ -27,21 +33,27 @@ const CityDetailPage = () => {
     );
   }
 
-  const prevCity = city.id > 1 ? cities.find(c => c.id === city.id - 1) : null;
-  const nextCity = city.id < 81 ? cities.find(c => c.id === city.id + 1) : null;
-  const relatedCities = cities.filter(c => c.element === city.element && c.id !== city.id).slice(0, 4);
+  const prevCity = city.id > 1 ? allCities.find(c => c.id === city.id - 1) : null;
+  const nextCity = city.id < 81 ? allCities.find(c => c.id === city.id + 1) : null;
+  const relatedCities = allCities.filter(c => c.element === city.element && c.id !== city.id).slice(0, 4);
 
-  // Generate symbolic reading based on city
-  const generateReading = (city) => {
-    const readings = [
+  // Generate symbolic reading based on city and language
+  const generateReading = (city, lang) => {
+    if (lang === 'en') {
+      return [
+        `${city.name} speaks with the symbol of ${city.symbol}. This symbol is the carrier of the ${city.element} element in collective memory.`,
+        `${city.description} Walking on these lands is building a bridge between past and present.`,
+        `Number ${city.id} is the spiritual coordinate of this city. Each number is a gate, each gate a remembrance.`
+      ];
+    }
+    return [
       `${city.name}, ${city.symbol} sembolüyle konuşur. Bu sembol, kolektif hafızada ${city.element} elementinin taşıyıcısıdır.`,
       `${city.description} Bu topraklarda yürümek, geçmişle şimdi arasında bir köprü kurmaktır.`,
       `Sayı ${city.id}, bu şehrin ruhani koordinatıdır. Her sayı bir kapı, her kapı bir hatırlamadır.`
     ];
-    return readings;
   };
 
-  const readings = generateReading(city);
+  const readings = generateReading(city, language);
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -63,7 +75,7 @@ const CityDetailPage = () => {
             <Button asChild variant="ghost" className="hover:bg-primary/10">
               <Link to="/sehirler">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Şehirlere Dön
+                {language === 'en' ? 'Back to Cities' : 'Şehirlere Dön'}
               </Link>
             </Button>
             <div className="flex items-center gap-2">
@@ -129,7 +141,9 @@ const CityDetailPage = () => {
           >
             <div className="flex items-center gap-3 mb-8">
               <Sparkles className="h-5 w-5 text-primary" />
-              <h2 className="font-serif text-2xl text-foreground">Sembolik Okuma</h2>
+              <h2 className="font-serif text-2xl text-foreground">
+                {language === 'en' ? 'Symbolic Reading' : 'Sembolik Okuma'}
+              </h2>
             </div>
             
             <div className="space-y-6">
@@ -150,8 +164,10 @@ const CityDetailPage = () => {
             <Card className="mt-12 border-border/50 bg-muted/30">
               <CardContent className="p-6">
                 <p className="text-sm text-muted-foreground text-center italic">
-                  Bu okuma, sembolik anlam üretir. Kehanet, teşhis veya kesinlik sunmaz. 
-                  Perspektif açar, geri çekilir.
+                  {language === 'en' 
+                    ? 'This reading produces symbolic meaning. It does not offer prophecy, diagnosis, or certainty. It opens perspective, then withdraws.'
+                    : 'Bu okuma, sembolik anlam üretir. Kehanet, teşhis veya kesinlik sunmaz. Perspektif açar, geri çekilir.'
+                  }
                 </p>
               </CardContent>
             </Card>
@@ -171,7 +187,7 @@ const CityDetailPage = () => {
               <div className="flex items-center gap-3 mb-8">
                 <Compass className="h-5 w-5 text-primary" />
                 <h2 className="font-serif text-2xl text-foreground">
-                  Aynı Element: {city.element}
+                  {language === 'en' ? `Same Element: ${city.element}` : `Aynı Element: ${city.element}`}
                 </h2>
               </div>
 
@@ -217,12 +233,15 @@ const CityDetailPage = () => {
             className="text-center"
           >
             <p className="text-muted-foreground mb-6">
-              Bu şehrin sembolü hakkında daha derin bir yansıma ister misin?
+              {language === 'en' 
+                ? 'Would you like a deeper reflection on the symbol of this city?'
+                : 'Bu şehrin sembolü hakkında daha derin bir yansıma ister misin?'
+              }
             </p>
             <Button asChild className="rounded-full px-8">
               <Link to="/sanriya-sor">
                 <Sparkles className="mr-2 h-4 w-4" />
-                SANRI'ya Sor
+                {t('cities.askSanri')}
               </Link>
             </Button>
           </motion.div>
