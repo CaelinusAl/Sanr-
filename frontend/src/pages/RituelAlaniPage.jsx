@@ -866,10 +866,18 @@ const RituelAlaniPage = () => {
 
             {/* Tab Navigation */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-3xl mx-auto">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="moduller" className="text-base">Hızlı Ritüeller</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 mb-8">
+                <TabsTrigger value="premium" className="text-base flex items-center gap-2">
+                  <Crown className="h-4 w-4" />
+                  Premium
+                </TabsTrigger>
+                <TabsTrigger value="moduller" className="text-base">Hızlı</TabsTrigger>
                 <TabsTrigger value="112" className="text-base">112. Kitap</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="premium">
+                <PremiumRitualLines onSelectRitual={handleStartPremiumRitual} />
+              </TabsContent>
 
               <TabsContent value="moduller">
                 <RituelModulleri onStartRituel={handleStartRituel} />
