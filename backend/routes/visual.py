@@ -76,12 +76,20 @@ class AnalyzeRequest(BaseModel):
     is_premium: bool = False
 
 class AnalyzeResponse(BaseModel):
+    ok: bool = True
     seen: str  # "Gördüğüm" - objective description
     symbolic: str  # "Sembolik Okuma"
     questions: List[str]  # "Yansıma Soruları" - 3 questions
     ritual: str  # "Mini Ritüel"
     analysis_id: str
+    analysis_text: str  # Full formatted text for display
+    meta: dict  # Model info, latency, etc.
     timestamp: str
+
+class AnalyzeErrorResponse(BaseModel):
+    ok: bool = False
+    error: dict
+    request_id: str
 
 # ============== GLOBAL STYLE - SANRI HOLOGRAM MASTER ==============
 
