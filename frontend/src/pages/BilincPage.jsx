@@ -4,19 +4,19 @@ import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { bilincTexts, getRandomBilincText, getNextText } from "@/data/bilinc-frekans";
+import { getRandomBilincText, getNextText, getBilincTexts } from "@/data/bilinc-frekans";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const BilincPage = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [currentText, setCurrentText] = useState(null);
   const [userResponse, setUserResponse] = useState("");
   const [hasResponded, setHasResponded] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
-    setCurrentText(getRandomBilincText());
-  }, []);
+    setCurrentText(getRandomBilincText(language));
+  }, [language]);
 
   const handleNext = () => {
     setIsTransitioning(true);
@@ -24,7 +24,10 @@ const BilincPage = () => {
     setHasResponded(false);
     
     setTimeout(() => {
-      setCurrentText(getNextText(currentText.id, bilincTexts));
+      const texts = getBilincTexts(language);
+      const currentIndex = texts.findIndex(t => t.id === currentText.id);
+      const nextIndex = (currentIndex + 1) % texts.length;
+      setCurrentText(texts[nextIndex]);
       setIsTransitioning(false);
     }, 500);
   };
