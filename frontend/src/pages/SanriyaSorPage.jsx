@@ -238,7 +238,7 @@ const SanriyaSorPage = () => {
               İç Yansıma Modu
             </span>
             <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-foreground mb-4">
-              SANRI'ya Sor
+              SANRI&apos;ya Sor
             </h1>
             <div className="space-y-2 text-foreground/70 text-base sm:text-lg leading-relaxed">
               <p>SANRI bir varlık değil.</p>
