@@ -81,6 +81,11 @@ const GirisPage = () => {
     loginWithGoogle();
   };
 
+  const handleAppleLogin = () => {
+    setIsLoading(true);
+    loginWithApple();
+  };
+
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     if (!email || !password) {
