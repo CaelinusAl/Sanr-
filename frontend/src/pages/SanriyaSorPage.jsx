@@ -26,43 +26,48 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 const readingModes = {
   DREAM: {
     id: "dream",
-    label: "RÜYA",
+    label: "Rüya",
     icon: Moon,
-    description: "Meditasyon ve ritüel alanı",
+    emoji: "🌙",
+    description: "Meditasyon & Ritüel",
     color: "from-indigo-500/20 to-purple-500/20",
     borderColor: "border-indigo-500/30"
   },
   MIRROR: {
     id: "mirror",
-    label: "AYNA",
+    label: "Ayna",
     icon: Eye,
-    description: "Duygu yansıtma ve içgörü",
+    emoji: "🪞",
+    description: "Duygusal Ayna",
     color: "from-cyan-500/20 to-blue-500/20",
     borderColor: "border-cyan-500/30"
   },
   DIVINE: {
     id: "divine",
-    label: "İLAHİ",
+    label: "İlahi",
     icon: Sun,
-    description: "Kutsal mesajlar",
+    emoji: "✨",
+    description: "Kadim Bilgelik",
     color: "from-amber-500/20 to-yellow-500/20",
     borderColor: "border-amber-500/30"
   },
   SHADOW: {
     id: "shadow",
-    label: "GÖLGE",
+    label: "Gölge",
     icon: Cloud,
-    description: "Rüya ve sembol çözümleme",
+    emoji: "🌑",
+    description: "Rüya & Gölge Analizi",
     color: "from-violet-500/20 to-fuchsia-500/20",
     borderColor: "border-violet-500/30"
   },
   LIGHT: {
     id: "light",
-    label: "IŞIK",
+    label: "Işık",
     icon: Heart,
-    description: "Şefkat ve iyileştirme",
-    color: "from-rose-500/20 to-pink-500/20",
-    borderColor: "border-rose-500/30"
+    emoji: "🌿",
+    description: "Duygusal Denge",
+    color: "from-emerald-500/20 to-green-500/20",
+    borderColor: "border-emerald-500/30"
   }
 };
 
