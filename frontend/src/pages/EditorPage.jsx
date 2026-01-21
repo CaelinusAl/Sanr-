@@ -100,6 +100,7 @@ export default function EditorPage() {
   const [showCreateCharacter, setShowCreateCharacter] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
+  const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [continuityIssues, setContinuityIssues] = useState([]);
   
   // Generate Modal State
@@ -111,6 +112,11 @@ export default function EditorPage() {
   });
   const [generatingSceneId, setGeneratingSceneId] = useState(null);
   const [renderProgress, setRenderProgress] = useState(null);
+  
+  // Rendering Console State
+  const [renders, setRenders] = useState([]);
+  const [sceneAnalysis, setSceneAnalysis] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   
   // Export State
   const [exportConfig, setExportConfig] = useState({
@@ -131,9 +137,39 @@ export default function EditorPage() {
   // New Character Form
   const [newCharacter, setNewCharacter] = useState({ name: "", description: "", reference_images: [] });
   
+  // Context Menu
+  const { openContextMenu, ContextMenuComponent } = useContextMenu();
+  
   // Refs
   const timelineRef = useRef(null);
   const playbackRef = useRef(null);
+
+  // Keyboard Shortcuts Setup
+  useEffect(() => {
+    const shortcuts = getKeyboardShortcuts();
+    
+    const handlers = {
+      play_pause: () => setIsPlaying(prev => !prev),
+      stop: () => { setIsPlaying(false); setCurrentTime(0); },
+      frame_forward: () => setCurrentTime(prev => Math.min(prev + 0.1, project?.total_duration || 60)),
+      frame_backward: () => setCurrentTime(prev => Math.max(prev - 0.1, 0)),
+      go_to_start: () => setCurrentTime(0),
+      go_to_end: () => setCurrentTime(project?.total_duration || 0),
+      zoom_in: () => setZoom(prev => Math.min(4, prev + 0.25)),
+      zoom_out: () => setZoom(prev => Math.max(0.25, prev - 0.25)),
+      new_scene: () => setShowCreateScene(true),
+      export: () => setShowExportModal(true),
+      delete_clip: () => selectedScene && handleDeleteScene(selectedScene.id),
+      generate_scene: () => selectedScene && openGenerateModal(selectedScene),
+      save: () => toast.success("Project auto-saved"),
+    };
+    
+    const unsubscribes = Object.entries(handlers).map(([event, handler]) => 
+      shortcuts.on(event, handler)
+    );
+    
+    return () => unsubscribes.forEach(unsub => unsub());
+  }, [project, selectedScene]);
 
   // Load project data
   useEffect(() => {
