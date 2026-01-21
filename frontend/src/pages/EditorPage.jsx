@@ -758,16 +758,21 @@ export default function EditorPage() {
             {/* Video Preview Area */}
             <div className="flex-1 min-h-[300px]">
               <VideoPreview
-                videoUrl={currentScene?.video_url ? `${API.replace('/api', '')}${currentScene.video_url}` : null}
-                thumbnailUrl={currentScene?.thumbnail}
+                videoUrl={
+                  // Priority: selectedScene > currentScene
+                  (selectedScene?.video_url || currentScene?.video_url) 
+                    ? `${API.replace('/api', '')}${selectedScene?.video_url || currentScene?.video_url}` 
+                    : null
+                }
+                thumbnailUrl={selectedScene?.thumbnail || currentScene?.thumbnail}
                 currentTime={currentTime}
                 isPlaying={isPlaying}
                 onTimeUpdate={(time) => setCurrentTime(time)}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
                 onSeek={(time) => setCurrentTime(time)}
-                sceneName={currentScene?.name}
-                sceneStatus={currentScene?.status}
+                sceneName={selectedScene?.name || currentScene?.name}
+                sceneStatus={selectedScene?.status || currentScene?.status}
               />
             </div>
 
