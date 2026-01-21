@@ -202,12 +202,14 @@ CineCursor is a comprehensive AI-powered video production platform inspired by C
 - Project templates
 
 ### In Progress 🔄
-- Video generation completion tracking
-- Real video playback in preview
+- Real video playback in VideoPreview when scene status is 'ready'
 
 ### MOCKED Features ⚠️
-- **Sora 2 Video Generation**: API integrated, generates videos but completion tracking needs improvement
-- **Scene Analysis**: Returns mock analysis data
+- **Scene Analysis**: Returns mock analysis data for composition and lighting
+
+### ✅ Fixed Issues (January 21, 2026)
+- **Video Generation Resolution Fix**: Removed invalid resolutions (1920x1080, 3840x2160) from UI. Now only shows Sora 2 supported sizes: 1280x720, 1792x1024, 1024x1792, 1024x1024
+- **Video Generation Completion**: Render-status endpoint working correctly, videos complete successfully with valid resolutions
 
 ---
 
