@@ -386,12 +386,52 @@ class CineCursorAPITester:
             success_count += 1
         
         return success_count > 0
+
+    def run_all_tests(self):
+        """Run comprehensive API test suite"""
+        self.log("🚀 Starting CineCursor API Test Suite")
+        self.log(f"   Testing against: {self.base_url}")
+        
+        # Core API tests
+        self.test_root_endpoint()
+        
+        # Project lifecycle
+        self.test_create_project()
+        self.test_get_projects()
+        self.test_get_project()
+        self.test_update_project()
+        
+        # Scene lifecycle
+        self.test_create_scene()
+        self.test_get_project_scenes()
+        self.test_get_scene()
+        self.test_update_scene()
+        self.test_generate_scene_video()
+        self.test_scene_reorder()
+        
+        # Character lifecycle
+        self.test_create_character()
+        self.test_get_project_characters()
+        self.test_get_character()
+        self.test_update_character()
+        
+        # Asset lifecycle
+        self.test_create_asset()
+        self.test_get_project_assets()
+        
+        # AI features
+        self.test_ai_chat()
+        self.test_get_chat_history()
+        
         # Advanced features
         self.test_continuity_check()
         self.test_export_timeline()
         
         # V2.0 specific features
         self.test_v2_features()
+        
+        # Cleanup
+        self.test_delete_operations()
         
         # Results
         self.log(f"\n📊 Test Results: {self.tests_passed}/{self.tests_run} passed")
