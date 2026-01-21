@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide React error overlay for third-party errors */
+body > iframe[style*="z-index: 2147483647"] {
+    display: none !important;
+}
+
 :root {
     --background: 0 0% 4%;
     --foreground: 0 0% 98%;
