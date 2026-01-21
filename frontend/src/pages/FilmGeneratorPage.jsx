@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import AIDirectorPanel from '../components/AIDirectorPanel';
 import ProductionDashboard from '../components/ProductionDashboard';
 import { ArrowLeft, Film, Sparkles } from 'lucide-react';
