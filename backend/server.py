@@ -884,8 +884,9 @@ async def create_film_plan(story: str, duration: int) -> dict:
     
     chat = LlmChat(
         api_key=os.environ.get('EMERGENT_LLM_KEY'),
-        model="claude-sonnet-4-20250514"
-    )
+        session_id=f"film_plan_{uuid.uuid4()}",
+        system_message="You are a Hollywood screenwriter and director. Return only valid JSON, no markdown."
+    ).with_model("anthropic", "claude-4-sonnet-20250514")
     
     prompt = FILM_PLAN_PROMPT.format(
         story=story,
