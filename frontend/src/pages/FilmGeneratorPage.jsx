@@ -5,7 +5,8 @@ import AIDirectorPanel from '../components/AIDirectorPanel';
 import ProductionDashboard from '../components/ProductionDashboard';
 import { ArrowLeft, Film, Sparkles } from 'lucide-react';
 
-const API = process.env.REACT_APP_BACKEND_URL || '';
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || '';
+const API = `${BASE_URL}/api`;
 
 export default function FilmGeneratorPage() {
   const navigate = useNavigate();
