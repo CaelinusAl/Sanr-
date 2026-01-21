@@ -1074,11 +1074,28 @@ export default function EditorPage() {
                     <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
                     <div>
                       <p className="text-white font-medium">{renderProgress?.message || "Generating..."}</p>
-                      <p className="text-sm text-zinc-400">This may take 2-5 minutes</p>
+                      <p className="text-sm text-zinc-400">
+                        {renderProgress?.status === "queued" && "Waiting in queue..."}
+                        {renderProgress?.status === "generating" && "AI is creating your video - this may take 2-8 minutes"}
+                        {renderProgress?.status === "downloading" && "Downloading generated video..."}
+                        {renderProgress?.status === "complete" && "Video ready!"}
+                        {renderProgress?.status === "error" && "An error occurred"}
+                      </p>
                     </div>
                   </div>
-                  <Progress value={renderProgress?.progress || 0} className="h-2" />
-                  <p className="text-center text-sm text-zinc-500">{renderProgress?.progress || 0}% complete</p>
+                  <Progress value={renderProgress?.progress || 0} className="h-3" />
+                  <div className="flex justify-between text-sm text-zinc-500">
+                    <span>{renderProgress?.progress || 0}% complete</span>
+                    <span>
+                      {renderProgress?.status === "generating" && "~3-5 min remaining"}
+                      {renderProgress?.status === "downloading" && "Almost done..."}
+                    </span>
+                  </div>
+                  <div className="p-3 bg-zinc-900/50 rounded-lg border border-zinc-800 mt-4">
+                    <p className="text-xs text-zinc-500 text-center">
+                      ⚠️ Do not close this window. The video is being generated on Sora 2 servers.
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <>
@@ -1110,11 +1127,14 @@ export default function EditorPage() {
                       </Select>
                     </div>
                   </div>
-                  <div className="p-3 bg-zinc-900/50 rounded-lg border border-zinc-800">
+                  <div className="p-3 bg-zinc-900/50 rounded-lg border border-zinc-800 space-y-2">
                     <div className="flex items-center gap-2 text-sm text-zinc-400">
                       <Clock className="w-4 h-4" />
-                      <span>Estimated time: 2-5 minutes</span>
+                      <span>Estimated time: {generateConfig.size.includes("3840") ? "5-10" : "2-5"} minutes</span>
                     </div>
+                    <p className="text-xs text-zinc-500">
+                      {generateConfig.size.includes("3840") && "⚠️ 4K videos take longer to generate"}
+                    </p>
                   </div>
                 </>
               )}
