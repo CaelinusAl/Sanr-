@@ -353,6 +353,49 @@ export default function EditorPage() {
     }
   };
 
+  const handleSceneUpdate = async (updatedScene) => {
+    try {
+      setScenes(prev => prev.map(s => s.id === updatedScene.id ? updatedScene : s));
+      await axios.put(`${API}/scenes/${updatedScene.id}`, updatedScene);
+    } catch (error) {
+      console.error("Error updating scene:", error);
+    }
+  };
+
+  const handleAnalyzeScene = async () => {
+    if (!selectedScene) return;
+    
+    setIsAnalyzing(true);
+    try {
+      // Simulated analysis - in production, this would call an AI service
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setSceneAnalysis({
+        characters: [
+          { name: "Main Character", emotion: "neutral", pose: "standing" }
+        ],
+        lighting: {
+          brightness: 0.7,
+          contrast: 0.6,
+        },
+        composition: {
+          ruleOfThirds: 0.85,
+          balance: 0.72,
+        },
+        quality: {
+          overall: 85,
+          sharpness: 90,
+          noise: 15,
+        }
+      });
+    } catch (error) {
+      console.error("Analysis error:", error);
+      toast.error("Failed to analyze scene");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const openGenerateModal = (scene) => {
     setSelectedScene(scene);
     setGenerateConfig({
@@ -375,7 +418,26 @@ export default function EditorPage() {
       setGeneratingSceneId(selectedScene.id);
       setRenderProgress({ progress: 0, status: "queued", message: "Starting..." });
 
+      // Add to renders list
+      const newRender = {
+        renderId: `render_${Date.now()}`,
+        sceneId: selectedScene.id,
+        sceneName: selectedScene.name,
+        stage: "queued",
+        progress: 0,
+        message: "Waiting to start...",
+        estimatedTimeRemaining: 180,
+      };
+      setRenders(prev => [...prev, newRender]);
+
       await axios.post(`${API}/scenes/${selectedScene.id}/generate`, generateConfig);
+      
+      // Update render status
+      setRenders(prev => prev.map(r => 
+        r.sceneId === selectedScene.id 
+          ? { ...r, stage: "generating", message: "Generating with Sora 2..." }
+          : r
+      ));
       
       // Update scene status locally
       setScenes((prev) =>
@@ -388,7 +450,49 @@ export default function EditorPage() {
       toast.error("Failed to start generation");
       setGeneratingSceneId(null);
       setShowGenerateModal(false);
+      
+      // Update render as failed
+      setRenders(prev => prev.map(r => 
+        r.sceneId === selectedScene?.id 
+          ? { ...r, stage: "failed", message: "Failed to start generation", error: error.message }
+          : r
+      ));
     }
+  };
+
+  const handleCancelRender = (renderId) => {
+    setRenders(prev => prev.map(r => 
+      r.renderId === renderId 
+        ? { ...r, stage: "cancelled", message: "Cancelled by user" }
+        : r
+    ));
+    toast.info("Render cancelled");
+  };
+
+  const handleRetryRender = (renderId) => {
+    const render = renders.find(r => r.renderId === renderId);
+    if (render) {
+      const scene = scenes.find(s => s.id === render.sceneId);
+      if (scene) {
+        openGenerateModal(scene);
+      }
+    }
+  };
+
+  const handleClearCompletedRenders = () => {
+    setRenders(prev => prev.filter(r => !["complete", "cancelled"].includes(r.stage)));
+  };
+
+  // Timeline context menu
+  const handleTimelineContextMenu = (e, scene) => {
+    openContextMenu(e, [
+      { label: "Scene Actions", type: "label" },
+      { icon: "🎬", label: "Generate Video", onClick: () => openGenerateModal(scene) },
+      { icon: "✏️", label: "Edit Properties", onClick: () => setSelectedScene(scene) },
+      { icon: "📋", label: "Duplicate", onClick: () => toast.info("Duplicate coming soon") },
+      { type: "separator" },
+      { icon: "🗑️", label: "Delete", onClick: () => handleDeleteScene(scene.id), danger: true },
+    ]);
   };
 
   // Character functions
