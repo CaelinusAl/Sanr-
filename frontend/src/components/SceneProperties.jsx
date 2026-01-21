@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   ClipboardList, RefreshCw, Film, Settings, Sparkles,
-  Users, Sun, Palette, BarChart3, Sliders, Eye,
+  Users, Sun, Palette, BarChart3, Eye,
   Clock, DollarSign, Calendar, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
