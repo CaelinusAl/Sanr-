@@ -149,11 +149,18 @@ class CineCursorAPITester:
         return self.run_test("Update Scene", "PUT", f"scenes/{self.scene_id}", 200, update_data)
 
     def test_generate_scene_video(self):
-        """Test scene video generation (MOCKED)"""
+        """Test scene video generation with Sora 2"""
         if not self.scene_id:
             self.log("❌ Generate Scene Video - No scene ID available")
             return False
-        return self.run_test("Generate Scene Video", "POST", f"scenes/{self.scene_id}/generate", 200)
+        
+        generate_data = {
+            "prompt": "A beautiful sunset over mountains, cinematic shot",
+            "duration": 4,
+            "size": "1280x720",
+            "model": "sora-2"
+        }
+        return self.run_test("Generate Scene Video", "POST", f"scenes/{self.scene_id}/generate", 200, generate_data)
 
     def test_create_character(self):
         """Test character creation"""
