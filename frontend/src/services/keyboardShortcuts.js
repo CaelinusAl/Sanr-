@@ -233,7 +233,7 @@ class KeyboardShortcutsManager {
       description: "Play/Pause",
       category: "playback",
       callback: () => this.emit("play_pause"),
-      global: true,
+      global: false, // Don't trigger in inputs
     });
 
     this.register({
@@ -242,7 +242,7 @@ class KeyboardShortcutsManager {
       description: "Stop playback",
       category: "playback",
       callback: () => this.emit("stop"),
-      global: true,
+      global: false, // Don't trigger in inputs
     });
 
     this.register({
