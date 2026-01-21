@@ -937,38 +937,36 @@ async def generate_scene_video(scene: dict, film_id: str, scene_index: int, qual
         }
         settings = quality_settings.get(quality, quality_settings['fast'])
         
+        # Generate video using Sora 2
         video_gen = OpenAIVideoGeneration(
             api_key=os.environ.get('EMERGENT_LLM_KEY')
         )
         
-        result = await asyncio.to_thread(
-            video_gen.generate_video,
+        video_filename = f"{film_id}_scene_{scene_index + 1}.mp4"
+        video_path = VIDEOS_DIR / video_filename
+        
+        # Use text_to_video method (blocking call)
+        video_bytes = await asyncio.to_thread(
+            video_gen.text_to_video,
             prompt=video_prompt,
             model="sora-2",
             size=settings['size'],
-            duration=min(settings['duration'], scene.get('duration', 4))
+            duration=min(settings['duration'], 4),  # Start with 4 seconds for faster testing
+            max_wait_time=600
         )
         
-        if result and result.url:
-            # Download and save video
-            import aiohttp
-            video_filename = f"{film_id}_scene_{scene_index + 1}.mp4"
-            video_path = VIDEOS_DIR / video_filename
+        if video_bytes:
+            # Save video
+            await asyncio.to_thread(video_gen.save_video, video_bytes, str(video_path))
             
-            async with aiohttp.ClientSession() as session:
-                async with session.get(result.url) as resp:
-                    if resp.status == 200:
-                        with open(video_path, 'wb') as f:
-                            f.write(await resp.read())
-                        
-                        return {
-                            'success': True,
-                            'video_path': str(video_path),
-                            'video_url': f"/api/film-videos/{video_filename}",
-                            'duration': settings['duration']
-                        }
+            return {
+                'success': True,
+                'video_path': str(video_path),
+                'video_url': f"/api/film-videos/{video_filename}",
+                'duration': settings['duration']
+            }
         
-        return {'success': False, 'error': 'Video generation failed'}
+        return {'success': False, 'error': 'Video generation returned no data'}
         
     except Exception as e:
         logger.error(f"Scene generation error: {str(e)}")
