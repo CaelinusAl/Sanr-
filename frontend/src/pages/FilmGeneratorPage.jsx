@@ -43,7 +43,14 @@ export default function FilmGeneratorPage() {
               setFilmPlan(data.filmPlan);
             }
 
-            if (data.stage === 'complete' || data.stage === 'error') {
+            // Handle error stage
+            if (data.stage === 'error') {
+              setError(data.error || 'Film generation failed. Please try again.');
+              clearInterval(pollInterval);
+              setIsGenerating(false);
+            }
+
+            if (data.stage === 'complete') {
               clearInterval(pollInterval);
               setIsGenerating(false);
             }
