@@ -1,203 +1,300 @@
-# CineCursor v2.0 - AI-Powered Video Production Platform
-## Product Requirements Document (PRD)
+# CineCursor - AI-Powered Video Production Platform
+## Product Requirements Document
 
-### Project Overview
-**Name:** CineCursor  
-**Tagline:** "Cursor for Film" - AI-powered video production platform  
-**Vision:** Enable anyone to create professional films through natural language  
-**Version:** 2.0
+**Version:** 2.0  
+**Last Updated:** January 21, 2026  
+**Status:** In Development
 
 ---
 
-### User Personas
+## 1. Overview
 
-1. **Content Creators** - YouTubers, social media influencers needing quick video production
-2. **Indie Filmmakers** - Low-budget filmmakers wanting AI assistance
-3. **Marketing Agencies** - Teams creating commercial video content
-4. **Hobbyists** - People exploring video creation with AI tools
+CineCursor is a comprehensive AI-powered video production platform inspired by Cursor IDE, designed for filmmakers and content creators. The platform enables users to create professional videos using natural language prompts and AI-powered tools.
 
----
-
-### Core Requirements (Static)
-
-| Requirement | Priority | Status |
-|-------------|----------|--------|
-| Project Management (CRUD) | P0 | ✅ Implemented |
-| Scene Management | P0 | ✅ Implemented |
-| Character Management | P0 | ✅ Implemented |
-| Timeline Editor | P0 | ✅ Implemented |
-| AI Director Chat | P0 | ✅ Implemented |
-| Video Preview | P0 | ✅ Implemented |
-| **Sora 2 Video Generation** | P0 | ✅ **NEW in v2.0** |
-| **Scene Transitions** | P1 | ✅ **NEW in v2.0** |
-| **Audio Track Support** | P1 | ✅ **NEW in v2.0** |
-| **Video Export (MP4/MOV/WebM)** | P1 | ✅ **NEW in v2.0** |
-| Continuity Checking | P1 | ✅ Implemented |
-| Export Timeline JSON | P1 | ✅ Implemented |
-| Character Consistency AI | P1 | 📋 Planned |
+### Core Value Proposition
+- Create professional videos using natural language
+- AI Director powered by Claude for scene planning
+- Video generation using Sora 2 AI
+- Character consistency across scenes
+- Professional timeline editing
 
 ---
 
-### What's Been Implemented
+## 2. Target Users
 
-#### Version 2.0 (Jan 21, 2026) - CURRENT
-
-**NEW Backend Features:**
-- ✅ **Sora 2 Integration** - Real AI video generation via OpenAI
-  - Durations: 4, 8, or 12 seconds
-  - Resolutions: 1280x720, 1792x1024, 1024x1792, 1024x1024
-  - Background task with progress polling
-- ✅ **Scene Transitions** - Fade, dissolve, wipe, slide effects
-- ✅ **Audio Track Support** - Upload audio per scene, volume control
-- ✅ **Video Export** - MP4, MOV, WebM with resolution/fps options
-- ✅ Video file serving endpoints
-- ✅ Thumbnail generation with ffmpeg
-- ✅ Render status polling endpoint
-
-**NEW Frontend Features:**
-- ✅ **Generate Video Modal** - Sora 2 configuration UI
-  - Duration selector (4/8/12 seconds)
-  - Resolution selector (HD/Widescreen/Portrait/Square)
-  - Progress indicator with percentage
-- ✅ **Export Video Modal** - Full export configuration
-  - Format: MP4, MOV, WebM
-  - Resolution: 720p, 1080p, 4K
-  - Frame rate: 24, 30, 60 fps
-  - Audio inclusion toggle
-- ✅ **Transition Selectors** in scene creation
-- ✅ **Video Player** in preview area
-- ✅ **Volume Control** with mute button
-- ✅ **Scene Status Indicators** (draft/generating/ready)
-- ✅ "Sora 2" badge in AI Director panel
-- ✅ JSON export button in header
-
-#### Version 1.0 (Jan 21, 2026) - Initial Release
-
-- ✅ Project CRUD endpoints
-- ✅ Scene CRUD with timeline positioning
-- ✅ Character CRUD for consistency tracking
-- ✅ AI Director chat with Claude Sonnet 4.5
-- ✅ Continuity checking algorithm
-- ✅ Professional 3-panel editor layout
-- ✅ Timeline with drag-drop scene positioning
-- ✅ Transport controls (play/pause/stop/skip)
-- ✅ Timeline zoom
-- ✅ Dark theme (Obsidian Suite)
+- **Content Creators**: YouTubers, TikTokers, social media influencers
+- **Indie Filmmakers**: Independent filmmakers and video artists
+- **Marketing Agencies**: Creating promotional content
+- **Education**: Tutorial and educational video creators
 
 ---
 
-### API Endpoints (v2.0)
+## 3. Technical Stack
 
-```
-# Core
-GET    /api/                              - Health check (v2.0)
+- **Frontend**: React.js, TailwindCSS, Shadcn/UI
+- **Backend**: FastAPI (Python)
+- **Database**: MongoDB
+- **AI Integration**: 
+  - Claude Sonnet 4.5 (AI Director)
+  - Sora 2 (Video Generation)
+- **Video Processing**: FFmpeg
 
-# Projects
-POST   /api/projects                      - Create project
-GET    /api/projects                      - List projects
-GET    /api/projects/{id}                 - Get project
-PUT    /api/projects/{id}                 - Update project
-DELETE /api/projects/{id}                 - Delete project
+---
 
-# Scenes
-POST   /api/scenes                        - Create scene
-GET    /api/projects/{id}/scenes          - List project scenes
-GET    /api/scenes/{id}                   - Get scene
-PUT    /api/scenes/{id}                   - Update scene
-DELETE /api/scenes/{id}                   - Delete scene
-POST   /api/scenes/reorder                - Reorder scenes
+## 4. Features Implemented
 
-# Video Generation (NEW)
-POST   /api/scenes/{id}/generate          - Start Sora 2 generation
-GET    /api/scenes/{id}/render-status     - Poll render progress
-GET    /api/videos/{scene_id}             - Serve video file
-GET    /api/thumbnails/{scene_id}         - Serve thumbnail
+### 4.1 Core MVP (v1.0) ✅
+- [x] Project Management (CRUD)
+- [x] Scene Management (CRUD)
+- [x] Character Management
+- [x] AI Director Chat (Claude)
+- [x] Basic Timeline Editor
+- [x] Video Preview Player
 
-# Transitions (NEW)
-PUT    /api/scenes/{id}/transition        - Set transitions
+### 4.2 Professional UI (v2.0) ✅
+- [x] VS Code-themed dark UI
+- [x] ChatPanel with AI Director integration
+- [x] AssetExplorer with tree view
+- [x] VideoPreview component
+- [x] SceneProperties panel with tabs (General, Analysis, Effects)
+- [x] RenderingConsole with filtering
+- [x] ContextMenu (right-click)
+- [x] Keyboard Shortcuts Manager
+- [x] Theme CSS styling
 
-# Audio (NEW)
-POST   /api/scenes/{id}/audio             - Upload audio track
-PUT    /api/scenes/{id}/audio-volume      - Set volume
-GET    /api/audio/{scene_id}              - Serve audio file
+### 4.3 Services (v2.0) ✅
+- [x] Project Manager Service (auto-save, recent projects)
+- [x] Version Control Service (undo/redo)
+- [x] Search Index Service (Fuse.js)
+- [x] Virtual Timeline Renderer (performance)
+- [x] Export Service (FFmpeg-based)
 
-# Export (NEW)
-POST   /api/projects/{id}/export          - Export as video file
-GET    /api/exports/{project_id}/{id}     - Download export
-GET    /api/projects/{id}/export-json     - Export as JSON
+### 4.4 User Experience (v2.0) ✅
+- [x] Onboarding Flow (5-step tutorial)
+- [x] Project Templates (6 templates)
+- [x] Keyboard shortcuts modal
+- [x] Context menus for timeline
 
-# Characters
-POST   /api/characters                    - Create character
-GET    /api/projects/{id}/characters      - List characters
-GET    /api/characters/{id}               - Get character
-PUT    /api/characters/{id}               - Update character
-DELETE /api/characters/{id}               - Delete character
+---
 
-# AI Director
-POST   /api/chat                          - Chat with AI Director
-GET    /api/projects/{id}/chat-history    - Get chat history
-DELETE /api/projects/{id}/chat-history    - Clear chat
+## 5. API Endpoints
 
-# Continuity
-GET    /api/projects/{id}/continuity-check - Check continuity issues
+### Projects
+- `GET /api/projects` - List all projects
+- `POST /api/projects` - Create new project
+- `GET /api/projects/{id}` - Get project details
+- `PUT /api/projects/{id}` - Update project
+- `DELETE /api/projects/{id}` - Delete project
+
+### Scenes
+- `GET /api/projects/{id}/scenes` - List project scenes
+- `POST /api/projects/{id}/scenes` - Create scene
+- `PUT /api/scenes/{id}` - Update scene
+- `DELETE /api/scenes/{id}` - Delete scene
+- `POST /api/scenes/{id}/generate` - Generate video with Sora 2
+
+### Characters
+- `POST /api/characters` - Create character
+- `GET /api/projects/{id}/characters` - List characters
+
+### AI Director
+- `POST /api/chat` - Send message to AI Director
+- `DELETE /api/projects/{id}/chat-history` - Clear chat
+
+### Export
+- `POST /api/projects/{id}/export` - Export project video
+
+---
+
+## 6. Database Schema
+
+### Projects Collection
+```json
+{
+  "id": "uuid",
+  "name": "string",
+  "description": "string",
+  "style_guide": "string",
+  "total_duration": "number",
+  "created_at": "datetime",
+  "updated_at": "datetime"
+}
 ```
 
----
+### Scenes Collection
+```json
+{
+  "id": "uuid",
+  "project_id": "uuid",
+  "name": "string",
+  "prompt": "string",
+  "duration": "number",
+  "start_time": "number",
+  "track_index": "number",
+  "status": "draft|generating|ready|error",
+  "video_path": "string",
+  "thumbnail": "string"
+}
+```
 
-### Tech Stack
-
-| Layer | Technology |
-|-------|------------|
-| Frontend | React 19, Tailwind CSS, Shadcn/UI |
-| Backend | FastAPI, Python 3.x |
-| Database | MongoDB |
-| AI Chat | Claude Sonnet 4.5 (Emergent LLM Key) |
-| Video Gen | **OpenAI Sora 2** (Emergent LLM Key) |
-| Video Processing | FFmpeg |
-
----
-
-### Prioritized Backlog
-
-#### P0 - Critical (Next Sprint)
-1. **Real-time Video Playback** - Sync timeline playhead with video
-2. **Audio Waveform Display** - Show audio visualization in timeline
-
-#### P1 - High Priority
-1. **Character Face Embedding** - InsightFace integration for consistency
-2. **Batch Video Generation** - Generate all scenes sequentially
-3. **Project Templates** - Pre-built scene sequences
-
-#### P2 - Medium Priority
-1. **Multi-user Collaboration** - Real-time editing
-2. **Version History** - Git-like versioning for projects
-3. **Cloud Storage** - S3 integration for assets
-
-#### P3 - Nice to Have
-1. **Electron App** - Desktop version
-2. **Mobile Preview** - Responsive editor
-3. **AI Script Writer** - Full screenplay generation
+### Characters Collection
+```json
+{
+  "id": "uuid",
+  "project_id": "uuid",
+  "name": "string",
+  "description": "string",
+  "reference_images": ["string"]
+}
+```
 
 ---
 
-### Testing Results
+## 7. Keyboard Shortcuts
 
-| Version | Backend | Frontend | Integration | Overall |
-|---------|---------|----------|-------------|---------|
-| v1.0 | 96.2% | 100% | 100% | 98.7% |
-| v2.0 | TBD | TBD | TBD | TBD |
+### Playback
+- `Space` - Play/Pause
+- `←` / `→` - Previous/Next frame
+- `Esc` - Stop playback
+- `Home` / `End` - Go to start/end
+
+### Timeline
+- `⌘ +` / `⌘ -` - Zoom in/out
+- `⌘ 0` - Fit to view
+- `⌘ B` - Split clip
+- `Delete` - Delete selected
+
+### General
+- `⌘ S` - Save project
+- `⌘ Z` / `⌘ ⇧ Z` - Undo/Redo
+- `⌘ N` - New scene
+- `⌘ E` - Export
+
+### AI & Editing
+- `⌘ I` - Focus AI chat
+- `⌘ G` - Generate scene
+- `⌘ C` / `⌘ V` / `⌘ D` - Copy/Paste/Duplicate
 
 ---
 
-### Next Tasks
+## 8. Project Templates
 
-1. Test Sora 2 generation end-to-end
-2. Implement video playback sync with timeline
-3. Add audio waveform visualization
-4. Implement batch export for all scenes
-5. Add project duplication feature
+1. **Blank Project** - Start from scratch
+2. **Short Film** - 5 scenes, narrative structure
+3. **Commercial** - 4 scenes, marketing focus
+4. **Music Video** - 8 scenes, visual storytelling
+5. **Documentary** - 6 scenes, interview format
+6. **Social Media** - 3 scenes, quick content
 
 ---
 
-*Last Updated: January 21, 2026*
-*Version: 2.0*
+## 9. Current Status
+
+### Working Features ✅
+- Project creation and management
+- Scene creation and timeline display
+- AI Director chat with Claude
+- Video generation with Sora 2 (async)
+- Professional UI components
+- Keyboard shortcuts
+- Context menus
+- Onboarding flow
+- Project templates
+
+### In Progress 🔄
+- Video generation completion tracking
+- Real video playback in preview
+
+### MOCKED Features ⚠️
+- **Sora 2 Video Generation**: API integrated, generates videos but completion tracking needs improvement
+- **Scene Analysis**: Returns mock analysis data
+
+---
+
+## 10. Upcoming Features (Backlog)
+
+### P1 - High Priority
+- [ ] Real video playback in VideoPreview
+- [ ] Video generation progress polling
+- [ ] Asset upload functionality
+- [ ] Audio track support
+
+### P2 - Medium Priority
+- [ ] Character face consistency (IP-Adapter)
+- [ ] Scene transitions
+- [ ] Continuity checking (VAP)
+- [ ] Multi-track timeline editing
+
+### P3 - Future
+- [ ] Cloud sync (S3)
+- [ ] Team collaboration
+- [ ] Plugin system
+- [ ] Desktop app (Electron)
+
+---
+
+## 11. File Structure
+
+```
+/app/
+├── backend/
+│   ├── server.py
+│   ├── requirements.txt
+│   └── services/
+│       └── export_service.py
+└── frontend/
+    ├── src/
+    │   ├── components/
+    │   │   ├── AssetExplorer.jsx
+    │   │   ├── ChatPanel.jsx
+    │   │   ├── ContextMenu.jsx
+    │   │   ├── OnboardingFlow.jsx
+    │   │   ├── ProjectTemplates.jsx
+    │   │   ├── RenderingConsole.jsx
+    │   │   ├── SceneProperties.jsx
+    │   │   └── VideoPreview.jsx
+    │   ├── pages/
+    │   │   ├── EditorPage.jsx
+    │   │   └── ProjectsPage.jsx
+    │   ├── services/
+    │   │   ├── eventEmitter.js
+    │   │   ├── keyboardShortcuts.js
+    │   │   ├── projectManager.js
+    │   │   ├── searchIndex.js
+    │   │   ├── versionControl.js
+    │   │   └── virtualTimeline.js
+    │   └── styles/
+    │       └── theme.css
+    └── package.json
+```
+
+---
+
+## 12. Change Log
+
+### January 21, 2026 - v2.0
+- Implemented Part 2 & 3 of blueprint
+- Added SceneProperties panel with tabs
+- Added RenderingConsole with filtering
+- Added ContextMenu for timeline clips
+- Added Keyboard Shortcuts system
+- Added Project Manager service
+- Added Version Control service
+- Added Search Index service
+- Added Virtual Timeline renderer
+- Added Export Service backend
+- Added Onboarding Flow
+- Added Project Templates (6 templates)
+- Updated EditorPage with all new components
+- Fixed timeline scene display issues
+
+### January 21, 2026 - v1.0
+- Initial MVP release
+- Project, Scene, Character CRUD
+- AI Director with Claude
+- Basic timeline editor
+- Video generation with Sora 2
+
+---
+
+**Document maintained by CineCursor Development Team**
