@@ -957,7 +957,9 @@ async def generate_scene_video(scene: dict, film_id: str, scene_index: int, qual
         else:
             video_size = settings['size']
         
-        video_duration = min(settings['duration'], 4)  # Max 4 seconds per scene for now
+        # Get video duration based on quality (Sora 2 supports 5-20 seconds)
+        # We use 12 seconds as standard for proper film length
+        video_duration = settings['duration']  # Use full duration from quality settings
         
         # Generate video using Sora 2
         video_gen = OpenAIVideoGeneration(
@@ -976,7 +978,7 @@ async def generate_scene_video(scene: dict, film_id: str, scene_index: int, qual
             model="sora-2",
             size=video_size,
             duration=video_duration,
-            max_wait_time=600
+            max_wait_time=900  # 15 minutes max wait for longer videos
         )
         
         if video_bytes:
