@@ -930,7 +930,7 @@ async def create_film_plan(story: str, duration: int) -> dict:
     return json.loads(response_text.strip())
 
 
-async def generate_scene_video(scene: dict, film_id: str, scene_index: int, quality: str) -> dict:
+async def generate_scene_video(scene: dict, film_id: str, scene_index: int, quality: str, aspect_ratio: str = "16:9") -> dict:
     """Generate video for a single scene using Sora 2"""
     try:
         # Create detailed prompt for video generation
@@ -948,13 +948,16 @@ async def generate_scene_video(scene: dict, film_id: str, scene_index: int, qual
         
         video_prompt = ". ".join(filter(None, prompt_parts))
         
-        # Map quality to video settings
-        quality_settings = {
-            'fast': {'size': '1280x720', 'duration': 4},
-            'balanced': {'size': '1280x720', 'duration': 8},
-            'hollywood': {'size': '1792x1024', 'duration': 12}
-        }
-        settings = quality_settings.get(quality, quality_settings['fast'])
+        # Get settings from new config
+        settings = QUALITY_SETTINGS.get(quality, QUALITY_SETTINGS['standard'])
+        
+        # Override size with aspect ratio if different quality doesn't force a size
+        if quality in ['mobile', 'standard']:
+            video_size = ASPECT_RATIO_SIZES.get(aspect_ratio, "1280x720")
+        else:
+            video_size = settings['size']
+        
+        video_duration = min(settings['duration'], 4)  # Max 4 seconds per scene for now
         
         # Generate video using Sora 2
         video_gen = OpenAIVideoGeneration(
@@ -964,13 +967,15 @@ async def generate_scene_video(scene: dict, film_id: str, scene_index: int, qual
         video_filename = f"{film_id}_scene_{scene_index + 1}.mp4"
         video_path = VIDEOS_DIR / video_filename
         
+        logger.info(f"[Scene {scene_index + 1}] Generating video: {video_size}, {video_duration}s")
+        
         # Use text_to_video method (blocking call)
         video_bytes = await asyncio.to_thread(
             video_gen.text_to_video,
             prompt=video_prompt,
             model="sora-2",
-            size=settings['size'],
-            duration=min(settings['duration'], 4),  # Start with 4 seconds for faster testing
+            size=video_size,
+            duration=video_duration,
             max_wait_time=600
         )
         
@@ -982,7 +987,8 @@ async def generate_scene_video(scene: dict, film_id: str, scene_index: int, qual
                 'success': True,
                 'video_path': str(video_path),
                 'video_url': f"/api/film-videos/{video_filename}",
-                'duration': settings['duration']
+                'duration': video_duration,
+                'size': video_size
             }
         
         return {'success': False, 'error': 'Video generation returned no data'}
