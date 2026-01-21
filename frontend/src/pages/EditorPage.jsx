@@ -713,69 +713,38 @@ export default function EditorPage() {
             </div>
           </div>
 
-          {/* Right Sidebar - AI Director Chat */}
-          <div className="w-[380px] bg-[#09090B] border-l border-zinc-800 flex flex-col flex-shrink-0">
-            <div className="h-12 border-b border-zinc-800 flex items-center justify-between px-4">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-[#8B5CF6]" />
-                <span className="font-chivo font-semibold text-white">AI Director</span>
-                <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">Sora 2</span>
-              </div>
-              <Button variant="ghost" size="sm" data-testid="clear-chat-btn"
-                      onClick={async () => { await axios.delete(`${API}/projects/${projectId}/chat-history`); setChatMessages([]); toast.success("Chat cleared"); }}
-                      className="text-zinc-400 hover:text-white text-xs">Clear</Button>
-            </div>
-
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
-                {chatMessages.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Sparkles className="w-12 h-12 text-[#8B5CF6] mx-auto mb-4 opacity-50" />
-                    <p className="text-zinc-400 text-sm mb-2">Start a conversation with your AI Director</p>
-                    <p className="text-zinc-500 text-xs">Ask for scene ideas, script help, or creative direction</p>
-                  </div>
-                ) : (
-                  chatMessages.map((msg, idx) => (
-                    <div key={msg.id || idx} data-testid={`chat-message-${idx}`}
-                         className={`p-3 rounded-lg ${msg.role === "assistant" ? "ai-message" : "user-message"} animate-fade-in`}>
-                      <div className="flex items-center gap-2 mb-2">
-                        {msg.role === "assistant" ? <Sparkles className="w-4 h-4 text-[#8B5CF6]" /> : <div className="w-4 h-4 rounded-full bg-zinc-600" />}
-                        <span className="text-xs font-medium text-zinc-400">{msg.role === "assistant" ? "AI Director" : "You"}</span>
-                      </div>
-                      <div className="text-sm text-zinc-300 whitespace-pre-wrap">{msg.content}</div>
-                      {msg.scene_plan && (
-                        <div className="mt-3 pt-3 border-t border-zinc-700">
-                          <Button data-testid={`create-from-plan-${idx}`} size="sm" onClick={() => handleCreateFromPlan(msg.scene_plan)}
-                                  className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs">
-                            <Plus className="w-3 h-3 mr-1" /> Create This Scene
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  ))
-                )}
-                {chatLoading && (
-                  <div className="ai-message p-3 rounded-lg animate-fade-in">
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 text-[#8B5CF6] animate-spin" />
-                      <span className="text-xs text-zinc-400">AI Director is thinking...</span>
-                    </div>
-                  </div>
-                )}
-                <div ref={chatEndRef} />
-              </div>
-            </ScrollArea>
-
-            <div className="p-4 border-t border-zinc-800">
-              <Textarea data-testid="chat-input" placeholder="Ask the AI Director..." value={chatInput}
-                        onChange={(e) => setChatInput(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
-                        className="bg-zinc-900/50 border-zinc-700 focus:border-zinc-500 text-white resize-none h-20 text-sm" />
-              <Button data-testid="send-chat-btn" onClick={handleSendMessage} disabled={!chatInput.trim() || chatLoading}
-                      className="w-full mt-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white">
-                {chatLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4 mr-2" /> Send</>}
-              </Button>
-            </div>
+          {/* Right Sidebar - AI Director Chat Panel */}
+          <div className="w-[400px] bg-[#1e1e1e] border-l border-[#3c3c3c] flex-shrink-0">
+            <ChatPanel
+              messages={chatMessages}
+              onSendMessage={async (message) => {
+                setChatLoading(true);
+                setChatMessages((prev) => [...prev, { id: Date.now(), role: "user", content: message }]);
+                try {
+                  const response = await axios.post(`${API}/chat`, { project_id: projectId, message });
+                  setChatMessages((prev) => [
+                    ...prev,
+                    { id: response.data.id, role: "assistant", content: response.data.message, scene_plan: response.data.scene_plan },
+                  ]);
+                  if (response.data.scene_plan) {
+                    toast.info("AI Director suggested a scene! Click 'Create This Scene' to add it.");
+                  }
+                } catch (error) {
+                  console.error("Chat error:", error);
+                  toast.error("Failed to get AI response");
+                } finally {
+                  setChatLoading(false);
+                }
+              }}
+              onClearChat={async () => {
+                await axios.delete(`${API}/projects/${projectId}/chat-history`);
+                setChatMessages([]);
+                toast.success("Chat cleared");
+              }}
+              isLoading={chatLoading}
+              onCreateFromPlan={handleCreateFromPlan}
+              modelName="Claude + Sora 2"
+            />
           </div>
         </div>
 
