@@ -900,7 +900,8 @@ Make scenes detailed and specific. Each scene should be a clear, filmable moment
 
 async def create_film_plan(story: str, duration: int) -> dict:
     """Create a detailed film plan using Claude"""
-    scene_count = duration * 2  # ~2 scenes per minute
+    # Calculate scenes: each scene is ~12 seconds, so 5 scenes per minute
+    scene_count = duration * 5  # 5 scenes per minute for proper duration
     
     chat = LlmChat(
         api_key=os.environ.get('EMERGENT_LLM_KEY'),
