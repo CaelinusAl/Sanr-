@@ -25,25 +25,39 @@ class KeyboardShortcutsManager {
     const key = this.normalizeKey(e);
     this.pressedKeys.add(key);
 
+    // Check if focused on input element
+    const target = e.target;
+    const isInputFocused = ["INPUT", "TEXTAREA", "SELECT"].includes(
+      target.tagName
+    ) || target.isContentEditable;
+
+    // If focused on input, don't trigger any shortcuts except specific ones with modifier keys
+    if (isInputFocused) {
+      // Only allow shortcuts with modifier keys (Cmd/Ctrl) when in input
+      const hasModifier = this.pressedKeys.has("Cmd") || 
+                          this.pressedKeys.has("Ctrl") || 
+                          this.pressedKeys.has("Alt");
+      if (!hasModifier) {
+        return; // Don't process shortcuts without modifiers in inputs
+      }
+    }
+
     // Check if any shortcut matches
     for (const shortcut of this.shortcuts.values()) {
       if (this.isShortcutPressed(shortcut)) {
-        // Check if global or not focused on input
-        const target = e.target;
-        const isInputFocused = ["INPUT", "TEXTAREA", "SELECT"].includes(
-          target.tagName
-        ) || target.isContentEditable;
+        // Skip non-global shortcuts when in input (even with modifiers, for safety)
+        if (isInputFocused && !shortcut.global) {
+          continue;
+        }
 
-        if (shortcut.global || !isInputFocused) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          try {
-            shortcut.callback();
-            this.emit(shortcut.id);
-          } catch (error) {
-            console.error(`Shortcut error (${shortcut.id}):`, error);
-          }
+        e.preventDefault();
+        e.stopPropagation();
+        
+        try {
+          shortcut.callback();
+          this.emit(shortcut.id);
+        } catch (error) {
+          console.error(`Shortcut error (${shortcut.id}):`, error);
         }
       }
     }
