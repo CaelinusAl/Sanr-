@@ -402,11 +402,86 @@ export default function EditorPage() {
     setSelectedScene(scene);
     setGenerateConfig({
       prompt: scene.prompt || "",
-      duration: Math.min(12, Math.max(4, Math.round(scene.duration / 4) * 4)) || 4,
-      size: "1280x720",
+      duration: Math.min(20, Math.max(4, Math.round(scene.duration / 4) * 4)) || 8,
+      size: "1920x1080",
       model: "sora-2"
     });
     setShowGenerateModal(true);
+  };
+
+  // Poll for render status
+  const pollRenderStatus = async (sceneId, renderId) => {
+    const maxPolls = 180; // Max 15 minutes (180 * 5 seconds)
+    let pollCount = 0;
+    
+    const poll = async () => {
+      try {
+        const response = await axios.get(`${API}/scenes/${sceneId}/render-status`);
+        const status = response.data;
+        
+        // Update render progress
+        setRenderProgress({
+          progress: status.progress || 0,
+          status: status.status,
+          message: status.message || "Processing..."
+        });
+        
+        // Update renders list
+        setRenders(prev => prev.map(r => 
+          r.sceneId === sceneId 
+            ? { 
+                ...r, 
+                stage: status.status === "complete" ? "complete" : 
+                       status.status === "error" ? "failed" : "generating",
+                progress: status.progress || 0,
+                message: status.message || "Processing...",
+                videoUrl: status.video_url,
+                error: status.status === "error" ? status.message : null
+              }
+            : r
+        ));
+        
+        // Update scene status
+        if (status.status === "complete") {
+          setScenes(prev => prev.map(s => 
+            s.id === sceneId 
+              ? { ...s, status: "ready", video_path: status.video_path, video_url: status.video_url, thumbnail: status.thumbnail }
+              : s
+          ));
+          setShowGenerateModal(false);
+          setGeneratingSceneId(null);
+          toast.success("Video generated successfully!");
+          loadProjectData(); // Reload to get updated data
+          return; // Stop polling
+        }
+        
+        if (status.status === "error") {
+          setGeneratingSceneId(null);
+          setShowGenerateModal(false);
+          toast.error(`Generation failed: ${status.message}`);
+          return; // Stop polling
+        }
+        
+        // Continue polling
+        pollCount++;
+        if (pollCount < maxPolls) {
+          setTimeout(poll, 5000); // Poll every 5 seconds
+        } else {
+          toast.warning("Generation is taking longer than expected. Check back later.");
+          setShowGenerateModal(false);
+        }
+        
+      } catch (error) {
+        console.error("Poll error:", error);
+        pollCount++;
+        if (pollCount < maxPolls) {
+          setTimeout(poll, 5000);
+        }
+      }
+    };
+    
+    // Start polling after a short delay
+    setTimeout(poll, 2000);
   };
 
   const handleGenerateVideo = async () => {
@@ -421,23 +496,25 @@ export default function EditorPage() {
       setRenderProgress({ progress: 0, status: "queued", message: "Starting..." });
 
       // Add to renders list
+      const renderId = `render_${Date.now()}`;
       const newRender = {
-        renderId: `render_${Date.now()}`,
+        renderId,
         sceneId: selectedScene.id,
         sceneName: selectedScene.name,
         stage: "queued",
         progress: 0,
-        message: "Waiting to start...",
-        estimatedTimeRemaining: 180,
+        message: "Initializing Sora 2...",
+        estimatedTimeRemaining: generateConfig.duration * 15, // Rough estimate
       };
       setRenders(prev => [...prev, newRender]);
 
+      // Start generation
       await axios.post(`${API}/scenes/${selectedScene.id}/generate`, generateConfig);
       
       // Update render status
       setRenders(prev => prev.map(r => 
         r.sceneId === selectedScene.id 
-          ? { ...r, stage: "generating", message: "Generating with Sora 2..." }
+          ? { ...r, stage: "generating", message: "AI is creating your video...", progress: 5 }
           : r
       ));
       
@@ -446,10 +523,14 @@ export default function EditorPage() {
         prev.map((s) => s.id === selectedScene.id ? { ...s, status: "generating", render_progress: 0 } : s)
       );
 
-      toast.info("Video generation started with Sora 2!");
+      toast.info("Video generation started! This may take 2-5 minutes.");
+      
+      // Start polling for status
+      pollRenderStatus(selectedScene.id, renderId);
+      
     } catch (error) {
       console.error("Error starting generation:", error);
-      toast.error("Failed to start generation");
+      toast.error("Failed to start generation: " + (error.response?.data?.detail || error.message));
       setGeneratingSceneId(null);
       setShowGenerateModal(false);
       
