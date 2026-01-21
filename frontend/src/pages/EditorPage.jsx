@@ -367,35 +367,6 @@ export default function EditorPage() {
     }
   };
 
-  // Chat functions
-  const handleSendMessage = async () => {
-    if (!chatInput.trim() || chatLoading) return;
-
-    const userMessage = chatInput.trim();
-    setChatInput("");
-    setChatLoading(true);
-
-    setChatMessages((prev) => [...prev, { id: Date.now(), role: "user", content: userMessage }]);
-
-    try {
-      const response = await axios.post(`${API}/chat`, { project_id: projectId, message: userMessage });
-
-      setChatMessages((prev) => [
-        ...prev,
-        { id: response.data.id, role: "assistant", content: response.data.message, scene_plan: response.data.scene_plan },
-      ]);
-
-      if (response.data.scene_plan) {
-        toast.info("AI Director suggested a scene! Click 'Create Scene' to add it.");
-      }
-    } catch (error) {
-      console.error("Chat error:", error);
-      toast.error("Failed to get AI response");
-    } finally {
-      setChatLoading(false);
-    }
-  };
-
   const handleCreateFromPlan = (scenePlan) => {
     setNewScene({
       name: scenePlan.name || "New Scene",
