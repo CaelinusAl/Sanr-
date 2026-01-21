@@ -221,6 +221,16 @@ CineCursor is a comprehensive AI-powered video production platform inspired by C
 - **NEW: Sora 2 Video Generation** - text_to_video method working, scenes generated successfully
 - **NEW: FFmpeg Assembly** - Multiple scene videos combined into final film
 
+### ✅ CineCursor V2.1 - Pro Features (January 21, 2026)
+- **NEW: Quality Presets** - Mobile (1024x1024), Standard (1280x720), Cinema (1792x1024), Premium (+Upscale)
+- **NEW: Aspect Ratios** - 16:9 Widescreen, 9:16 Portrait/TikTok, 1:1 Square, 21:9 Cinematic
+- **NEW: Emotional Journeys** - Hero's Journey, Tragedy, Comedy, Romance, Mystery, Horror presets
+- **NEW: FFmpeg Upscaling** - 720p → 1080p quality enhancement with lanczos filter
+- **NEW: Turkish UI** - Full Turkish language support for AI Director
+- **NEW: 6 Example Stories** - Sci-Fi, Romance, Action, Horror, Drama, Nature
+- **NEW: Cost Estimator** - Shows estimated API costs before generation
+- **NEW: Worker Slider** - 1-5 parallel workers for speed/cost balance
+
 ---
 
 ## 10. Upcoming Features (Backlog)
