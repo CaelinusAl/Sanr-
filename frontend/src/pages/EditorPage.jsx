@@ -528,162 +528,58 @@ export default function EditorPage() {
 
         {/* Main Content */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Left Sidebar - Assets */}
-          <div className="w-64 bg-[#09090B] border-r border-zinc-800 flex flex-col flex-shrink-0">
-            <Tabs defaultValue="scenes" className="flex-1 flex flex-col">
-              <TabsList className="mx-3 mt-3 bg-zinc-900">
-                <TabsTrigger value="scenes" className="flex-1 data-[state=active]:bg-zinc-800">
-                  <Film className="w-4 h-4 mr-1" /> Scenes
-                </TabsTrigger>
-                <TabsTrigger value="characters" className="flex-1 data-[state=active]:bg-zinc-800">
-                  <Users className="w-4 h-4 mr-1" /> Characters
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="scenes" className="flex-1 mt-0 overflow-hidden">
-                <div className="p-3">
-                  <Button data-testid="add-scene-btn" onClick={() => setShowCreateScene(true)}
-                          className="w-full bg-zinc-800 hover:bg-zinc-700 text-white" size="sm">
-                    <Plus className="w-4 h-4 mr-1" /> Add Scene
-                  </Button>
-                </div>
-                <ScrollArea className="flex-1 px-3">
-                  <div className="space-y-2 pb-4">
-                    {scenes.length === 0 ? (
-                      <div className="text-center py-8 text-zinc-500 text-sm">
-                        No scenes yet. Create one or ask the AI Director.
-                      </div>
-                    ) : (
-                      scenes.map((scene) => (
-                        <div key={scene.id} data-testid={`scene-card-${scene.id}`}
-                             className={`scene-card p-3 rounded-lg border cursor-pointer ${
-                               selectedScene?.id === scene.id ? "border-blue-500 bg-blue-500/10" : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700"
-                             }`}
-                             onClick={() => { setSelectedScene(scene); setCurrentTime(scene.start_time); }}>
-                          <div className="relative aspect-video rounded overflow-hidden mb-2 bg-zinc-800">
-                            {scene.video_url ? (
-                              <video src={`${API.replace('/api', '')}${scene.video_url}`} className="w-full h-full object-cover"
-                                     poster={scene.thumbnail ? `${API}/thumbnails/${scene.id}` : undefined} muted />
-                            ) : scene.thumbnail ? (
-                              <img src={scene.thumbnail} alt={scene.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-zinc-600">
-                                <Film className="w-6 h-6" />
-                              </div>
-                            )}
-                            {scene.status === "generating" && (
-                              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
-                              </div>
-                            )}
-                            {scene.status === "ready" && (
-                              <div className="absolute top-1 right-1">
-                                <CheckCircle className="w-4 h-4 text-green-500" />
-                              </div>
-                            )}
-                            <div className="absolute bottom-1 right-1 timecode text-[10px] bg-black/60 px-1 rounded">
-                              {scene.duration.toFixed(1)}s
-                            </div>
-                          </div>
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h4 className="text-sm font-medium text-white truncate">{scene.name}</h4>
-                              <span className="text-xs text-zinc-500 capitalize">{scene.status}</span>
-                            </div>
-                            <div className="flex gap-1">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <button data-testid={`generate-scene-${scene.id}`}
-                                          onClick={(e) => { e.stopPropagation(); openGenerateModal(scene); }}
-                                          className="p-1 rounded hover:bg-zinc-700 text-zinc-400 hover:text-white"
-                                          disabled={scene.status === "generating"}>
-                                    <Wand2 className="w-3.5 h-3.5" />
-                                  </button>
-                                </TooltipTrigger>
-                                <TooltipContent>Generate with Sora 2</TooltipContent>
-                              </Tooltip>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <button data-testid={`delete-scene-${scene.id}`}
-                                          onClick={(e) => { e.stopPropagation(); handleDeleteScene(scene.id); }}
-                                          className="p-1 rounded hover:bg-red-500/20 text-zinc-400 hover:text-red-400">
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                  </button>
-                                </TooltipTrigger>
-                                <TooltipContent>Delete Scene</TooltipContent>
-                              </Tooltip>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </ScrollArea>
-              </TabsContent>
-
-              <TabsContent value="characters" className="flex-1 mt-0 overflow-hidden">
-                <div className="p-3">
-                  <Button data-testid="add-character-btn" onClick={() => setShowCreateCharacter(true)}
-                          className="w-full bg-zinc-800 hover:bg-zinc-700 text-white" size="sm">
-                    <Plus className="w-4 h-4 mr-1" /> Add Character
-                  </Button>
-                </div>
-                <ScrollArea className="flex-1 px-3">
-                  <div className="space-y-2 pb-4">
-                    {characters.length === 0 ? (
-                      <div className="text-center py-8 text-zinc-500 text-sm">
-                        No characters yet. Create one to ensure consistency.
-                      </div>
-                    ) : (
-                      characters.map((char) => (
-                        <div key={char.id} data-testid={`character-card-${char.id}`}
-                             className="p-3 rounded-lg border border-zinc-800 bg-zinc-900/50">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 text-lg font-medium">
-                              {char.name[0]}
-                            </div>
-                            <div>
-                              <h4 className="text-sm font-medium text-white">{char.name}</h4>
-                              <p className="text-xs text-zinc-500 truncate max-w-[140px]">{char.description || "No description"}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </ScrollArea>
-              </TabsContent>
-            </Tabs>
+          {/* Left Sidebar - Asset Explorer */}
+          <div className="w-72 bg-[#1e1e1e] border-r border-[#3c3c3c] flex-shrink-0">
+            <AssetExplorer
+              scenes={scenes}
+              characters={characters}
+              assets={[]}
+              onAssetSelect={(asset) => {
+                if (asset.duration !== undefined) {
+                  setSelectedScene(asset);
+                  setCurrentTime(asset.start_time || 0);
+                }
+              }}
+              onAssetDoubleClick={(asset) => {
+                if (asset.duration !== undefined) {
+                  openGenerateModal(asset);
+                }
+              }}
+              onAssetDelete={(assetId) => handleDeleteScene(assetId)}
+              onRefresh={loadProjectData}
+              selectedAssetId={selectedScene?.id}
+              projectName={project?.name || "Untitled Project"}
+            />
+            
+            {/* Quick Action Buttons */}
+            <div className="p-3 border-t border-[#3c3c3c] space-y-2">
+              <Button data-testid="add-scene-btn" onClick={() => setShowCreateScene(true)}
+                      className="w-full bg-[#0e639c] hover:bg-[#1177bb] text-white" size="sm">
+                <Plus className="w-4 h-4 mr-1" /> Add Scene
+              </Button>
+              <Button data-testid="add-character-btn" onClick={() => setShowCreateCharacter(true)}
+                      variant="outline" className="w-full border-[#3c3c3c] text-[#cccccc] hover:bg-[#2d2d30]" size="sm">
+                <Users className="w-4 h-4 mr-1" /> Add Character
+              </Button>
+            </div>
           </div>
 
           {/* Center - Preview & Timeline */}
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Preview Area */}
-            <div className="flex-1 bg-black flex items-center justify-center relative min-h-[300px]">
-              {currentScene?.video_url ? (
-                <video ref={videoRef} data-testid="preview-video"
-                       src={`${API.replace('/api', '')}${currentScene.video_url}`}
-                       className="max-h-full max-w-full object-contain"
-                       poster={currentScene.thumbnail ? `${API}/thumbnails/${currentScene.id}` : undefined}
-                       muted={isMuted} loop />
-              ) : currentScene?.thumbnail ? (
-                <img src={currentScene.thumbnail} alt="Preview" className="max-h-full max-w-full object-contain" data-testid="preview-image" />
-              ) : (
-                <div className="flex flex-col items-center justify-center gap-4 text-zinc-600">
-                  <Film className="w-16 h-16" />
-                  <span className="text-sm">Select a scene to preview</span>
-                </div>
-              )}
-              
-              {/* Video Controls Overlay */}
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                <div className="timecode text-lg bg-black/60 px-3 py-1 rounded">{formatTime(currentTime)}</div>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => setIsMuted(!isMuted)} className="p-2 bg-black/60 rounded hover:bg-black/80 text-white">
-                    {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
+            {/* Video Preview Area */}
+            <div className="flex-1 min-h-[300px]">
+              <VideoPreview
+                videoUrl={currentScene?.video_url ? `${API.replace('/api', '')}${currentScene.video_url}` : null}
+                thumbnailUrl={currentScene?.thumbnail}
+                currentTime={currentTime}
+                isPlaying={isPlaying}
+                onTimeUpdate={(time) => setCurrentTime(time)}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onSeek={(time) => setCurrentTime(time)}
+                sceneName={currentScene?.name}
+                sceneStatus={currentScene?.status}
+              />
             </div>
 
             {/* Timeline */}
