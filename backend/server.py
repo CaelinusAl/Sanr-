@@ -954,60 +954,83 @@ async def create_film_plan(story: str, duration: int, max_retries: int = 3) -> d
     raise Exception(f"Failed to generate film plan after {max_retries} attempts: {str(last_error)}")
 
 
-async def generate_scene_video(scene: dict, film_id: str, scene_index: int, quality: str, aspect_ratio: str = "16:9") -> dict:
-    """Generate video for a single scene using Sora 2"""
-    try:
-        # Create detailed prompt for video generation
-        prompt_parts = [
-            scene.get('action', ''),
-            f"Setting: {scene.get('location', '')}",
-            f"Time: {scene.get('timeOfDay', 'day')}",
-            f"Mood: {scene.get('mood', '')}",
-            f"Camera: {scene.get('cameraAngle', 'medium shot')}",
-            f"Lighting: {scene.get('lighting', 'natural')}"
-        ]
-        
-        if scene.get('characters'):
-            prompt_parts.append(f"Characters: {', '.join(scene['characters'])}")
-        
-        video_prompt = ". ".join(filter(None, prompt_parts))
-        
-        # Get settings from new config
-        settings = QUALITY_SETTINGS.get(quality, QUALITY_SETTINGS['standard'])
-        
-        # Override size with aspect ratio if different quality doesn't force a size
-        if quality in ['mobile', 'standard']:
-            video_size = ASPECT_RATIO_SIZES.get(aspect_ratio, "1280x720")
-        else:
-            video_size = settings['size']
-        
-        # Get video duration based on quality (Sora 2 supports 5-20 seconds)
-        # We use 12 seconds as standard for proper film length
-        video_duration = settings['duration']  # Use full duration from quality settings
-        
-        # Generate video using Sora 2
-        video_gen = OpenAIVideoGeneration(
-            api_key=os.environ.get('EMERGENT_LLM_KEY')
-        )
-        
-        video_filename = f"{film_id}_scene_{scene_index + 1}.mp4"
-        video_path = VIDEOS_DIR / video_filename
-        
-        logger.info(f"[Scene {scene_index + 1}] Generating video: {video_size}, {video_duration}s")
-        
-        # Use text_to_video method (blocking call)
-        video_bytes = await asyncio.to_thread(
-            video_gen.text_to_video,
-            prompt=video_prompt,
-            model="sora-2",
-            size=video_size,
-            duration=video_duration,
-            max_wait_time=900  # 15 minutes max wait for longer videos
-        )
-        
-        if video_bytes:
-            # Save video
-            await asyncio.to_thread(video_gen.save_video, video_bytes, str(video_path))
+async def generate_scene_video(scene: dict, film_id: str, scene_index: int, quality: str, aspect_ratio: str = "16:9", max_retries: int = 2) -> dict:
+    """Generate video for a single scene using Sora 2 with retry logic"""
+    # Create detailed prompt for video generation
+    prompt_parts = [
+        scene.get('action', ''),
+        f"Setting: {scene.get('location', '')}",
+        f"Time: {scene.get('timeOfDay', 'day')}",
+        f"Mood: {scene.get('mood', '')}",
+        f"Camera: {scene.get('cameraAngle', 'medium shot')}",
+        f"Lighting: {scene.get('lighting', 'natural')}"
+    ]
+    
+    if scene.get('characters'):
+        prompt_parts.append(f"Characters: {', '.join(scene['characters'])}")
+    
+    video_prompt = ". ".join(filter(None, prompt_parts))
+    
+    # Get settings from new config
+    settings = QUALITY_SETTINGS.get(quality, QUALITY_SETTINGS['standard'])
+    
+    # Override size with aspect ratio if different quality doesn't force a size
+    if quality in ['mobile', 'standard']:
+        video_size = ASPECT_RATIO_SIZES.get(aspect_ratio, "1280x720")
+    else:
+        video_size = settings['size']
+    
+    # Get video duration based on quality (Sora 2 supports 5-20 seconds)
+    video_duration = settings['duration']
+    
+    video_filename = f"{film_id}_scene_{scene_index + 1}.mp4"
+    video_path = VIDEOS_DIR / video_filename
+    
+    last_error = None
+    
+    for attempt in range(max_retries):
+        try:
+            logger.info(f"[Scene {scene_index + 1}] Generating video (attempt {attempt + 1}/{max_retries}): {video_size}, {video_duration}s")
+            
+            video_gen = OpenAIVideoGeneration(
+                api_key=os.environ.get('EMERGENT_LLM_KEY')
+            )
+            
+            # Use text_to_video method (blocking call)
+            video_bytes = await asyncio.to_thread(
+                video_gen.text_to_video,
+                prompt=video_prompt,
+                model="sora-2",
+                size=video_size,
+                duration=video_duration,
+                max_wait_time=900  # 15 minutes max wait
+            )
+            
+            if video_bytes:
+                # Save video
+                await asyncio.to_thread(video_gen.save_video, video_bytes, str(video_path))
+                
+                return {
+                    'success': True,
+                    'video_path': str(video_path),
+                    'video_url': f"/api/film-videos/{video_filename}",
+                    'duration': video_duration,
+                    'size': video_size
+                }
+            else:
+                raise Exception("Video generation returned no data")
+                
+        except Exception as e:
+            last_error = e
+            logger.warning(f"[Scene {scene_index + 1}] Attempt {attempt + 1} failed: {str(e)}")
+            
+            # Wait before retry
+            if attempt < max_retries - 1:
+                wait_time = (attempt + 1) * 10  # 10, 20 seconds
+                logger.info(f"[Scene {scene_index + 1}] Waiting {wait_time}s before retry...")
+                await asyncio.sleep(wait_time)
+    
+    return {'success': False, 'error': str(last_error)}
             
             return {
                 'success': True,
