@@ -260,16 +260,11 @@ class CineCursorAPITester:
         return self.run_test("Continuity Check", "GET", f"projects/{self.project_id}/continuity-check", 200)
 
     def test_export_timeline(self):
-        """Test timeline export"""
+        """Test timeline JSON export"""
         if not self.project_id:
             self.log("❌ Export Timeline - No project ID available")
             return False
-            
-        export_data = {
-            "project_id": self.project_id,
-            "format": "json"
-        }
-        return self.run_test("Export Timeline", "POST", f"projects/{self.project_id}/export", 200, export_data)
+        return self.run_test("Export Timeline JSON", "GET", f"projects/{self.project_id}/export-json", 200)
 
     def test_scene_reorder(self):
         """Test scene reordering"""
