@@ -19,12 +19,12 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+// Sora 2 supported resolutions only
 const RESOLUTIONS = [
-  { value: "1920x1080", label: "1920×1080 (1080p)" },
-  { value: "1280x720", label: "1280×720 (720p)" },
-  { value: "3840x2160", label: "3840×2160 (4K)" },
+  { value: "1280x720", label: "1280×720 (HD)" },
   { value: "1792x1024", label: "1792×1024 (Widescreen)" },
   { value: "1024x1792", label: "1024×1792 (Portrait)" },
+  { value: "1024x1024", label: "1024×1024 (Square)" },
 ];
 
 const FPS_OPTIONS = [
