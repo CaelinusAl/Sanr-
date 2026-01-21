@@ -901,16 +901,10 @@ Create a detailed film breakdown as JSON. Return ONLY valid JSON, no markdown:
 Make scenes detailed and specific. Each scene should be a clear, filmable moment with specific actions and camera work.'''
 
 
-async def create_film_plan(story: str, duration: int) -> dict:
-    """Create a detailed film plan using Claude"""
+async def create_film_plan(story: str, duration: int, max_retries: int = 3) -> dict:
+    """Create a detailed film plan using Claude with retry logic"""
     # Calculate scenes: each scene is ~12 seconds, so 5 scenes per minute
     scene_count = duration * 5  # 5 scenes per minute for proper duration
-    
-    chat = LlmChat(
-        api_key=os.environ.get('EMERGENT_LLM_KEY'),
-        session_id=f"film_plan_{uuid.uuid4()}",
-        system_message="You are a Hollywood screenwriter and director. Return only valid JSON, no markdown."
-    ).with_model("anthropic", "claude-4-sonnet-20250514")
     
     prompt = FILM_PLAN_PROMPT.format(
         story=story,
@@ -918,21 +912,46 @@ async def create_film_plan(story: str, duration: int) -> dict:
         scene_count=scene_count
     )
     
-    # Async send message - returns string directly
-    response = await chat.send_message(UserMessage(text=prompt))
+    last_error = None
     
-    # Response is a string, not an object
-    response_text = response if isinstance(response, str) else str(response)
-    response_text = response_text.strip()
+    for attempt in range(max_retries):
+        try:
+            logger.info(f"Creating film plan (attempt {attempt + 1}/{max_retries})")
+            
+            chat = LlmChat(
+                api_key=os.environ.get('EMERGENT_LLM_KEY'),
+                session_id=f"film_plan_{uuid.uuid4()}",
+                system_message="You are a Hollywood screenwriter and director. Return only valid JSON, no markdown."
+            ).with_model("anthropic", "claude-4-sonnet-20250514")
+            
+            # Async send message - returns string directly
+            response = await chat.send_message(UserMessage(text=prompt))
+            
+            # Response is a string, not an object
+            response_text = response if isinstance(response, str) else str(response)
+            response_text = response_text.strip()
+            
+            if response_text.startswith('```json'):
+                response_text = response_text[7:]
+            if response_text.startswith('```'):
+                response_text = response_text[3:]
+            if response_text.endswith('```'):
+                response_text = response_text[:-3]
+            
+            return json.loads(response_text.strip())
+            
+        except Exception as e:
+            last_error = e
+            logger.warning(f"Film plan attempt {attempt + 1} failed: {str(e)}")
+            
+            # Wait before retry (exponential backoff)
+            if attempt < max_retries - 1:
+                wait_time = (attempt + 1) * 5  # 5, 10, 15 seconds
+                logger.info(f"Waiting {wait_time}s before retry...")
+                await asyncio.sleep(wait_time)
     
-    if response_text.startswith('```json'):
-        response_text = response_text[7:]
-    if response_text.startswith('```'):
-        response_text = response_text[3:]
-    if response_text.endswith('```'):
-        response_text = response_text[:-3]
-    
-    return json.loads(response_text.strip())
+    # All retries failed
+    raise Exception(f"Failed to generate film plan after {max_retries} attempts: {str(last_error)}")
 
 
 async def generate_scene_video(scene: dict, film_id: str, scene_index: int, quality: str, aspect_ratio: str = "16:9") -> dict:
