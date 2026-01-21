@@ -144,8 +144,8 @@ export function ChatPanel({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Describe what you want to create... (Shift+Enter for new line)"
-            className="flex-1 min-h-[40px] max-h-[120px] bg-[#3c3c3c] border-[#5a5a5a] text-[#cccccc] placeholder:text-[#858585] resize-none focus:border-[#0e639c]"
+            placeholder="Describe what you want to create..."
+            className="flex-1 min-h-[60px] max-h-[150px] bg-[#3c3c3c] border-[#5a5a5a] text-[#cccccc] placeholder:text-[#858585] resize-none focus:border-[#0e639c]"
             disabled={isLoading}
           />
           <Button
@@ -156,6 +156,9 @@ export function ChatPanel({
             <Send className="w-4 h-4" />
           </Button>
         </div>
+        <p className="text-[10px] text-[#6a6a6a] mt-1 text-right">
+          Shift+Enter for new line
+        </p>
       </div>
 
       {/* Quick Actions */}
