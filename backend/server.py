@@ -1,5 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, BackgroundTasks
+from fastapi.responses import FileResponse, StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -12,18 +12,32 @@ import uuid
 from datetime import datetime, timezone
 import json
 import asyncio
+import subprocess
+import shutil
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+from emergentintegrations.llm.openai.video_generation import OpenAIVideoGeneration
 
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-app = FastAPI(title="CineCursor API", version="1.0.0")
+app = FastAPI(title="CineCursor API", version="2.0.0")
 api_router = APIRouter(prefix="/api")
+
+# Ensure directories exist
+VIDEOS_DIR = ROOT_DIR / "videos"
+AUDIO_DIR = ROOT_DIR / "audio"
+EXPORTS_DIR = ROOT_DIR / "exports"
+VIDEOS_DIR.mkdir(exist_ok=True)
+AUDIO_DIR.mkdir(exist_ok=True)
+EXPORTS_DIR.mkdir(exist_ok=True)
+
+# Active render tasks
+active_renders: Dict[str, Dict[str, Any]] = {}
 
 # ============ MODELS ============
 
@@ -53,16 +67,20 @@ class Scene(BaseModel):
     description: str = ""
     prompt: str = ""
     video_url: str = ""
+    video_path: str = ""
     thumbnail: str = ""
     duration: float = 5.0
     start_time: float = 0.0
     track_index: int = 0
     order: int = 0
-    status: str = "draft"  # draft, generating, ready, error
+    status: str = "draft"
     render_progress: float = 0.0
     characters: List[str] = []
     effects: List[Dict[str, Any]] = []
-    transitions: Dict[str, Any] = {}
+    transition_in: Dict[str, Any] = {}
+    transition_out: Dict[str, Any] = {}
+    audio_track: str = ""
+    audio_volume: float = 1.0
     metadata: Dict[str, Any] = {}
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -87,10 +105,14 @@ class SceneUpdate(BaseModel):
     order: Optional[int] = None
     status: Optional[str] = None
     video_url: Optional[str] = None
+    video_path: Optional[str] = None
     thumbnail: Optional[str] = None
     characters: Optional[List[str]] = None
     effects: Optional[List[Dict[str, Any]]] = None
-    transitions: Optional[Dict[str, Any]] = None
+    transition_in: Optional[Dict[str, Any]] = None
+    transition_out: Optional[Dict[str, Any]] = None
+    audio_track: Optional[str] = None
+    audio_volume: Optional[float] = None
 
 class Character(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -99,6 +121,7 @@ class Character(BaseModel):
     name: str
     description: str = ""
     reference_images: List[str] = []
+    face_embedding: List[float] = []
     costume: Dict[str, str] = {"default": "casual"}
     voice_profile: str = ""
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -113,7 +136,7 @@ class Asset(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     project_id: str
-    type: str  # scene, character, audio, effect, image
+    type: str
     name: str
     path: str = ""
     thumbnail: str = ""
@@ -134,7 +157,7 @@ class ChatMessage(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     project_id: str
-    role: str  # user, assistant
+    role: str
     content: str
     scene_plan: Optional[Dict[str, Any]] = None
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -143,23 +166,31 @@ class ChatRequest(BaseModel):
     project_id: str
     message: str
 
-class TimelineExport(BaseModel):
-    project_id: str
-    format: str = "json"  # json, xml, edl
+class VideoGenerateRequest(BaseModel):
+    prompt: str
+    duration: int = 4  # 4, 8, or 12 seconds
+    size: str = "1280x720"  # 1280x720, 1792x1024, 1024x1792, 1024x1024
+    model: str = "sora-2"
+
+class TransitionConfig(BaseModel):
+    type: str = "fade"  # fade, dissolve, wipe_left, wipe_right, slide_left, slide_right
+    duration: float = 0.5
+
+class ExportConfig(BaseModel):
+    format: str = "mp4"  # mp4, mov, webm
+    resolution: str = "1080p"  # 720p, 1080p, 4k
+    fps: int = 30
+    include_audio: bool = True
 
 # ============ PROJECT ENDPOINTS ============
 
 @api_router.get("/")
 async def root():
-    return {"message": "CineCursor API v1.0", "status": "operational"}
+    return {"message": "CineCursor API v2.0", "status": "operational", "features": ["sora2", "transitions", "audio", "export"]}
 
 @api_router.post("/projects", response_model=Project)
 async def create_project(input: ProjectCreate):
-    project = Project(
-        name=input.name,
-        description=input.description,
-        style_guide=input.style_guide
-    )
+    project = Project(name=input.name, description=input.description, style_guide=input.style_guide)
     doc = project.model_dump()
     await db.projects.insert_one(doc)
     return project
@@ -179,10 +210,7 @@ async def get_project(project_id: str):
 @api_router.put("/projects/{project_id}", response_model=Project)
 async def update_project(project_id: str, updates: Dict[str, Any]):
     updates["updated_at"] = datetime.now(timezone.utc).isoformat()
-    result = await db.projects.update_one(
-        {"id": project_id},
-        {"$set": updates}
-    )
+    result = await db.projects.update_one({"id": project_id}, {"$set": updates})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Project not found")
     project = await db.projects.find_one({"id": project_id}, {"_id": 0})
@@ -207,28 +235,18 @@ async def create_scene(input: SceneCreate):
     max_order = max([s.get("order", 0) for s in existing], default=-1)
     
     scene = Scene(
-        project_id=input.project_id,
-        name=input.name,
-        description=input.description,
-        prompt=input.prompt,
-        duration=input.duration,
-        start_time=input.start_time,
-        track_index=input.track_index,
-        characters=input.characters,
-        order=max_order + 1
+        project_id=input.project_id, name=input.name, description=input.description,
+        prompt=input.prompt, duration=input.duration, start_time=input.start_time,
+        track_index=input.track_index, characters=input.characters, order=max_order + 1
     )
     doc = scene.model_dump()
     await db.scenes.insert_one(doc)
-    
     await update_project_duration(input.project_id)
     return scene
 
 @api_router.get("/projects/{project_id}/scenes", response_model=List[Scene])
 async def get_project_scenes(project_id: str):
-    scenes = await db.scenes.find(
-        {"project_id": project_id},
-        {"_id": 0}
-    ).sort("order", 1).to_list(1000)
+    scenes = await db.scenes.find({"project_id": project_id}, {"_id": 0}).sort("order", 1).to_list(1000)
     return scenes
 
 @api_router.get("/scenes/{scene_id}", response_model=Scene)
@@ -242,14 +260,9 @@ async def get_scene(scene_id: str):
 async def update_scene(scene_id: str, updates: SceneUpdate):
     update_dict = {k: v for k, v in updates.model_dump().items() if v is not None}
     update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
-    
-    result = await db.scenes.update_one(
-        {"id": scene_id},
-        {"$set": update_dict}
-    )
+    result = await db.scenes.update_one({"id": scene_id}, {"$set": update_dict})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Scene not found")
-    
     scene = await db.scenes.find_one({"id": scene_id}, {"_id": 0})
     await update_project_duration(scene["project_id"])
     return scene
@@ -259,8 +272,10 @@ async def delete_scene(scene_id: str):
     scene = await db.scenes.find_one({"id": scene_id}, {"_id": 0})
     if not scene:
         raise HTTPException(status_code=404, detail="Scene not found")
-    
     project_id = scene["project_id"]
+    # Delete video file if exists
+    if scene.get("video_path") and os.path.exists(scene["video_path"]):
+        os.remove(scene["video_path"])
     await db.scenes.delete_one({"id": scene_id})
     await update_project_duration(project_id)
     return {"status": "deleted"}
@@ -270,46 +285,324 @@ async def reorder_scenes(scene_orders: List[Dict[str, Any]]):
     for item in scene_orders:
         await db.scenes.update_one(
             {"id": item["id"]},
-            {"$set": {
-                "order": item["order"],
-                "start_time": item.get("start_time", 0),
-                "track_index": item.get("track_index", 0),
-                "updated_at": datetime.now(timezone.utc).isoformat()
-            }}
+            {"$set": {"order": item["order"], "start_time": item.get("start_time", 0),
+                      "track_index": item.get("track_index", 0), "updated_at": datetime.now(timezone.utc).isoformat()}}
         )
     return {"status": "reordered"}
 
 async def update_project_duration(project_id: str):
     scenes = await db.scenes.find({"project_id": project_id}).to_list(1000)
-    if scenes:
-        max_end = max([s.get("start_time", 0) + s.get("duration", 0) for s in scenes])
-    else:
-        max_end = 0
+    max_end = max([s.get("start_time", 0) + s.get("duration", 0) for s in scenes], default=0)
     await db.projects.update_one(
         {"id": project_id},
         {"$set": {"total_duration": max_end, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
 
+# ============ SORA 2 VIDEO GENERATION ============
+
+def generate_video_sync(scene_id: str, prompt: str, duration: int, size: str, model: str):
+    """Synchronous video generation for background task"""
+    try:
+        active_renders[scene_id] = {"progress": 10, "status": "generating", "message": "Starting Sora 2..."}
+        
+        video_gen = OpenAIVideoGeneration(api_key=os.environ['EMERGENT_LLM_KEY'])
+        output_path = str(VIDEOS_DIR / f"{scene_id}.mp4")
+        
+        active_renders[scene_id] = {"progress": 30, "status": "generating", "message": "AI is creating your video..."}
+        
+        video_bytes = video_gen.text_to_video(
+            prompt=prompt,
+            model=model,
+            size=size,
+            duration=duration,
+            max_wait_time=900
+        )
+        
+        if video_bytes:
+            active_renders[scene_id] = {"progress": 80, "status": "downloading", "message": "Downloading video..."}
+            video_gen.save_video(video_bytes, output_path)
+            
+            # Generate thumbnail
+            thumbnail_path = str(VIDEOS_DIR / f"{scene_id}_thumb.jpg")
+            try:
+                subprocess.run([
+                    "ffmpeg", "-y", "-i", output_path, "-ss", "00:00:01",
+                    "-vframes", "1", "-vf", "scale=320:180", thumbnail_path
+                ], capture_output=True, timeout=30)
+            except:
+                thumbnail_path = ""
+            
+            active_renders[scene_id] = {"progress": 100, "status": "complete", "message": "Video ready!",
+                                        "video_path": output_path, "thumbnail": thumbnail_path}
+        else:
+            active_renders[scene_id] = {"progress": 0, "status": "error", "message": "Video generation failed"}
+            
+    except Exception as e:
+        logging.error(f"Video generation error: {str(e)}")
+        active_renders[scene_id] = {"progress": 0, "status": "error", "message": str(e)}
+
+@api_router.post("/scenes/{scene_id}/generate")
+async def generate_scene_video(scene_id: str, config: VideoGenerateRequest, background_tasks: BackgroundTasks):
+    """Generate video using Sora 2"""
+    scene = await db.scenes.find_one({"id": scene_id}, {"_id": 0})
+    if not scene:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    
+    prompt = config.prompt or scene.get("prompt", "")
+    if not prompt:
+        raise HTTPException(status_code=400, detail="Prompt is required")
+    
+    # Update scene status
+    await db.scenes.update_one(
+        {"id": scene_id},
+        {"$set": {"status": "generating", "render_progress": 0, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Start background generation
+    active_renders[scene_id] = {"progress": 5, "status": "queued", "message": "Queued for generation..."}
+    background_tasks.add_task(generate_video_sync, scene_id, prompt, config.duration, config.size, config.model)
+    
+    return {"status": "generating", "scene_id": scene_id, "message": "Video generation started with Sora 2"}
+
+@api_router.get("/scenes/{scene_id}/render-status")
+async def get_render_status(scene_id: str):
+    """Get current render status"""
+    if scene_id in active_renders:
+        render_info = active_renders[scene_id]
+        
+        # If complete, update DB and cleanup
+        if render_info.get("status") == "complete":
+            video_path = render_info.get("video_path", "")
+            thumbnail = render_info.get("thumbnail", "")
+            
+            await db.scenes.update_one(
+                {"id": scene_id},
+                {"$set": {
+                    "status": "ready", "render_progress": 100,
+                    "video_path": video_path, "thumbnail": thumbnail,
+                    "video_url": f"/api/videos/{scene_id}",
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+            del active_renders[scene_id]
+            return {"status": "complete", "progress": 100, "video_url": f"/api/videos/{scene_id}", "thumbnail": thumbnail}
+        
+        elif render_info.get("status") == "error":
+            await db.scenes.update_one(
+                {"id": scene_id},
+                {"$set": {"status": "error", "render_progress": 0, "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+            error_msg = render_info.get("message", "Unknown error")
+            del active_renders[scene_id]
+            return {"status": "error", "progress": 0, "message": error_msg}
+        
+        return render_info
+    
+    # Check DB for status
+    scene = await db.scenes.find_one({"id": scene_id}, {"_id": 0})
+    if scene:
+        return {"status": scene.get("status", "draft"), "progress": scene.get("render_progress", 0)}
+    
+    return {"status": "unknown", "progress": 0}
+
+@api_router.get("/videos/{scene_id}")
+async def serve_video(scene_id: str):
+    """Serve generated video file"""
+    video_path = VIDEOS_DIR / f"{scene_id}.mp4"
+    if not video_path.exists():
+        raise HTTPException(status_code=404, detail="Video not found")
+    return FileResponse(video_path, media_type="video/mp4", filename=f"{scene_id}.mp4")
+
+@api_router.get("/thumbnails/{scene_id}")
+async def serve_thumbnail(scene_id: str):
+    """Serve video thumbnail"""
+    thumb_path = VIDEOS_DIR / f"{scene_id}_thumb.jpg"
+    if not thumb_path.exists():
+        raise HTTPException(status_code=404, detail="Thumbnail not found")
+    return FileResponse(thumb_path, media_type="image/jpeg")
+
+# ============ TRANSITIONS ============
+
+@api_router.put("/scenes/{scene_id}/transition")
+async def set_scene_transition(scene_id: str, transition_in: Optional[TransitionConfig] = None, transition_out: Optional[TransitionConfig] = None):
+    """Set transition effects for a scene"""
+    updates = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    if transition_in:
+        updates["transition_in"] = transition_in.model_dump()
+    if transition_out:
+        updates["transition_out"] = transition_out.model_dump()
+    
+    result = await db.scenes.update_one({"id": scene_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    
+    scene = await db.scenes.find_one({"id": scene_id}, {"_id": 0})
+    return scene
+
+# ============ AUDIO ============
+
+@api_router.post("/scenes/{scene_id}/audio")
+async def upload_audio(scene_id: str, file: UploadFile = File(...)):
+    """Upload audio track for a scene"""
+    scene = await db.scenes.find_one({"id": scene_id}, {"_id": 0})
+    if not scene:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    
+    # Save audio file
+    audio_path = AUDIO_DIR / f"{scene_id}_{file.filename}"
+    with open(audio_path, "wb") as f:
+        content = await file.read()
+        f.write(content)
+    
+    # Update scene
+    await db.scenes.update_one(
+        {"id": scene_id},
+        {"$set": {"audio_track": str(audio_path), "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"status": "uploaded", "audio_path": str(audio_path)}
+
+@api_router.put("/scenes/{scene_id}/audio-volume")
+async def set_audio_volume(scene_id: str, volume: float):
+    """Set audio volume for a scene (0.0 to 2.0)"""
+    volume = max(0.0, min(2.0, volume))
+    await db.scenes.update_one(
+        {"id": scene_id},
+        {"$set": {"audio_volume": volume, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"status": "updated", "volume": volume}
+
+@api_router.get("/audio/{scene_id}")
+async def serve_audio(scene_id: str):
+    """Serve audio file"""
+    scene = await db.scenes.find_one({"id": scene_id}, {"_id": 0})
+    if not scene or not scene.get("audio_track"):
+        raise HTTPException(status_code=404, detail="Audio not found")
+    
+    audio_path = Path(scene["audio_track"])
+    if not audio_path.exists():
+        raise HTTPException(status_code=404, detail="Audio file not found")
+    
+    return FileResponse(audio_path, media_type="audio/mpeg")
+
+# ============ EXPORT ============
+
+def apply_transition(input1: str, input2: str, output: str, transition_type: str, duration: float):
+    """Apply transition between two videos using ffmpeg"""
+    filters = {
+        "fade": f"[0:v]fade=t=out:st={duration}:d={duration}[v0];[1:v]fade=t=in:st=0:d={duration}[v1];[v0][v1]concat=n=2:v=1:a=0",
+        "dissolve": f"[0:v][1:v]xfade=transition=dissolve:duration={duration}:offset={duration}",
+        "wipe_left": f"[0:v][1:v]xfade=transition=wipeleft:duration={duration}:offset={duration}",
+        "wipe_right": f"[0:v][1:v]xfade=transition=wiperight:duration={duration}:offset={duration}",
+        "slide_left": f"[0:v][1:v]xfade=transition=slideleft:duration={duration}:offset={duration}",
+        "slide_right": f"[0:v][1:v]xfade=transition=slideright:duration={duration}:offset={duration}",
+    }
+    
+    filter_complex = filters.get(transition_type, filters["fade"])
+    
+    cmd = ["ffmpeg", "-y", "-i", input1, "-i", input2, "-filter_complex", filter_complex, "-c:v", "libx264", "-preset", "fast", output]
+    subprocess.run(cmd, capture_output=True, timeout=300)
+
+@api_router.post("/projects/{project_id}/export")
+async def export_project(project_id: str, config: ExportConfig, background_tasks: BackgroundTasks):
+    """Export entire project as video file"""
+    project = await db.projects.find_one({"id": project_id}, {"_id": 0})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    scenes = await db.scenes.find({"project_id": project_id, "video_path": {"$ne": ""}}, {"_id": 0}).sort("start_time", 1).to_list(1000)
+    
+    if not scenes:
+        raise HTTPException(status_code=400, detail="No rendered scenes to export")
+    
+    export_id = str(uuid.uuid4())
+    output_ext = {"mp4": "mp4", "mov": "mov", "webm": "webm"}.get(config.format, "mp4")
+    output_path = EXPORTS_DIR / f"{project_id}_{export_id}.{output_ext}"
+    
+    # Resolution mapping
+    resolutions = {"720p": "1280:720", "1080p": "1920:1080", "4k": "3840:2160"}
+    scale = resolutions.get(config.resolution, "1920:1080")
+    
+    # Create file list for concat
+    list_file = EXPORTS_DIR / f"{export_id}_list.txt"
+    with open(list_file, "w") as f:
+        for scene in scenes:
+            if scene.get("video_path") and os.path.exists(scene["video_path"]):
+                f.write(f"file '{scene['video_path']}'\n")
+    
+    try:
+        # Concat all videos
+        cmd = [
+            "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(list_file),
+            "-vf", f"scale={scale}", "-c:v", "libx264", "-preset", "medium",
+            "-c:a", "aac" if config.include_audio else "-an",
+            "-r", str(config.fps), str(output_path)
+        ]
+        
+        result = subprocess.run(cmd, capture_output=True, timeout=600)
+        
+        # Cleanup list file
+        os.remove(list_file)
+        
+        if result.returncode != 0:
+            raise HTTPException(status_code=500, detail=f"Export failed: {result.stderr.decode()}")
+        
+        return {
+            "status": "complete",
+            "export_id": export_id,
+            "download_url": f"/api/exports/{project_id}/{export_id}",
+            "format": config.format,
+            "resolution": config.resolution
+        }
+        
+    except subprocess.TimeoutExpired:
+        raise HTTPException(status_code=500, detail="Export timed out")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/exports/{project_id}/{export_id}")
+async def download_export(project_id: str, export_id: str):
+    """Download exported video"""
+    # Find the export file
+    for ext in ["mp4", "mov", "webm"]:
+        export_path = EXPORTS_DIR / f"{project_id}_{export_id}.{ext}"
+        if export_path.exists():
+            media_types = {"mp4": "video/mp4", "mov": "video/quicktime", "webm": "video/webm"}
+            return FileResponse(export_path, media_type=media_types.get(ext, "video/mp4"), 
+                              filename=f"cinecursor_export_{export_id}.{ext}")
+    
+    raise HTTPException(status_code=404, detail="Export not found")
+
+@api_router.get("/projects/{project_id}/export-json")
+async def export_timeline_json(project_id: str):
+    """Export timeline as JSON"""
+    project = await db.projects.find_one({"id": project_id}, {"_id": 0})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    scenes = await db.scenes.find({"project_id": project_id}, {"_id": 0}).sort("order", 1).to_list(1000)
+    characters = await db.characters.find({"project_id": project_id}, {"_id": 0}).to_list(100)
+    
+    return {
+        "project": project,
+        "scenes": scenes,
+        "characters": characters,
+        "total_duration": project.get("total_duration", 0),
+        "exported_at": datetime.now(timezone.utc).isoformat()
+    }
+
 # ============ CHARACTER ENDPOINTS ============
 
 @api_router.post("/characters", response_model=Character)
 async def create_character(input: CharacterCreate):
-    character = Character(
-        project_id=input.project_id,
-        name=input.name,
-        description=input.description,
-        reference_images=input.reference_images
-    )
+    character = Character(project_id=input.project_id, name=input.name, description=input.description, reference_images=input.reference_images)
     doc = character.model_dump()
     await db.characters.insert_one(doc)
     return character
 
 @api_router.get("/projects/{project_id}/characters", response_model=List[Character])
 async def get_project_characters(project_id: str):
-    characters = await db.characters.find(
-        {"project_id": project_id},
-        {"_id": 0}
-    ).to_list(100)
+    characters = await db.characters.find({"project_id": project_id}, {"_id": 0}).to_list(100)
     return characters
 
 @api_router.get("/characters/{character_id}", response_model=Character)
@@ -321,10 +614,7 @@ async def get_character(character_id: str):
 
 @api_router.put("/characters/{character_id}", response_model=Character)
 async def update_character(character_id: str, updates: Dict[str, Any]):
-    result = await db.characters.update_one(
-        {"id": character_id},
-        {"$set": updates}
-    )
+    result = await db.characters.update_one({"id": character_id}, {"$set": updates})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Character not found")
     character = await db.characters.find_one({"id": character_id}, {"_id": 0})
@@ -341,14 +631,7 @@ async def delete_character(character_id: str):
 
 @api_router.post("/assets", response_model=Asset)
 async def create_asset(input: AssetCreate):
-    asset = Asset(
-        project_id=input.project_id,
-        type=input.type,
-        name=input.name,
-        path=input.path,
-        thumbnail=input.thumbnail,
-        tags=input.tags
-    )
+    asset = Asset(project_id=input.project_id, type=input.type, name=input.name, path=input.path, thumbnail=input.thumbnail, tags=input.tags)
     doc = asset.model_dump()
     await db.assets.insert_one(doc)
     return asset
@@ -374,7 +657,7 @@ def get_ai_system_prompt(project: dict, characters: list, scenes: list) -> str:
     char_list = "\n".join([f"- {c['name']}: {c['description']}" for c in characters]) if characters else "No characters defined yet."
     scene_list = "\n".join([f"Scene {i+1}: {s['name']} ({s['duration']}s) - {s.get('description', 'No description')}" for i, s in enumerate(scenes)]) if scenes else "No scenes yet."
     
-    return f"""You are the AI Director for CineCursor, a professional video production platform.
+    return f"""You are the AI Director for CineCursor, a professional video production platform powered by Sora 2.
 
 PROJECT: {project.get('name', 'Untitled')}
 STYLE: {project.get('style_guide', 'cinematic')}
@@ -386,10 +669,16 @@ EXISTING SCENES:
 {scene_list}
 
 YOUR ROLE:
-- Help users plan and create professional video scenes
+- Help users plan and create professional video scenes using Sora 2
 - Translate natural language into detailed scene generation prompts
 - Ensure visual and narrative consistency across scenes
 - Suggest improvements for pacing, composition, and storytelling
+- Recommend transitions between scenes (fade, dissolve, wipe, slide)
+
+SORA 2 CAPABILITIES:
+- Duration: 4, 8, or 12 seconds per scene
+- Resolutions: 1280x720 (HD), 1792x1024 (widescreen), 1024x1792 (portrait), 1024x1024 (square)
+- High quality cinematic video generation
 
 When user wants to create a scene, respond with a JSON scene plan:
 ```json
@@ -398,12 +687,12 @@ When user wants to create a scene, respond with a JSON scene plan:
   "scene_plan": {{
     "name": "Scene Name",
     "description": "Brief description",
-    "visual_prompt": "Detailed visual prompt for AI video generation",
-    "audio_prompt": "Audio/music description",
-    "camera_movement": "static|pan|tilt|dolly|zoom|handheld",
-    "characters": ["character_id1"],
-    "lighting": "natural_day|natural_night|indoor_soft|indoor_dramatic|golden_hour",
+    "visual_prompt": "Detailed prompt for Sora 2 - be specific about camera movement, lighting, action",
     "duration": 8,
+    "size": "1280x720",
+    "transition_in": {{"type": "fade", "duration": 0.5}},
+    "transition_out": {{"type": "dissolve", "duration": 0.5}},
+    "characters": ["character_id"],
     "continuity_notes": "How this connects to previous scenes"
   }}
 }}
@@ -422,15 +711,7 @@ async def chat_with_director(request: ChatRequest):
     
     system_prompt = get_ai_system_prompt(project, characters, scenes)
     
-    history = await db.chat_messages.find(
-        {"project_id": request.project_id}
-    ).sort("created_at", 1).to_list(20)
-    
-    user_msg = ChatMessage(
-        project_id=request.project_id,
-        role="user",
-        content=request.message
-    )
+    user_msg = ChatMessage(project_id=request.project_id, role="user", content=request.message)
     await db.chat_messages.insert_one(user_msg.model_dump())
     
     try:
@@ -438,10 +719,7 @@ async def chat_with_director(request: ChatRequest):
         if not api_key:
             raise HTTPException(status_code=500, detail="AI API key not configured")
         
-        chat = LlmChat(
-            api_key=api_key,
-            session_id=f"cinecursor-{request.project_id}",
-            system_message=system_prompt
+        chat = LlmChat(api_key=api_key, session_id=f"cinecursor-{request.project_id}", system_message=system_prompt
         ).with_model("anthropic", "claude-sonnet-4-5-20250929")
         
         user_message = UserMessage(text=request.message)
@@ -457,19 +735,10 @@ async def chat_with_director(request: ChatRequest):
             except:
                 pass
         
-        assistant_msg = ChatMessage(
-            project_id=request.project_id,
-            role="assistant",
-            content=response,
-            scene_plan=scene_plan
-        )
+        assistant_msg = ChatMessage(project_id=request.project_id, role="assistant", content=response, scene_plan=scene_plan)
         await db.chat_messages.insert_one(assistant_msg.model_dump())
         
-        return {
-            "message": response,
-            "scene_plan": scene_plan,
-            "id": assistant_msg.id
-        }
+        return {"message": response, "scene_plan": scene_plan, "id": assistant_msg.id}
         
     except Exception as e:
         logging.error(f"AI chat error: {str(e)}")
@@ -477,10 +746,7 @@ async def chat_with_director(request: ChatRequest):
 
 @api_router.get("/projects/{project_id}/chat-history", response_model=List[ChatMessage])
 async def get_chat_history(project_id: str):
-    messages = await db.chat_messages.find(
-        {"project_id": project_id},
-        {"_id": 0}
-    ).sort("created_at", 1).to_list(100)
+    messages = await db.chat_messages.find({"project_id": project_id}, {"_id": 0}).sort("created_at", 1).to_list(100)
     return messages
 
 @api_router.delete("/projects/{project_id}/chat-history")
@@ -488,138 +754,43 @@ async def clear_chat_history(project_id: str):
     await db.chat_messages.delete_many({"project_id": project_id})
     return {"status": "cleared"}
 
-# ============ TIMELINE EXPORT ============
-
-@api_router.post("/projects/{project_id}/export")
-async def export_timeline(project_id: str, export_config: TimelineExport):
-    project = await db.projects.find_one({"id": project_id}, {"_id": 0})
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
-    
-    scenes = await db.scenes.find(
-        {"project_id": project_id},
-        {"_id": 0}
-    ).sort("order", 1).to_list(1000)
-    
-    export_data = {
-        "project": project,
-        "scenes": scenes,
-        "total_duration": project.get("total_duration", 0),
-        "resolution": project.get("resolution", {"width": 1920, "height": 1080}),
-        "fps": project.get("fps", 30),
-        "exported_at": datetime.now(timezone.utc).isoformat()
-    }
-    
-    if export_config.format == "json":
-        return export_data
-    else:
-        return export_data
-
-# ============ MOCK VIDEO GENERATION ============
-
-@api_router.post("/scenes/{scene_id}/generate")
-async def generate_scene_video(scene_id: str):
-    """Mock video generation - simulates AI video generation process"""
-    scene = await db.scenes.find_one({"id": scene_id}, {"_id": 0})
-    if not scene:
-        raise HTTPException(status_code=404, detail="Scene not found")
-    
-    await db.scenes.update_one(
-        {"id": scene_id},
-        {"$set": {"status": "generating", "render_progress": 0}}
-    )
-    
-    mock_videos = [
-        "https://images.pexels.com/photos/13812458/pexels-photo-13812458.jpeg",
-        "https://images.pexels.com/photos/13226337/pexels-photo-13226337.jpeg",
-        "https://images.pexels.com/photos/1117132/pexels-photo-1117132.jpeg",
-        "https://images.pexels.com/photos/13812380/pexels-photo-13812380.jpeg"
-    ]
-    
-    import random
-    video_url = random.choice(mock_videos)
-    
-    await db.scenes.update_one(
-        {"id": scene_id},
-        {"$set": {
-            "status": "ready",
-            "render_progress": 100,
-            "video_url": video_url,
-            "thumbnail": video_url,
-            "updated_at": datetime.now(timezone.utc).isoformat()
-        }}
-    )
-    
-    return {
-        "status": "ready",
-        "video_url": video_url,
-        "message": "Scene generated successfully (MOCKED - Real video generation requires Runway/Sora API)"
-    }
-
 # ============ CONTINUITY CHECK ============
 
 @api_router.get("/projects/{project_id}/continuity-check")
 async def check_continuity(project_id: str):
     """Check for continuity issues across scenes"""
-    scenes = await db.scenes.find(
-        {"project_id": project_id},
-        {"_id": 0}
-    ).sort("order", 1).to_list(1000)
-    
+    scenes = await db.scenes.find({"project_id": project_id}, {"_id": 0}).sort("order", 1).to_list(1000)
     issues = []
     
     for i in range(len(scenes) - 1):
-        scene1 = scenes[i]
-        scene2 = scenes[i + 1]
+        scene1, scene2 = scenes[i], scenes[i + 1]
         
-        chars1 = set(scene1.get("characters", []))
-        chars2 = set(scene2.get("characters", []))
-        appearing = chars2 - chars1
-        disappearing = chars1 - chars2
+        # Character consistency
+        chars1, chars2 = set(scene1.get("characters", [])), set(scene2.get("characters", []))
+        appearing, disappearing = chars2 - chars1, chars1 - chars2
         
         if appearing:
-            issues.append({
-                "type": "character_appears",
-                "severity": "info",
-                "scene1_id": scene1["id"],
-                "scene2_id": scene2["id"],
-                "message": f"Character(s) appear without introduction between Scene {i+1} and {i+2}",
-                "characters": list(appearing)
-            })
-        
+            issues.append({"type": "character_appears", "severity": "info", "scene1_id": scene1["id"],
+                          "scene2_id": scene2["id"], "message": f"Character(s) appear without introduction", "characters": list(appearing)})
         if disappearing:
-            issues.append({
-                "type": "character_disappears",
-                "severity": "warning",
-                "scene1_id": scene1["id"],
-                "scene2_id": scene2["id"],
-                "message": f"Character(s) disappear without explanation between Scene {i+1} and {i+2}",
-                "characters": list(disappearing)
-            })
+            issues.append({"type": "character_disappears", "severity": "warning", "scene1_id": scene1["id"],
+                          "scene2_id": scene2["id"], "message": f"Character(s) disappear without explanation", "characters": list(disappearing)})
         
+        # Timeline gaps/overlaps
         gap = scene2.get("start_time", 0) - (scene1.get("start_time", 0) + scene1.get("duration", 0))
         if gap > 1:
-            issues.append({
-                "type": "timeline_gap",
-                "severity": "warning",
-                "scene1_id": scene1["id"],
-                "scene2_id": scene2["id"],
-                "message": f"Gap of {gap:.1f}s detected in timeline"
-            })
+            issues.append({"type": "timeline_gap", "severity": "warning", "scene1_id": scene1["id"],
+                          "scene2_id": scene2["id"], "message": f"Gap of {gap:.1f}s detected in timeline"})
         elif gap < -0.1:
-            issues.append({
-                "type": "timeline_overlap",
-                "severity": "error",
-                "scene1_id": scene1["id"],
-                "scene2_id": scene2["id"],
-                "message": f"Scenes overlap by {abs(gap):.1f}s"
-            })
+            issues.append({"type": "timeline_overlap", "severity": "error", "scene1_id": scene1["id"],
+                          "scene2_id": scene2["id"], "message": f"Scenes overlap by {abs(gap):.1f}s"})
+        
+        # Missing transitions
+        if not scene1.get("transition_out") and not scene2.get("transition_in"):
+            issues.append({"type": "no_transition", "severity": "info", "scene1_id": scene1["id"],
+                          "scene2_id": scene2["id"], "message": "No transition between scenes (hard cut)"})
     
-    return {
-        "project_id": project_id,
-        "total_issues": len(issues),
-        "issues": issues
-    }
+    return {"project_id": project_id, "total_issues": len(issues), "issues": issues}
 
 # ============ APP SETUP ============
 
@@ -633,10 +804,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
