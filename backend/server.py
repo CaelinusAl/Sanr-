@@ -1369,6 +1369,13 @@ async def cancel_film_generation(film_id: str):
     return {"status": "cancelled"}
 
 
+@api_router.get("/films")
+async def get_all_films():
+    """Get all films sorted by created_at desc"""
+    films = await db.films.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return films
+
+
 @api_router.get("/film/{film_id}")
 async def get_film(film_id: str):
     """Get film details"""
@@ -1376,6 +1383,27 @@ async def get_film(film_id: str):
     if not film:
         raise HTTPException(status_code=404, detail="Film not found")
     return film
+
+
+@api_router.delete("/film/{film_id}")
+async def delete_film(film_id: str):
+    """Delete a film and its video files"""
+    film = await db.films.find_one({"id": film_id}, {"_id": 0})
+    if not film:
+        raise HTTPException(status_code=404, detail="Film not found")
+    
+    # Delete video files
+    import glob
+    video_files = glob.glob(str(VIDEOS_DIR / f"{film_id}*"))
+    for vf in video_files:
+        try:
+            os.remove(vf)
+        except:
+            pass
+    
+    # Delete from database
+    await db.films.delete_one({"id": film_id})
+    return {"status": "deleted"}
 
 
 @api_router.get("/film-videos/{filename}")
