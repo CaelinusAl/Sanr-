@@ -61,6 +61,8 @@ const TRANSITIONS = [
 
 // Video sizes for Sora 2
 const VIDEO_SIZES = [
+  { value: "1920x1080", label: "Full HD (1920×1080)" },
+  { value: "3840x2160", label: "4K Ultra HD (3840×2160)" },
   { value: "1280x720", label: "HD (1280×720)" },
   { value: "1792x1024", label: "Widescreen (1792×1024)" },
   { value: "1024x1792", label: "Portrait (1024×1792)" },
