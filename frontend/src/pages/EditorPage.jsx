@@ -820,42 +820,67 @@ export default function EditorPage() {
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Right Sidebar - AI Director Chat Panel */}
-          <div className="w-[400px] bg-[#1e1e1e] border-l border-[#3c3c3c] flex-shrink-0">
-            <ChatPanel
-              messages={chatMessages}
-              onSendMessage={async (message) => {
-                setChatLoading(true);
-                setChatMessages((prev) => [...prev, { id: Date.now(), role: "user", content: message }]);
-                try {
-                  const response = await axios.post(`${API}/chat`, { project_id: projectId, message });
-                  setChatMessages((prev) => [
-                    ...prev,
-                    { id: response.data.id, role: "assistant", content: response.data.message, scene_plan: response.data.scene_plan },
-                  ]);
-                  if (response.data.scene_plan) {
-                    toast.info("AI Director suggested a scene! Click 'Create This Scene' to add it.");
-                  }
-                } catch (error) {
-                  console.error("Chat error:", error);
-                  toast.error("Failed to get AI response");
-                } finally {
-                  setChatLoading(false);
-                }
-              }}
-              onClearChat={async () => {
-                await axios.delete(`${API}/projects/${projectId}/chat-history`);
-                setChatMessages([]);
-                toast.success("Chat cleared");
-              }}
-              isLoading={chatLoading}
-              onCreateFromPlan={handleCreateFromPlan}
-              modelName="Claude + Sora 2"
+            
+            {/* Rendering Console */}
+            <RenderingConsole
+              renders={renders}
+              onCancelRender={handleCancelRender}
+              onRetryRender={handleRetryRender}
+              onClearCompleted={handleClearCompletedRenders}
             />
           </div>
+
+          {/* Right Sidebar - Two Panels */}
+          <div className="w-[400px] bg-[#1e1e1e] border-l border-[#3c3c3c] flex-shrink-0 flex flex-col">
+            {/* Scene Properties - Top Half */}
+            <div className="h-1/2 border-b border-[#3c3c3c] overflow-hidden">
+              <SceneProperties
+                scene={selectedScene}
+                onSceneUpdate={handleSceneUpdate}
+                onAnalyze={handleAnalyzeScene}
+                isAnalyzing={isAnalyzing}
+                analysis={sceneAnalysis}
+              />
+            </div>
+            
+            {/* AI Director Chat - Bottom Half */}
+            <div className="h-1/2 overflow-hidden">
+              <ChatPanel
+                messages={chatMessages}
+                onSendMessage={async (message) => {
+                  setChatLoading(true);
+                  setChatMessages((prev) => [...prev, { id: Date.now(), role: "user", content: message }]);
+                  try {
+                    const response = await axios.post(`${API}/chat`, { project_id: projectId, message });
+                    setChatMessages((prev) => [
+                      ...prev,
+                      { id: response.data.id, role: "assistant", content: response.data.message, scene_plan: response.data.scene_plan },
+                    ]);
+                    if (response.data.scene_plan) {
+                      toast.info("AI Director suggested a scene! Click 'Create This Scene' to add it.");
+                    }
+                  } catch (error) {
+                    console.error("Chat error:", error);
+                    toast.error("Failed to get AI response");
+                  } finally {
+                    setChatLoading(false);
+                  }
+                }}
+                onClearChat={async () => {
+                  await axios.delete(`${API}/projects/${projectId}/chat-history`);
+                  setChatMessages([]);
+                  toast.success("Chat cleared");
+                }}
+                isLoading={chatLoading}
+                onCreateFromPlan={handleCreateFromPlan}
+                modelName="Claude + Sora 2"
+              />
+            </div>
+          </div>
         </div>
+        
+        {/* Context Menu */}
+        {ContextMenuComponent}
 
         {/* Create Scene Modal */}
         <Dialog open={showCreateScene} onOpenChange={setShowCreateScene}>
