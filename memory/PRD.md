@@ -212,6 +212,13 @@ CineCursor is a comprehensive AI-powered video production platform inspired by C
 - **Video Generation Completion**: Render-status endpoint working correctly, videos complete successfully with valid resolutions
 - **Video Playback**: VideoPreview component now correctly shows videos for selected scenes with video_url. Green scenes in timeline indicate ready videos.
 
+### ✅ CineCursor V2.0 - AI Director Mode (January 21, 2026)
+- **NEW: AI Director Panel** - Story input UI with duration/quality options
+- **NEW: Production Dashboard** - Real-time progress tracking with stage indicators
+- **NEW: Film Plan Generator** - Claude Sonnet 4 creates detailed JSON film plans
+- **NEW: Parallel Worker System** - Multiple scenes can be generated simultaneously
+- **NEW: Film Generation API** - /api/film/generate, /api/film/{id}/status endpoints
+
 ---
 
 ## 10. Upcoming Features (Backlog)
