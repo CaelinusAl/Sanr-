@@ -4,6 +4,7 @@ import "@/App.css";
 import ProjectsPage from "@/pages/ProjectsPage";
 import EditorPage from "@/pages/EditorPage";
 import FilmGeneratorPage from "@/pages/FilmGeneratorPage";
+import FilmHistoryPage from "@/pages/FilmHistoryPage";
 import { Toaster } from "@/components/ui/sonner";
 
 // Hide React error overlay for third-party errors
@@ -47,6 +48,7 @@ function App() {
           <Route path="/" element={<ProjectsPage />} />
           <Route path="/editor/:projectId" element={<EditorPage />} />
           <Route path="/ai-director" element={<FilmGeneratorPage />} />
+          <Route path="/film-history" element={<FilmHistoryPage />} />
         </Routes>
       </BrowserRouter>
       <Toaster position="bottom-right" theme="dark" />
