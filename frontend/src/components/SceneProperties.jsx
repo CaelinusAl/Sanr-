@@ -181,7 +181,7 @@ function GeneralTab({ scene, onSceneUpdate }) {
     }
   };
 
-  const resolution = scene.metadata?.resolution || { width: 1920, height: 1080 };
+  const resolution = scene.metadata?.resolution || { width: 1280, height: 720 };
   const resolutionValue = `${resolution.width}x${resolution.height}`;
 
   return (
