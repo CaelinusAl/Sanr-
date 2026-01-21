@@ -251,7 +251,7 @@ class KeyboardShortcutsManager {
       description: "Next frame",
       category: "playback",
       callback: () => this.emit("frame_forward"),
-      global: true,
+      global: false, // Don't trigger in inputs
     });
 
     this.register({
@@ -260,7 +260,7 @@ class KeyboardShortcutsManager {
       description: "Previous frame",
       category: "playback",
       callback: () => this.emit("frame_backward"),
-      global: true,
+      global: false, // Don't trigger in inputs
     });
 
     this.register({
@@ -269,7 +269,7 @@ class KeyboardShortcutsManager {
       description: "Go to start",
       category: "playback",
       callback: () => this.emit("go_to_start"),
-      global: true,
+      global: false, // Don't trigger in inputs
     });
 
     this.register({
@@ -278,7 +278,7 @@ class KeyboardShortcutsManager {
       description: "Go to end",
       category: "playback",
       callback: () => this.emit("go_to_end"),
-      global: true,
+      global: false, // Don't trigger in inputs
     });
 
     // === TIMELINE ===
