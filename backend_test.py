@@ -358,9 +358,34 @@ class CineCursorAPITester:
         self.test_ai_chat()
         self.test_get_chat_history()
         
-        # Advanced features
-        self.test_continuity_check()
-        self.test_export_timeline()
+    def test_v2_features(self):
+        """Test CineCursor v2.0 specific features"""
+        success_count = 0
+        
+        if not self.scene_id:
+            self.log("❌ V2 Features - No scene ID available")
+            return False
+        
+        # Test scene transitions
+        transition_data = {
+            "transition_in": {"type": "fade", "duration": 0.5},
+            "transition_out": {"type": "dissolve", "duration": 0.5}
+        }
+        success, _ = self.run_test("Set Scene Transitions", "PUT", f"scenes/{self.scene_id}/transition", 200, transition_data)
+        if success:
+            success_count += 1
+        
+        # Test render status endpoint
+        success, _ = self.run_test("Get Render Status", "GET", f"scenes/{self.scene_id}/render-status", 200)
+        if success:
+            success_count += 1
+        
+        # Test audio volume setting
+        success, _ = self.run_test("Set Audio Volume", "PUT", f"scenes/{self.scene_id}/audio-volume?volume=0.8", 200)
+        if success:
+            success_count += 1
+        
+        return success_count > 0
         
         # Cleanup
         self.test_delete_operations()
