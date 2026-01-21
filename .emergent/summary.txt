@@ -1,154 +1,143 @@
-<analysis>**original_problem_statement:** The user wants to build CineCursor, a comprehensive AI-powered video production platform inspired by Cursor, but for filmmaking. The user provided an extremely detailed technical blueprint document outlining the entire architecture, from the low-level Electron/VS Code fork structure to high-level AI services.
+<analysis>**original_problem_statement:** The user initially wanted to build CineCursor, an AI-powered video production platform based on a detailed blueprint for an Electron application. The project has since evolved with a new, more ambitious CineCursor V2.0 blueprint provided by the user. The new vision is for a Hollywood-grade, highly automated film production platform that can generate films from 5-60 minutes long.
 
-The platform should include:
-- A professional UI with a multi-track timeline editor, an asset explorer, a video preview player, and an AI Director chat panel.
-- An advanced backend with asset management, character management, and project/scene management.
-- An AI Director powered by Claude for translating natural language prompts into scene plans.
-- A Video Analysis Protocol (VAP) for detecting continuity errors.
-- A video generation engine integrated with models like Sora 2 to create video clips.
-- Features for adding transitions, audio tracks, and exporting the final video.
-The user's instruction has been hepsini yap (do all of it), indicating a desire to implement the full scope of the provided blueprint.
+PRODUCT REQUIREMENTS (for V2.0):
+- A new AI Director Mode UI to generate a full film from a single story prompt.
+- A sophisticated backend that orchestrates multiple AI services.
+- The system should use Claude for creating a film plan and Sora 2 for generating video scenes.
+- Video generation should be parallelized using multiple AI workers (starting with 5, targeting 20).
+- A real-time  to track the film's progress through various stages (Pre-production, Production, QA, Assembly).
+- Advanced configuration options for the user, including quality presets, aspect ratios, emotional arcs, and AI upscaling.
+- A Smart QA system to ensure visual consistency (e.g., character faces, lighting) across scenes (Future Phase).
+- The final output should be a single, cohesive video file, not just a series of clips.
 
-**User's preferred language**: The user's primary language is **Turkish**. The next agent MUST respond in Turkish.
+**User's preferred language**: The user's primary language is **Turkish**. However, they have explicitly requested that all user-facing UI text be in **English**. The next agent MUST respond to the user in Turkish.
 
 **what currently exists?**
-A sophisticated React + FastAPI web application MVP for CineCursor.
-- **Backend**: A FastAPI server with MongoDB, providing CRUD APIs for projects, scenes, and characters. It includes a working AI Director chat endpoint (Claude) and an in-progress video generation endpoint using Sora 2. It also has stubbed routes for export.
-- **Frontend**: A React application featuring:
-    - **Projects Page**: A dashboard to create/view projects, featuring a new-user onboarding flow and project templates (e.g., Short Film, Commercial).
-    - **Editor Page**: A highly detailed editor with resizable panels for , , a , an , a  panel for editing selected clips, and a  to show generation progress.
-- **Core Functionality**: Users can create projects, enter the editor, chat with the AI to generate scene data, and view scenes on the timeline. Video generation can be initiated, but it is not fully functional. Keyboard shortcuts and context menus are also implemented.
+An MVP of the CineCursor V2.0 vision has been implemented on top of the existing FastAPI (Python) + React stack.
+- **Backend:** A new  endpoint orchestrates the entire film creation process as a background task. It uses Claude to create a film plan, spawns parallel Sora 2 workers to generate scene videos, and uses FFmpeg to assemble the final video. A robust retry mechanism has been added to handle transient API errors from Claude and Sora.
+- **Frontend:** A new page at  hosts the , a comprehensive UI with 'Story', 'Style', and 'Advanced' tabs allowing the user to configure everything from the narrative and emotional tone to technical details like quality, aspect ratio, and the number of parallel AI workers. A  provides real-time progress updates by polling a status endpoint.
+- **Core Functionality:** A user can describe a story, configure options, and initiate a film generation process. The system generates a plan, produces individual video clips in parallel, and assembles them into a final video file.
 
 **Last working item**:
--   **Last item agent was working**: The agent was fixing the core video generation feature. The user reported that generation gets stuck and never completes. The agent identified this as a frontend issue where progress was not being polled. It implemented a polling mechanism in  to repeatedly call a new backend endpoint () to get real-time progress. It also added a 4K resolution option as requested by the user.
+-   **Last item agent was working**: The user reported that the film generation process was getting stuck. The agent diagnosed that transient  errors from the AI providers (Claude/Sora) were causing the process to fail silently. To solve this, the agent implemented a robust automatic retry mechanism with exponential backoff for all external AI API calls in . It also improved the frontend to display a clear error message if the generation fails after all retries.
 -   **Status**: IN PROGRESS
--   **Agent Testing Done**: N
--   **Which testing method agent to use?**: both. The backend endpoint  needs to be created/verified with . The end-to-end flow should be tested using the screenshot tool to trigger generation and observe the UI updating with real progress.
+-   **Agent Testing Done**: Y (Agent confirmed the retry logic was added and the backend was restarted).
+-   **Which testing method agent to use?**: both. A backend test should confirm that the retry logic correctly handles simulated API failures. A full end-to-end test from the frontend is needed to verify that a film generation process can survive transient errors and that the UI provides clear feedback (either successful completion or a final error message).
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1 (P0)**: Video generation is stuck and does not complete.
-    -   **Attempted fixes**: The agent modified  in  to poll a status endpoint () every 3 seconds and updated the UI to reflect the polled progress. A 4K option was also added to the UI.
+-   **Issue 1 (P0)**: Film generation appears to hang, confusing the user.
+    -   **Attempted fixes**: An automatic retry mechanism was implemented to handle transient API errors (like 502s), which was the primary cause of failures. Error display was also added to the frontend.
     -   **Next debug checklist**:
-        1.  In , create or verify the  endpoint. It should query the database for the scene's status (, , ) and progress percentage.
-        2.  Review the  background task in . Ensure it correctly updates the scene's status and progress in the MongoDB document during generation.
-        3.  Check backend logs for errors from the Sora 2 API call via .
-        4.  Perform an end-to-end test: trigger generation from the UI and verify that the progress bar updates correctly and the final video becomes available.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is the application's most critical feature. Fixing it will make the platform functional and useful.
+        1.  The root of the user's confusion is the ability to start multiple, overlapping generation jobs. Implement a UI lock in  to disable the Generate Film button while a job is already running.
+        2.  Improve backend state management to only allow one active generation job at a time, returning an error if a new one is started.
+        3.  Educate the user that video generation is a time-consuming process and that the progress bar on the dashboard is the source of truth.
+    -   **Why fix this issue and what will be achieved with the fix?**: This will fix the core usability problem by providing a clear, reliable, and non-confusing user experience for the main feature.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: Y
     -   **Should Test frontend/backend/both after fix?**: both
     -   **Blocked on other issue**: None
 
 **In progress Task List**:
--   **Task 1 (P0)**: Complete the implementation of real-time video generation progress.
-    -   **Where to resume**: Implement the backend status endpoint () in . The frontend polling logic is already in place in .
-    -   **What will be achieved with this?**: The user will see a functional, real-time progress bar and status updates during video generation.
-    -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: both
-    -   **Blocked on something**: Directly related to Pending Issue 1.
+- None.
 
 **Upcoming and Future Tasks**
 *   **Upcoming Tasks (P1):**
-    *   **Real Video Playback:** Update  to play the actual video URL when a scene's status is 'complete'.
-    *   **Full Timeline Interactivity:** Implement drag-drop reordering, resizing, and splitting clips, using the events defined in .
-    *   **Full Asset Management:** Implement backend logic for uploading and serving character images, audio files, and effects.
-    *   **Implement Export Functionality**: Connect the frontend Export UI to the backend  logic to render the final video.
+    *   **Implement Scene Transitions:** The user wants a single, cohesive video. The next step is to add basic transitions (e.g., fade, cross-dissolve) between scenes during the FFmpeg assembly process in  in .
+    *   **Implement Color Correction:** Apply a consistent color grading filter during the FFmpeg process to make all scenes feel like they belong to the same film.
+    *   **Persist Generation State:** The current film generation state is stored in an in-memory Python dictionary in , which is lost on restart. This state should be moved to the MongoDB database to allow for recovery and viewing history.
 
 *   **Future Tasks (P2):**
-    *   **Advanced AI Services:** Implement the Video Analysis Protocol (VAP) for continuity checking.
-    *   **Character Consistency:** Implement the face embedding extraction and comparison logic.
-    *   **Cloud Sync & Version Control:** Integrate the (currently non-functional) frontend services with a real backend implementation.
-    *   **Electron App:** Convert the web application into a cross-platform desktop application.
+    *   **Character & Style Consistency:** Implement a system (e.g., using InsightFace or IP-Adapter) to ensure characters and visual styles remain consistent across different scenes. This was a key user concern.
+    *   **Integrate More AI Models:** Add support for Runway Gen-3 and Pika, as specified in the V2.0 blueprint.
+    *   **Full Smart QA System:** Build out the advanced quality assurance features from the blueprint, including consensus validation where multiple AIs review a scene.
+    *   **Migrate to TypeScript:** Convert the frontend codebase from JavaScript () to TypeScript () to align with the user's blueprint.
 
 **Completed work in this session**
--   **Full Professional UI (Part 2 & 3):** Successfully created and integrated all advanced UI components from the user's blueprint, including , , , , and a  manager.
--   **Projects Page Enhancements (Part 5):** Implemented a new-user  and a  modal for starting projects. Added  for project searching.
--   **Bug Fixes:**
-    -   Resolved an issue where keyboard shortcuts (Spacebar for play/pause) interfered with typing in input fields.
-    -   Fixed the chat input to correctly handle Shift+Enter for new lines.
-    -   Attempted to hide a recurring PostHog analytics error overlay by modifying , , and .
-    -   Fixed a rendering bug where scenes were not appearing on the timeline.
+-   **CineCursor V2.0 MVP Implemented:**
+    -   Created the full-featured  and  for automated film creation.
+    -   Implemented advanced user controls for story, style (quality, aspect ratio), and performance (worker count, upscaling).
+    -   Built the backend orchestration logic in  using Claude, parallel Sora 2 workers, and FFmpeg.
+-   **Bug Fix: API Failures:** Implemented a robust, automatic  mechanism for all external API calls, making the generation process resilient to transient errors.
+-   **Bug Fix: Incorrect Video Duration:** Corrected scene calculation logic to ensure the final video length matches the user's request.
+-   **User Guidance:** Successfully diagnosed and guided the user through resolving an LLM Key Budget Exceeded error.
+-   **UI Internationalization:** Converted the entire V2.0 UI to English as requested by the user.
 
 **Earlier issues found/mentioned but not fixed**
-None.
+-   None.
 
 **Known issue recurrence from previous fork**
-N/A
+-   N/A
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Frontend**: React.js, TailwindCSS, 
--   **Backend**: FastAPI (Python)
--   **Database**: MongoDB
--   **AI Integration**: Claude (AI Director), Sora 2 (Video Generation)
--   **Architecture**: Web-based MVP with a rich client-side editor.
+-   **Backend**: FastAPI, Background Tasks, ,  library for retries, FFmpeg for video processing.
+-   **Frontend**: React, client-side polling for status updates.
+-   **AI Integration**:  library for Claude (film plan) and Sora 2 (scene generation).
+-   **Architecture**: The application now has two distinct user flows: the original manual editor and the new automated AI Director.
 
 **key DB schema**
--   : {_id, name, description, createdAt, total_duration}
--   : {_id, projectId, prompt, status, videoUrl, progress, createdAt, start_time, duration, track_index}
--   : {_id, projectId, name, description, referenceImageUrl}
--   : {_id, projectId, role, content, timestamp}
+-   No new DB tables. Film generation state is currently managed in an in-memory Python dictionary in , which needs to be migrated to MongoDB.
+    - : { uid=0(root) gid=0(root) groups=0(root), , , , , , ,  }
 
 **changes in tech stack**
--   Added  on the frontend for fuzzy searching.
+-   **Backend:** Added  for retry logic.  is now a system dependency.
+-   **Frontend:** No major stack changes, but significant new components were added.
 
 **All files of reference**
-*   : The main FastAPI application. Needs a new  endpoint.
-*   : The core UI for the editor. Contains the new polling logic for video generation. It is very large and a candidate for refactoring.
-*   : The project dashboard, updated with onboarding and templates.
-*   , : Contain all the newly created UI and service modules. Note that some service files are non-functional.
-*   : The Product Requirements Document updated by the agent.
+*   : Contains almost all the new V2.0 backend logic, including orchestration, API endpoints, and retry mechanisms.
+*   : The main entry point and state manager for the new AI Director UI.
+*   : The complex, tabbed UI for configuring and starting a film generation.
 
 **Areas that need refactoring**:
--   ****: This file is now over 1100 lines and manages the state for numerous complex components. It should be broken down using React Context or a state management library to improve maintainability.
--   **Frontend Services**: Files like  and  were created in  but contain Node.js code (, ). They are non-functional in a browser environment and represent a misunderstanding of the blueprint. They should be removed or their logic should be moved to the backend.
+-   ** is a monolith.** The 500+ lines of new film generation logic should be extracted into dedicated service modules (e.g., , ).
+-   **In-memory state management** on the backend is fragile and will be lost on restart. The  dictionary should be replaced with a MongoDB collection.
 
 **key api endpoints**
--   : Create a new project.
--   : Get all projects.
--   : Send a message to the AI Director.
--   : Initiate video generation for a scene.
--   : **(Needs to be implemented)** Get the generation status and progress of a scene.
--   : (Stubbed) Export the final video.
+-   : Kicks off a new film generation background task.
+-   : Polls the progress of an ongoing generation job.
 
 **Critical Info for New Agent**
--   **Your top priority is to fix the video generation.** This involves implementing the  endpoint on the backend and ensuring the background generation task correctly updates the scene's status and progress in MongoDB.
--   The user's blueprint is for a final **Electron app**, but the current implementation is a **web app**. The previous agent created several service files in the frontend (, ) that contain Node.js code and **will not work**. Ignore these non-functional files and focus on implementing features within the existing React/FastAPI stack.
--   The user's language is Turkish. All your responses must be in Turkish.
+-   Your highest priority is to solve the stuck generation issue from the user's perspective. This involves preventing multiple concurrent jobs from being started.
+-   After fixing the concurrent job issue, the next most important feature is to make the output feel like a single, cohesive film. Start by implementing scene transitions (e.g., fades) in the FFmpeg assembly step.
+-   All AI features depend on the user's Emergent Universal Key budget. Be prepared to guide the user again if they run out of credits.
+-   The user is highly engaged and ambitious. Refer to their V2.0 blueprint (user message #123) for future direction. You are adapting this blueprint from the specified Node.js to the actual Python environment.
 
 **documents and test reports created in this job**
--   
--    (from a previous session, but relevant)
+-    (updated with V2.0 features)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **user**:  (Do it all) - Approving the plan to implement Part 4 & 5.
-2.  **user**:  (This error appears when I open it) - Reports the PostHog error overlay.
-3.  **user**:  (I refreshed, but the error appeared again) - Confirms the PostHog error is persistent.
-4.  **user**:  (I can't make a space here) - Reports that the spacebar doesn't work in the chat input.
-5.  **user**:  (Strangely, if I hold down any key, the space works, otherwise it doesn't work again) - Provides more detail on the spacebar bug.
-6.  **user**:  (It gets stuck on this screen and doesn't produce a video, 5 minutes have passed. Fix this professionally in the best way. And let's be able to produce 4k video, I think that option is not here. Does it really take this long to make even a 12-second video?) - **This is the main pending request.** Reports the core issue of video generation failing and requests a 4K option.
+1.  **user**: Reports the generation is stuck on the UI.
+2.  **agent**: Investigates and finds the user's new job failed with a 502 error, while the agent's previous test job is still running. Explains the situation.
+3.  **user**: Asks why the 502 error is happening and says it's a problem that it gets stuck.
+4.  **agent**: Agrees it's unacceptable and implements an automatic retry mechanism on the backend to handle these errors, and also adds error display on the frontend.
+5.  **user**: Asks how many AIs are currently working.
+6.  **agent**: Explains the current setup (1 Claude, 1-5 Sora) and how it compares to the blueprint's goal of 20, explaining the trade-offs (cost, rate limits).
+7.  **user**: Reports the process is stuck again.
+8.  **agent**: Investigates and finds the user's LLM key budget has been exceeded, which is blocking API calls.
+9.  **user**: Asks how to add budget.
+10. **agent**: Guides the user with detailed steps and screenshots on how to add credits to their Emergent Universal Key. The user confirms they added a balance.
 
 **Project Health Check:**
-*   **Broken**: 1 (Video generation does not complete).
-*   **Mocked**: 1 (Video export is stubbed on the backend).
+*   **Broken**: The core film generation workflow is confusing for the user because they can inadvertently start multiple jobs, and it appears to hang.
+*   **Mocked**: Advanced V2.0 features like character consistency, a full QA system, and multiple video AI models are not yet implemented.
 
 **3rd Party Integrations**
-*   **Anthropic Claude Sonnet 4.5**: For the AI Director chat. Uses Emergent LLM Key. (Working)
-*   **Sora 2**: For video generation. Uses Emergent LLM Key. (Implementation in progress, currently broken).
-*   **fuse.js**: For frontend project searching. (Working)
+*   **Anthropic Claude Sonnet 4.5**: Used for film plan generation. Uses Emergent LLM Key.
+*   **Sora 2**: Used for scene video generation. Uses Emergent LLM Key.
+*   **FFmpeg**: Used for video processing (assembly and upscaling). System-level dependency.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES (after initial UI refactors).
--   **Troubleshoot agent used after agent stuck in loop**: NO.
--   **Test files created**: None.
--   **Known regressions**: None.
+-   **Testing agent used after significant changes**: NO
+-   **Troubleshoot agent used after agent stuck in loop**: NO
+-   **Test files created**: None
+-   **Known regressions**: None
 
 **Credentials to test flow:**
 No authentication is implemented. The application is directly accessible.
 
 **What agent forgot to execute**
-- The agent created multiple service files (, , etc.) in the frontend directory with Node.js-specific code (, ), making them non-functional in the browser. It followed the blueprint literally without adapting it to the current web-app context. These files are currently dead code.
-- The agent identified the need for a polling mechanism for video generation but did not implement the required backend status endpoint, leaving the fix incomplete.</analysis>
+- The agent has not yet implemented a mechanism to prevent multiple concurrent film generation jobs, which is the main source of the user's current confusion and stuck state.
+- The state of generation jobs is stored in-memory, making it fragile. It was not migrated to a persistent database like MongoDB.</analysis>
