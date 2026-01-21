@@ -357,6 +357,22 @@ export default function ProjectsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Onboarding Flow */}
+      {showOnboarding && (
+        <OnboardingFlow
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingComplete}
+        />
+      )}
+
+      {/* Project Templates */}
+      {showTemplates && (
+        <ProjectTemplates
+          onSelect={handleCreateFromTemplate}
+          onCancel={() => setShowTemplates(false)}
+        />
+      )}
     </div>
   );
 }
