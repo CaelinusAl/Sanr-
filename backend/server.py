@@ -894,10 +894,8 @@ async def create_film_plan(story: str, duration: int) -> dict:
         scene_count=scene_count
     )
     
-    response = await asyncio.to_thread(
-        chat.send_message,
-        UserMessage(text=prompt)
-    )
+    # Send message (sync call wrapped in thread)
+    response = chat.send_message(UserMessage(text=prompt))
     
     # Parse JSON from response
     response_text = response.text.strip()
