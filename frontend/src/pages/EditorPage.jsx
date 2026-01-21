@@ -5,12 +5,16 @@ import {
   Plus, ZoomIn, ZoomOut, Settings, Download,
   Clapperboard, ChevronLeft, Film, Users,
   Folder, AlertTriangle, Sparkles, Send,
-  Trash2, MoreVertical, Wand2, Loader2
+  Trash2, Wand2, Loader2, Volume2, VolumeX,
+  Maximize2, FileVideo, Music, Layers, Eye,
+  RefreshCw, CheckCircle, XCircle, Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
+import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
@@ -31,12 +35,44 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import axios from "axios";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-
 const PIXELS_PER_SECOND = 50;
+
+// Transition types
+const TRANSITIONS = [
+  { value: "none", label: "None (Hard Cut)" },
+  { value: "fade", label: "Fade" },
+  { value: "dissolve", label: "Dissolve" },
+  { value: "wipe_left", label: "Wipe Left" },
+  { value: "wipe_right", label: "Wipe Right" },
+  { value: "slide_left", label: "Slide Left" },
+  { value: "slide_right", label: "Slide Right" },
+];
+
+// Video sizes for Sora 2
+const VIDEO_SIZES = [
+  { value: "1280x720", label: "HD (1280×720)" },
+  { value: "1792x1024", label: "Widescreen (1792×1024)" },
+  { value: "1024x1792", label: "Portrait (1024×1792)" },
+  { value: "1024x1024", label: "Square (1024×1024)" },
+];
+
+// Video durations
+const VIDEO_DURATIONS = [
+  { value: 4, label: "4 seconds" },
+  { value: 8, label: "8 seconds" },
+  { value: 12, label: "12 seconds" },
+];
 
 export default function EditorPage() {
   const { projectId } = useParams();
@@ -46,7 +82,6 @@ export default function EditorPage() {
   const [project, setProject] = useState(null);
   const [scenes, setScenes] = useState([]);
   const [characters, setCharacters] = useState([]);
-  const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // Timeline State
@@ -55,6 +90,8 @@ export default function EditorPage() {
   const [zoom, setZoom] = useState(1);
   const [selectedScene, setSelectedScene] = useState(null);
   const [draggingScene, setDraggingScene] = useState(null);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
   
   // Chat State
   const [chatMessages, setChatMessages] = useState([]);
@@ -64,34 +101,48 @@ export default function EditorPage() {
   // Modal State
   const [showCreateScene, setShowCreateScene] = useState(false);
   const [showCreateCharacter, setShowCreateCharacter] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [continuityIssues, setContinuityIssues] = useState([]);
+  
+  // Generate Modal State
+  const [generateConfig, setGenerateConfig] = useState({
+    prompt: "",
+    duration: 4,
+    size: "1280x720",
+    model: "sora-2"
+  });
+  const [generatingSceneId, setGeneratingSceneId] = useState(null);
+  const [renderProgress, setRenderProgress] = useState(null);
+  
+  // Export State
+  const [exportConfig, setExportConfig] = useState({
+    format: "mp4",
+    resolution: "1080p",
+    fps: 30,
+    include_audio: true
+  });
+  const [exporting, setExporting] = useState(false);
   
   // New Scene Form
   const [newScene, setNewScene] = useState({
-    name: "",
-    description: "",
-    prompt: "",
-    duration: 5,
-    characters: [],
+    name: "", description: "", prompt: "", duration: 5, characters: [],
+    transition_in: { type: "fade", duration: 0.5 },
+    transition_out: { type: "fade", duration: 0.5 }
   });
   
   // New Character Form
-  const [newCharacter, setNewCharacter] = useState({
-    name: "",
-    description: "",
-    reference_images: [],
-  });
+  const [newCharacter, setNewCharacter] = useState({ name: "", description: "", reference_images: [] });
   
   // Refs
   const timelineRef = useRef(null);
   const chatEndRef = useRef(null);
   const playbackRef = useRef(null);
+  const videoRef = useRef(null);
 
   // Load project data
   useEffect(() => {
-    if (projectId) {
-      loadProjectData();
-    }
+    if (projectId) loadProjectData();
   }, [projectId]);
 
   // Auto-scroll chat
@@ -116,24 +167,48 @@ export default function EditorPage() {
     return () => clearInterval(playbackRef.current);
   }, [isPlaying, project?.total_duration]);
 
+  // Poll render status when generating
+  useEffect(() => {
+    if (generatingSceneId) {
+      const pollInterval = setInterval(async () => {
+        try {
+          const response = await axios.get(`${API}/scenes/${generatingSceneId}/render-status`);
+          setRenderProgress(response.data);
+          
+          if (response.data.status === "complete") {
+            clearInterval(pollInterval);
+            setGeneratingSceneId(null);
+            setShowGenerateModal(false);
+            toast.success("Video generated successfully!");
+            loadProjectData();
+          } else if (response.data.status === "error") {
+            clearInterval(pollInterval);
+            setGeneratingSceneId(null);
+            toast.error(response.data.message || "Generation failed");
+          }
+        } catch (err) {
+          console.error("Poll error:", err);
+        }
+      }, 2000);
+      
+      return () => clearInterval(pollInterval);
+    }
+  }, [generatingSceneId]);
+
   const loadProjectData = async () => {
     try {
       setLoading(true);
-      const [projectRes, scenesRes, charsRes, assetsRes, chatRes] = await Promise.all([
+      const [projectRes, scenesRes, charsRes, chatRes] = await Promise.all([
         axios.get(`${API}/projects/${projectId}`),
         axios.get(`${API}/projects/${projectId}/scenes`),
         axios.get(`${API}/projects/${projectId}/characters`),
-        axios.get(`${API}/projects/${projectId}/assets`),
         axios.get(`${API}/projects/${projectId}/chat-history`),
       ]);
       
       setProject(projectRes.data);
       setScenes(scenesRes.data);
       setCharacters(charsRes.data);
-      setAssets(assetsRes.data);
       setChatMessages(chatRes.data);
-      
-      // Check continuity
       checkContinuity();
     } catch (error) {
       console.error("Error loading project:", error);
@@ -180,9 +255,7 @@ export default function EditorPage() {
       const newStartTime = Math.max(0, x / (PIXELS_PER_SECOND * zoom));
       
       setScenes((prev) =>
-        prev.map((s) =>
-          s.id === sceneId ? { ...s, start_time: newStartTime } : s
-        )
+        prev.map((s) => s.id === sceneId ? { ...s, start_time: newStartTime } : s)
       );
     };
     
@@ -191,13 +264,10 @@ export default function EditorPage() {
       document.removeEventListener("mouseup", handleMouseUp);
       setDraggingScene(null);
       
-      // Save new position
       const scene = scenes.find((s) => s.id === sceneId);
       if (scene) {
         try {
-          await axios.put(`${API}/scenes/${sceneId}`, {
-            start_time: scene.start_time,
-          });
+          await axios.put(`${API}/scenes/${sceneId}`, { start_time: scene.start_time });
         } catch (error) {
           console.error("Error updating scene position:", error);
         }
@@ -216,24 +286,26 @@ export default function EditorPage() {
     }
 
     try {
-      const maxEndTime = scenes.reduce(
-        (max, s) => Math.max(max, s.start_time + s.duration),
-        0
-      );
+      const maxEndTime = scenes.reduce((max, s) => Math.max(max, s.start_time + s.duration), 0);
 
       const response = await axios.post(`${API}/scenes`, {
-        project_id: projectId,
-        name: newScene.name,
-        description: newScene.description,
-        prompt: newScene.prompt,
-        duration: newScene.duration,
-        start_time: maxEndTime,
+        project_id: projectId, name: newScene.name, description: newScene.description,
+        prompt: newScene.prompt, duration: newScene.duration, start_time: maxEndTime,
         characters: newScene.characters,
       });
 
+      // Set transitions
+      if (newScene.transition_in.type !== "none" || newScene.transition_out.type !== "none") {
+        await axios.put(`${API}/scenes/${response.data.id}/transition`, {
+          transition_in: newScene.transition_in.type !== "none" ? newScene.transition_in : null,
+          transition_out: newScene.transition_out.type !== "none" ? newScene.transition_out : null,
+        });
+      }
+
       setScenes([...scenes, response.data]);
       setShowCreateScene(false);
-      setNewScene({ name: "", description: "", prompt: "", duration: 5, characters: [] });
+      setNewScene({ name: "", description: "", prompt: "", duration: 5, characters: [],
+                   transition_in: { type: "fade", duration: 0.5 }, transition_out: { type: "fade", duration: 0.5 } });
       toast.success("Scene created");
       checkContinuity();
     } catch (error) {
@@ -255,31 +327,41 @@ export default function EditorPage() {
     }
   };
 
-  const handleGenerateScene = async (sceneId) => {
+  const openGenerateModal = (scene) => {
+    setSelectedScene(scene);
+    setGenerateConfig({
+      prompt: scene.prompt || "",
+      duration: Math.min(12, Math.max(4, Math.round(scene.duration / 4) * 4)) || 4,
+      size: "1280x720",
+      model: "sora-2"
+    });
+    setShowGenerateModal(true);
+  };
+
+  const handleGenerateVideo = async () => {
+    if (!selectedScene) return;
+    if (!generateConfig.prompt.trim()) {
+      toast.error("Prompt is required");
+      return;
+    }
+
     try {
+      setGeneratingSceneId(selectedScene.id);
+      setRenderProgress({ progress: 0, status: "queued", message: "Starting..." });
+
+      await axios.post(`${API}/scenes/${selectedScene.id}/generate`, generateConfig);
+      
+      // Update scene status locally
       setScenes((prev) =>
-        prev.map((s) =>
-          s.id === sceneId ? { ...s, status: "generating", render_progress: 0 } : s
-        )
+        prev.map((s) => s.id === selectedScene.id ? { ...s, status: "generating", render_progress: 0 } : s)
       );
 
-      const response = await axios.post(`${API}/scenes/${sceneId}/generate`);
-
-      setScenes((prev) =>
-        prev.map((s) =>
-          s.id === sceneId
-            ? { ...s, status: "ready", render_progress: 100, thumbnail: response.data.video_url }
-            : s
-        )
-      );
-
-      toast.success("Scene generated (MOCKED)");
+      toast.info("Video generation started with Sora 2!");
     } catch (error) {
-      console.error("Error generating scene:", error);
-      setScenes((prev) =>
-        prev.map((s) => (s.id === sceneId ? { ...s, status: "error" } : s))
-      );
-      toast.error("Failed to generate scene");
+      console.error("Error starting generation:", error);
+      toast.error("Failed to start generation");
+      setGeneratingSceneId(null);
+      setShowGenerateModal(false);
     }
   };
 
@@ -291,11 +373,7 @@ export default function EditorPage() {
     }
 
     try {
-      const response = await axios.post(`${API}/characters`, {
-        project_id: projectId,
-        ...newCharacter,
-      });
-
+      const response = await axios.post(`${API}/characters`, { project_id: projectId, ...newCharacter });
       setCharacters([...characters, response.data]);
       setShowCreateCharacter(false);
       setNewCharacter({ name: "", description: "", reference_images: [] });
@@ -314,29 +392,16 @@ export default function EditorPage() {
     setChatInput("");
     setChatLoading(true);
 
-    // Optimistic update
-    setChatMessages((prev) => [
-      ...prev,
-      { id: Date.now(), role: "user", content: userMessage },
-    ]);
+    setChatMessages((prev) => [...prev, { id: Date.now(), role: "user", content: userMessage }]);
 
     try {
-      const response = await axios.post(`${API}/chat`, {
-        project_id: projectId,
-        message: userMessage,
-      });
+      const response = await axios.post(`${API}/chat`, { project_id: projectId, message: userMessage });
 
       setChatMessages((prev) => [
         ...prev,
-        {
-          id: response.data.id,
-          role: "assistant",
-          content: response.data.message,
-          scene_plan: response.data.scene_plan,
-        },
+        { id: response.data.id, role: "assistant", content: response.data.message, scene_plan: response.data.scene_plan },
       ]);
 
-      // If AI suggested a scene plan, offer to create it
       if (response.data.scene_plan) {
         toast.info("AI Director suggested a scene! Click 'Create Scene' to add it.");
       }
@@ -355,41 +420,55 @@ export default function EditorPage() {
       prompt: scenePlan.visual_prompt || "",
       duration: scenePlan.duration || 5,
       characters: scenePlan.characters || [],
+      transition_in: scenePlan.transition_in || { type: "fade", duration: 0.5 },
+      transition_out: scenePlan.transition_out || { type: "fade", duration: 0.5 },
     });
     setShowCreateScene(true);
   };
 
-  // Export
+  // Export functions
   const handleExport = async () => {
     try {
-      const response = await axios.post(`${API}/projects/${projectId}/export`, {
-        project_id: projectId,
-        format: "json",
-      });
+      setExporting(true);
+      const response = await axios.post(`${API}/projects/${projectId}/export`, exportConfig);
+      
+      if (response.data.status === "complete") {
+        toast.success("Export complete!");
+        // Download file
+        window.open(`${API}/exports/${projectId}/${response.data.export_id}`, "_blank");
+      }
+      setShowExportModal(false);
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error(error.response?.data?.detail || "Export failed");
+    } finally {
+      setExporting(false);
+    }
+  };
 
-      const blob = new Blob([JSON.stringify(response.data, null, 2)], {
-        type: "application/json",
-      });
+  const handleExportJSON = async () => {
+    try {
+      const response = await axios.get(`${API}/projects/${projectId}/export-json`);
+      const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${project?.name || "project"}-export.json`;
+      a.download = `${project?.name || "project"}-timeline.json`;
       a.click();
       URL.revokeObjectURL(url);
-
-      toast.success("Timeline exported");
+      toast.success("Timeline exported as JSON");
     } catch (error) {
       console.error("Export error:", error);
       toast.error("Failed to export timeline");
     }
   };
 
-  const getPreviewImage = () => {
-    const currentScene = scenes.find(
-      (s) => currentTime >= s.start_time && currentTime < s.start_time + s.duration
-    );
-    return currentScene?.thumbnail || null;
+  // Get current scene for preview
+  const getCurrentScene = () => {
+    return scenes.find((s) => currentTime >= s.start_time && currentTime < s.start_time + s.duration);
   };
+
+  const currentScene = getCurrentScene();
 
   if (loading) {
     return (
@@ -408,11 +487,8 @@ export default function EditorPage() {
         {/* Header */}
         <header className="h-12 bg-[#18181B] border-b border-zinc-800 flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-4">
-            <button
-              data-testid="back-to-projects-btn"
-              onClick={() => navigate("/")}
-              className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
-            >
+            <button data-testid="back-to-projects-btn" onClick={() => navigate("/")}
+                    className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-2">
@@ -424,37 +500,24 @@ export default function EditorPage() {
             {continuityIssues.length > 0 && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    data-testid="continuity-issues-btn"
-                    variant="ghost"
-                    size="sm"
-                    className="text-amber-500 hover:text-amber-400 hover:bg-amber-500/10"
-                  >
+                  <Button data-testid="continuity-issues-btn" variant="ghost" size="sm"
+                          className="text-amber-500 hover:text-amber-400 hover:bg-amber-500/10">
                     <AlertTriangle className="w-4 h-4 mr-1" />
                     {continuityIssues.length}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p>{continuityIssues.length} continuity issues detected</p>
-                </TooltipContent>
+                <TooltipContent><p>{continuityIssues.length} continuity issues detected</p></TooltipContent>
               </Tooltip>
             )}
-            <Button
-              data-testid="export-btn"
-              variant="ghost"
-              size="sm"
-              onClick={handleExport}
-              className="text-zinc-400 hover:text-white"
-            >
-              <Download className="w-4 h-4 mr-1" />
-              Export
+            <Button data-testid="export-json-btn" variant="ghost" size="sm" onClick={handleExportJSON}
+                    className="text-zinc-400 hover:text-white">
+              <FileVideo className="w-4 h-4 mr-1" /> JSON
             </Button>
-            <Button
-              data-testid="settings-btn"
-              variant="ghost"
-              size="icon"
-              className="text-zinc-400 hover:text-white"
-            >
+            <Button data-testid="export-btn" variant="ghost" size="sm" onClick={() => setShowExportModal(true)}
+                    className="text-zinc-400 hover:text-white">
+              <Download className="w-4 h-4 mr-1" /> Export Video
+            </Button>
+            <Button data-testid="settings-btn" variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
               <Settings className="w-4 h-4" />
             </Button>
           </div>
@@ -467,25 +530,18 @@ export default function EditorPage() {
             <Tabs defaultValue="scenes" className="flex-1 flex flex-col">
               <TabsList className="mx-3 mt-3 bg-zinc-900">
                 <TabsTrigger value="scenes" className="flex-1 data-[state=active]:bg-zinc-800">
-                  <Film className="w-4 h-4 mr-1" />
-                  Scenes
+                  <Film className="w-4 h-4 mr-1" /> Scenes
                 </TabsTrigger>
                 <TabsTrigger value="characters" className="flex-1 data-[state=active]:bg-zinc-800">
-                  <Users className="w-4 h-4 mr-1" />
-                  Characters
+                  <Users className="w-4 h-4 mr-1" /> Characters
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="scenes" className="flex-1 mt-0 overflow-hidden">
                 <div className="p-3">
-                  <Button
-                    data-testid="add-scene-btn"
-                    onClick={() => setShowCreateScene(true)}
-                    className="w-full bg-zinc-800 hover:bg-zinc-700 text-white"
-                    size="sm"
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add Scene
+                  <Button data-testid="add-scene-btn" onClick={() => setShowCreateScene(true)}
+                          className="w-full bg-zinc-800 hover:bg-zinc-700 text-white" size="sm">
+                    <Plus className="w-4 h-4 mr-1" /> Add Scene
                   </Button>
                 </div>
                 <ScrollArea className="flex-1 px-3">
@@ -496,26 +552,17 @@ export default function EditorPage() {
                       </div>
                     ) : (
                       scenes.map((scene) => (
-                        <div
-                          key={scene.id}
-                          data-testid={`scene-card-${scene.id}`}
-                          className={`scene-card p-3 rounded-lg border cursor-pointer ${
-                            selectedScene?.id === scene.id
-                              ? "border-blue-500 bg-blue-500/10"
-                              : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700"
-                          }`}
-                          onClick={() => {
-                            setSelectedScene(scene);
-                            setCurrentTime(scene.start_time);
-                          }}
-                        >
+                        <div key={scene.id} data-testid={`scene-card-${scene.id}`}
+                             className={`scene-card p-3 rounded-lg border cursor-pointer ${
+                               selectedScene?.id === scene.id ? "border-blue-500 bg-blue-500/10" : "border-zinc-800 bg-zinc-900/50 hover:border-zinc-700"
+                             }`}
+                             onClick={() => { setSelectedScene(scene); setCurrentTime(scene.start_time); }}>
                           <div className="relative aspect-video rounded overflow-hidden mb-2 bg-zinc-800">
-                            {scene.thumbnail ? (
-                              <img
-                                src={scene.thumbnail}
-                                alt={scene.name}
-                                className="w-full h-full object-cover"
-                              />
+                            {scene.video_url ? (
+                              <video src={`${API.replace('/api', '')}${scene.video_url}`} className="w-full h-full object-cover"
+                                     poster={scene.thumbnail ? `${API}/thumbnails/${scene.id}` : undefined} muted />
+                            ) : scene.thumbnail ? (
+                              <img src={scene.thumbnail} alt={scene.name} className="w-full h-full object-cover" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-zinc-600">
                                 <Film className="w-6 h-6" />
@@ -526,46 +573,37 @@ export default function EditorPage() {
                                 <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
                               </div>
                             )}
+                            {scene.status === "ready" && (
+                              <div className="absolute top-1 right-1">
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                              </div>
+                            )}
                             <div className="absolute bottom-1 right-1 timecode text-[10px] bg-black/60 px-1 rounded">
                               {scene.duration.toFixed(1)}s
                             </div>
                           </div>
                           <div className="flex items-start justify-between">
                             <div>
-                              <h4 className="text-sm font-medium text-white truncate">
-                                {scene.name}
-                              </h4>
-                              <span className="text-xs text-zinc-500 capitalize">
-                                {scene.status}
-                              </span>
+                              <h4 className="text-sm font-medium text-white truncate">{scene.name}</h4>
+                              <span className="text-xs text-zinc-500 capitalize">{scene.status}</span>
                             </div>
                             <div className="flex gap-1">
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <button
-                                    data-testid={`generate-scene-${scene.id}`}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleGenerateScene(scene.id);
-                                    }}
-                                    className="p-1 rounded hover:bg-zinc-700 text-zinc-400 hover:text-white"
-                                    disabled={scene.status === "generating"}
-                                  >
+                                  <button data-testid={`generate-scene-${scene.id}`}
+                                          onClick={(e) => { e.stopPropagation(); openGenerateModal(scene); }}
+                                          className="p-1 rounded hover:bg-zinc-700 text-zinc-400 hover:text-white"
+                                          disabled={scene.status === "generating"}>
                                     <Wand2 className="w-3.5 h-3.5" />
                                   </button>
                                 </TooltipTrigger>
-                                <TooltipContent>Generate Video</TooltipContent>
+                                <TooltipContent>Generate with Sora 2</TooltipContent>
                               </Tooltip>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <button
-                                    data-testid={`delete-scene-${scene.id}`}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleDeleteScene(scene.id);
-                                    }}
-                                    className="p-1 rounded hover:bg-red-500/20 text-zinc-400 hover:text-red-400"
-                                  >
+                                  <button data-testid={`delete-scene-${scene.id}`}
+                                          onClick={(e) => { e.stopPropagation(); handleDeleteScene(scene.id); }}
+                                          className="p-1 rounded hover:bg-red-500/20 text-zinc-400 hover:text-red-400">
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>
                                 </TooltipTrigger>
@@ -582,14 +620,9 @@ export default function EditorPage() {
 
               <TabsContent value="characters" className="flex-1 mt-0 overflow-hidden">
                 <div className="p-3">
-                  <Button
-                    data-testid="add-character-btn"
-                    onClick={() => setShowCreateCharacter(true)}
-                    className="w-full bg-zinc-800 hover:bg-zinc-700 text-white"
-                    size="sm"
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add Character
+                  <Button data-testid="add-character-btn" onClick={() => setShowCreateCharacter(true)}
+                          className="w-full bg-zinc-800 hover:bg-zinc-700 text-white" size="sm">
+                    <Plus className="w-4 h-4 mr-1" /> Add Character
                   </Button>
                 </div>
                 <ScrollArea className="flex-1 px-3">
@@ -600,20 +633,15 @@ export default function EditorPage() {
                       </div>
                     ) : (
                       characters.map((char) => (
-                        <div
-                          key={char.id}
-                          data-testid={`character-card-${char.id}`}
-                          className="p-3 rounded-lg border border-zinc-800 bg-zinc-900/50"
-                        >
+                        <div key={char.id} data-testid={`character-card-${char.id}`}
+                             className="p-3 rounded-lg border border-zinc-800 bg-zinc-900/50">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 text-lg font-medium">
                               {char.name[0]}
                             </div>
                             <div>
                               <h4 className="text-sm font-medium text-white">{char.name}</h4>
-                              <p className="text-xs text-zinc-500 truncate max-w-[140px]">
-                                {char.description || "No description"}
-                              </p>
+                              <p className="text-xs text-zinc-500 truncate max-w-[140px]">{char.description || "No description"}</p>
                             </div>
                           </div>
                         </div>
@@ -629,22 +657,29 @@ export default function EditorPage() {
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Preview Area */}
             <div className="flex-1 bg-black flex items-center justify-center relative min-h-[300px]">
-              {getPreviewImage() ? (
-                <img
-                  src={getPreviewImage()}
-                  alt="Preview"
-                  className="max-h-full max-w-full object-contain"
-                  data-testid="preview-image"
-                />
+              {currentScene?.video_url ? (
+                <video ref={videoRef} data-testid="preview-video"
+                       src={`${API.replace('/api', '')}${currentScene.video_url}`}
+                       className="max-h-full max-w-full object-contain"
+                       poster={currentScene.thumbnail ? `${API}/thumbnails/${currentScene.id}` : undefined}
+                       muted={isMuted} loop />
+              ) : currentScene?.thumbnail ? (
+                <img src={currentScene.thumbnail} alt="Preview" className="max-h-full max-w-full object-contain" data-testid="preview-image" />
               ) : (
                 <div className="flex flex-col items-center justify-center gap-4 text-zinc-600">
                   <Film className="w-16 h-16" />
                   <span className="text-sm">Select a scene to preview</span>
                 </div>
               )}
-              {/* Timecode Overlay */}
-              <div className="absolute bottom-4 left-4 timecode text-lg bg-black/60 px-3 py-1 rounded">
-                {formatTime(currentTime)}
+              
+              {/* Video Controls Overlay */}
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                <div className="timecode text-lg bg-black/60 px-3 py-1 rounded">{formatTime(currentTime)}</div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setIsMuted(!isMuted)} className="p-2 bg-black/60 rounded hover:bg-black/80 text-white">
+                    {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -653,95 +688,43 @@ export default function EditorPage() {
               {/* Timeline Toolbar */}
               <div className="h-10 bg-[#18181B] border-b border-zinc-800 flex items-center justify-between px-3">
                 <div className="flex items-center gap-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        data-testid="skip-back-btn"
-                        onClick={() => setCurrentTime(0)}
-                        className="transport-btn"
-                      >
-                        <SkipBack className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>Go to Start</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        data-testid="play-pause-btn"
-                        onClick={() => setIsPlaying(!isPlaying)}
-                        className={`transport-btn ${isPlaying ? "active" : ""}`}
-                      >
-                        {isPlaying ? (
-                          <Pause className="w-4 h-4" />
-                        ) : (
-                          <Play className="w-4 h-4" />
-                        )}
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>{isPlaying ? "Pause" : "Play"}</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        data-testid="stop-btn"
-                        onClick={() => {
-                          setIsPlaying(false);
-                          setCurrentTime(0);
-                        }}
-                        className="transport-btn"
-                      >
-                        <Square className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>Stop</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        data-testid="skip-forward-btn"
-                        onClick={() => setCurrentTime(project?.total_duration || 60)}
-                        className="transport-btn"
-                      >
-                        <SkipForward className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>Go to End</TooltipContent>
-                  </Tooltip>
+                  <Tooltip><TooltipTrigger asChild>
+                    <button data-testid="skip-back-btn" onClick={() => setCurrentTime(0)} className="transport-btn">
+                      <SkipBack className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger><TooltipContent>Go to Start</TooltipContent></Tooltip>
+                  <Tooltip><TooltipTrigger asChild>
+                    <button data-testid="play-pause-btn" onClick={() => setIsPlaying(!isPlaying)}
+                            className={`transport-btn ${isPlaying ? "active" : ""}`}>
+                      {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                    </button>
+                  </TooltipTrigger><TooltipContent>{isPlaying ? "Pause" : "Play"}</TooltipContent></Tooltip>
+                  <Tooltip><TooltipTrigger asChild>
+                    <button data-testid="stop-btn" onClick={() => { setIsPlaying(false); setCurrentTime(0); }} className="transport-btn">
+                      <Square className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger><TooltipContent>Stop</TooltipContent></Tooltip>
+                  <Tooltip><TooltipTrigger asChild>
+                    <button data-testid="skip-forward-btn" onClick={() => setCurrentTime(project?.total_duration || 60)} className="transport-btn">
+                      <SkipForward className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger><TooltipContent>Go to End</TooltipContent></Tooltip>
                 </div>
 
-                <div className="timecode text-sm">
-                  {formatTime(currentTime)} / {formatTime(project?.total_duration || 0)}
-                </div>
+                <div className="timecode text-sm">{formatTime(currentTime)} / {formatTime(project?.total_duration || 0)}</div>
 
                 <div className="flex items-center gap-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        data-testid="zoom-out-btn"
-                        onClick={() => setZoom(Math.max(0.25, zoom - 0.25))}
-                        className="transport-btn"
-                      >
-                        <ZoomOut className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>Zoom Out</TooltipContent>
-                  </Tooltip>
-                  <span className="text-xs text-zinc-500 w-12 text-center">
-                    {Math.round(zoom * 100)}%
-                  </span>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        data-testid="zoom-in-btn"
-                        onClick={() => setZoom(Math.min(4, zoom + 0.25))}
-                        className="transport-btn"
-                      >
-                        <ZoomIn className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>Zoom In</TooltipContent>
-                  </Tooltip>
+                  <Tooltip><TooltipTrigger asChild>
+                    <button data-testid="zoom-out-btn" onClick={() => setZoom(Math.max(0.25, zoom - 0.25))} className="transport-btn">
+                      <ZoomOut className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger><TooltipContent>Zoom Out</TooltipContent></Tooltip>
+                  <span className="text-xs text-zinc-500 w-12 text-center">{Math.round(zoom * 100)}%</span>
+                  <Tooltip><TooltipTrigger asChild>
+                    <button data-testid="zoom-in-btn" onClick={() => setZoom(Math.min(4, zoom + 0.25))} className="transport-btn">
+                      <ZoomIn className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger><TooltipContent>Zoom In</TooltipContent></Tooltip>
                 </div>
               </div>
 
@@ -761,24 +744,15 @@ export default function EditorPage() {
                 </div>
 
                 {/* Timeline Tracks */}
-                <div
-                  ref={timelineRef}
-                  className="flex-1 overflow-x-auto overflow-y-hidden relative"
-                  onClick={handleTimelineClick}
-                  data-testid="timeline-area"
-                >
+                <div ref={timelineRef} className="flex-1 overflow-x-auto overflow-y-hidden relative"
+                     onClick={handleTimelineClick} data-testid="timeline-area">
                   {/* Ruler */}
                   <div className="h-6 bg-[#18181B] border-b border-zinc-800 sticky top-0 z-10">
-                    <div
-                      className="h-full relative"
-                      style={{ width: `${Math.max(1000, (project?.total_duration || 60) * PIXELS_PER_SECOND * zoom + 200)}px` }}
-                    >
+                    <div className="h-full relative"
+                         style={{ width: `${Math.max(1000, (project?.total_duration || 60) * PIXELS_PER_SECOND * zoom + 200)}px` }}>
                       {Array.from({ length: Math.ceil((project?.total_duration || 60) / 5) + 5 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute top-0 h-full flex flex-col justify-end items-start"
-                          style={{ left: `${i * 5 * PIXELS_PER_SECOND * zoom}px` }}
-                        >
+                        <div key={i} className="absolute top-0 h-full flex flex-col justify-end items-start"
+                             style={{ left: `${i * 5 * PIXELS_PER_SECOND * zoom}px` }}>
                           <span className="text-[10px] font-mono text-zinc-500 ml-1 mb-0.5">
                             {Math.floor((i * 5) / 60)}:{((i * 5) % 60).toString().padStart(2, "0")}
                           </span>
@@ -789,91 +763,52 @@ export default function EditorPage() {
                   </div>
 
                   {/* Video Track */}
-                  <div
-                    className="track-row h-20 relative timeline-track"
-                    style={{ width: `${Math.max(1000, (project?.total_duration || 60) * PIXELS_PER_SECOND * zoom + 200)}px` }}
-                  >
-                    {scenes
-                      .filter((s) => s.track_index === 0)
-                      .map((scene) => (
-                        <div
-                          key={scene.id}
-                          data-testid={`timeline-clip-${scene.id}`}
-                          className={`scene-clip absolute top-2 h-16 rounded-md border overflow-hidden ${
-                            scene.status === "generating"
-                              ? "border-blue-500 rendering"
-                              : selectedScene?.id === scene.id
-                              ? "border-blue-500 bg-blue-600"
-                              : "border-blue-600/50 bg-blue-500/80"
-                          } ${draggingScene === scene.id ? "dragging" : ""}`}
-                          style={{
-                            left: `${scene.start_time * PIXELS_PER_SECOND * zoom}px`,
-                            width: `${Math.max(40, scene.duration * PIXELS_PER_SECOND * zoom)}px`,
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedScene(scene);
-                          }}
-                          onMouseDown={(e) => handleSceneDrag(scene.id, e)}
-                        >
-                          <div className="h-full flex items-center px-2 gap-2">
-                            {scene.thumbnail && (
-                              <img
-                                src={scene.thumbnail}
-                                alt=""
-                                className="h-12 w-16 object-cover rounded-sm flex-shrink-0"
-                              />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <div className="text-xs font-medium text-white truncate">
-                                {scene.name}
-                              </div>
-                              <div className="text-[10px] text-white/70">
-                                {scene.duration.toFixed(1)}s
-                              </div>
-                            </div>
+                  <div className="track-row h-20 relative timeline-track"
+                       style={{ width: `${Math.max(1000, (project?.total_duration || 60) * PIXELS_PER_SECOND * zoom + 200)}px` }}>
+                    {scenes.filter((s) => s.track_index === 0).map((scene) => (
+                      <div key={scene.id} data-testid={`timeline-clip-${scene.id}`}
+                           className={`scene-clip absolute top-2 h-16 rounded-md border overflow-hidden ${
+                             scene.status === "generating" ? "border-blue-500 rendering" :
+                             scene.status === "ready" ? "border-green-500 bg-green-600/80" :
+                             selectedScene?.id === scene.id ? "border-blue-500 bg-blue-600" : "border-blue-600/50 bg-blue-500/80"
+                           } ${draggingScene === scene.id ? "dragging" : ""}`}
+                           style={{ left: `${scene.start_time * PIXELS_PER_SECOND * zoom}px`,
+                                    width: `${Math.max(40, scene.duration * PIXELS_PER_SECOND * zoom)}px` }}
+                           onClick={(e) => { e.stopPropagation(); setSelectedScene(scene); }}
+                           onMouseDown={(e) => handleSceneDrag(scene.id, e)}>
+                        <div className="h-full flex items-center px-2 gap-2">
+                          {scene.thumbnail && (
+                            <img src={scene.thumbnail.startsWith('http') ? scene.thumbnail : `${API}/thumbnails/${scene.id}`}
+                                 alt="" className="h-12 w-16 object-cover rounded-sm flex-shrink-0" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-medium text-white truncate">{scene.name}</div>
+                            <div className="text-[10px] text-white/70">{scene.duration.toFixed(1)}s</div>
                           </div>
                         </div>
-                      ))}
+                      </div>
+                    ))}
                   </div>
 
                   {/* Audio Track */}
-                  <div
-                    className="track-row h-16 relative timeline-track border-t border-zinc-800"
-                    style={{ width: `${Math.max(1000, (project?.total_duration || 60) * PIXELS_PER_SECOND * zoom + 200)}px` }}
-                  >
-                    {scenes
-                      .filter((s) => s.track_index === 1)
-                      .map((scene) => (
-                        <div
-                          key={scene.id}
-                          data-testid={`audio-clip-${scene.id}`}
-                          className={`scene-clip absolute top-2 h-12 rounded-md border bg-emerald-500/80 border-emerald-600/50 ${
-                            draggingScene === scene.id ? "dragging" : ""
-                          }`}
-                          style={{
-                            left: `${scene.start_time * PIXELS_PER_SECOND * zoom}px`,
-                            width: `${Math.max(40, scene.duration * PIXELS_PER_SECOND * zoom)}px`,
-                          }}
-                          onMouseDown={(e) => handleSceneDrag(scene.id, e)}
-                        >
-                          <div className="h-full flex items-center px-2">
-                            <span className="text-xs text-white truncate">{scene.name}</span>
-                          </div>
+                  <div className="track-row h-16 relative timeline-track border-t border-zinc-800"
+                       style={{ width: `${Math.max(1000, (project?.total_duration || 60) * PIXELS_PER_SECOND * zoom + 200)}px` }}>
+                    {scenes.filter((s) => s.audio_track).map((scene) => (
+                      <div key={`audio-${scene.id}`} data-testid={`audio-clip-${scene.id}`}
+                           className="scene-clip absolute top-2 h-12 rounded-md border bg-emerald-500/80 border-emerald-600/50"
+                           style={{ left: `${scene.start_time * PIXELS_PER_SECOND * zoom}px`,
+                                    width: `${Math.max(40, scene.duration * PIXELS_PER_SECOND * zoom)}px` }}>
+                        <div className="h-full flex items-center px-2">
+                          <Music className="w-3 h-3 mr-1 text-white" />
+                          <span className="text-xs text-white truncate">{scene.name}</span>
                         </div>
-                      ))}
+                      </div>
+                    ))}
                   </div>
 
                   {/* Playhead */}
-                  <div
-                    className="playhead"
-                    style={{
-                      left: `${currentTime * PIXELS_PER_SECOND * zoom}px`,
-                      top: 0,
-                      bottom: 0,
-                    }}
-                    data-testid="playhead"
-                  />
+                  <div className="playhead" style={{ left: `${currentTime * PIXELS_PER_SECOND * zoom}px`, top: 0, bottom: 0 }}
+                       data-testid="playhead" />
                 </div>
               </div>
             </div>
@@ -885,20 +820,11 @@ export default function EditorPage() {
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-[#8B5CF6]" />
                 <span className="font-chivo font-semibold text-white">AI Director</span>
+                <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">Sora 2</span>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={async () => {
-                  await axios.delete(`${API}/projects/${projectId}/chat-history`);
-                  setChatMessages([]);
-                  toast.success("Chat cleared");
-                }}
-                className="text-zinc-400 hover:text-white text-xs"
-                data-testid="clear-chat-btn"
-              >
-                Clear
-              </Button>
+              <Button variant="ghost" size="sm" data-testid="clear-chat-btn"
+                      onClick={async () => { await axios.delete(`${API}/projects/${projectId}/chat-history`); setChatMessages([]); toast.success("Chat cleared"); }}
+                      className="text-zinc-400 hover:text-white text-xs">Clear</Button>
             </div>
 
             <ScrollArea className="flex-1 p-4">
@@ -906,47 +832,23 @@ export default function EditorPage() {
                 {chatMessages.length === 0 ? (
                   <div className="text-center py-8">
                     <Sparkles className="w-12 h-12 text-[#8B5CF6] mx-auto mb-4 opacity-50" />
-                    <p className="text-zinc-400 text-sm mb-2">
-                      Start a conversation with your AI Director
-                    </p>
-                    <p className="text-zinc-500 text-xs">
-                      Ask for scene ideas, script help, or creative direction
-                    </p>
+                    <p className="text-zinc-400 text-sm mb-2">Start a conversation with your AI Director</p>
+                    <p className="text-zinc-500 text-xs">Ask for scene ideas, script help, or creative direction</p>
                   </div>
                 ) : (
                   chatMessages.map((msg, idx) => (
-                    <div
-                      key={msg.id || idx}
-                      data-testid={`chat-message-${idx}`}
-                      className={`p-3 rounded-lg ${
-                        msg.role === "assistant"
-                          ? "ai-message"
-                          : "user-message"
-                      } animate-fade-in`}
-                    >
+                    <div key={msg.id || idx} data-testid={`chat-message-${idx}`}
+                         className={`p-3 rounded-lg ${msg.role === "assistant" ? "ai-message" : "user-message"} animate-fade-in`}>
                       <div className="flex items-center gap-2 mb-2">
-                        {msg.role === "assistant" ? (
-                          <Sparkles className="w-4 h-4 text-[#8B5CF6]" />
-                        ) : (
-                          <div className="w-4 h-4 rounded-full bg-zinc-600" />
-                        )}
-                        <span className="text-xs font-medium text-zinc-400">
-                          {msg.role === "assistant" ? "AI Director" : "You"}
-                        </span>
+                        {msg.role === "assistant" ? <Sparkles className="w-4 h-4 text-[#8B5CF6]" /> : <div className="w-4 h-4 rounded-full bg-zinc-600" />}
+                        <span className="text-xs font-medium text-zinc-400">{msg.role === "assistant" ? "AI Director" : "You"}</span>
                       </div>
-                      <div className="text-sm text-zinc-300 whitespace-pre-wrap">
-                        {msg.content}
-                      </div>
+                      <div className="text-sm text-zinc-300 whitespace-pre-wrap">{msg.content}</div>
                       {msg.scene_plan && (
                         <div className="mt-3 pt-3 border-t border-zinc-700">
-                          <Button
-                            data-testid={`create-from-plan-${idx}`}
-                            size="sm"
-                            onClick={() => handleCreateFromPlan(msg.scene_plan)}
-                            className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs"
-                          >
-                            <Plus className="w-3 h-3 mr-1" />
-                            Create This Scene
+                          <Button data-testid={`create-from-plan-${idx}`} size="sm" onClick={() => handleCreateFromPlan(msg.scene_plan)}
+                                  className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs">
+                            <Plus className="w-3 h-3 mr-1" /> Create This Scene
                           </Button>
                         </div>
                       )}
@@ -966,35 +868,13 @@ export default function EditorPage() {
             </ScrollArea>
 
             <div className="p-4 border-t border-zinc-800">
-              <div className="flex gap-2">
-                <Textarea
-                  data-testid="chat-input"
-                  placeholder="Ask the AI Director..."
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                  className="flex-1 bg-zinc-900/50 border-zinc-700 focus:border-zinc-500 text-white resize-none h-20 text-sm"
-                />
-              </div>
-              <Button
-                data-testid="send-chat-btn"
-                onClick={handleSendMessage}
-                disabled={!chatInput.trim() || chatLoading}
-                className="w-full mt-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white"
-              >
-                {chatLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <>
-                    <Send className="w-4 h-4 mr-2" />
-                    Send
-                  </>
-                )}
+              <Textarea data-testid="chat-input" placeholder="Ask the AI Director..." value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
+                        className="bg-zinc-900/50 border-zinc-700 focus:border-zinc-500 text-white resize-none h-20 text-sm" />
+              <Button data-testid="send-chat-btn" onClick={handleSendMessage} disabled={!chatInput.trim() || chatLoading}
+                      className="w-full mt-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white">
+                {chatLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4 mr-2" /> Send</>}
               </Button>
             </div>
           </div>
@@ -1002,94 +882,69 @@ export default function EditorPage() {
 
         {/* Create Scene Modal */}
         <Dialog open={showCreateScene} onOpenChange={setShowCreateScene}>
-          <DialogContent className="bg-[#18181B] border-zinc-800 text-white max-w-lg">
-            <DialogHeader>
-              <DialogTitle className="font-chivo text-xl">Create New Scene</DialogTitle>
-            </DialogHeader>
+          <DialogContent className="bg-[#18181B] border-zinc-800 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogHeader><DialogTitle className="font-chivo text-xl">Create New Scene</DialogTitle></DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label className="text-zinc-300">Scene Name</Label>
-                <Input
-                  data-testid="scene-name-input"
-                  placeholder="Opening Shot"
-                  value={newScene.name}
-                  onChange={(e) => setNewScene({ ...newScene, name: e.target.value })}
-                  className="bg-zinc-900/50 border-zinc-700 text-white"
-                />
+                <Input data-testid="scene-name-input" placeholder="Opening Shot" value={newScene.name}
+                       onChange={(e) => setNewScene({ ...newScene, name: e.target.value })}
+                       className="bg-zinc-900/50 border-zinc-700 text-white" />
               </div>
               <div className="space-y-2">
                 <Label className="text-zinc-300">Description</Label>
-                <Textarea
-                  data-testid="scene-description-input"
-                  placeholder="Brief description of the scene..."
-                  value={newScene.description}
-                  onChange={(e) => setNewScene({ ...newScene, description: e.target.value })}
-                  className="bg-zinc-900/50 border-zinc-700 text-white resize-none h-20"
-                />
+                <Textarea data-testid="scene-description-input" placeholder="Brief description..."
+                          value={newScene.description} onChange={(e) => setNewScene({ ...newScene, description: e.target.value })}
+                          className="bg-zinc-900/50 border-zinc-700 text-white resize-none h-16" />
               </div>
               <div className="space-y-2">
-                <Label className="text-zinc-300">AI Generation Prompt</Label>
-                <Textarea
-                  data-testid="scene-prompt-input"
-                  placeholder="Detailed prompt for AI video generation..."
-                  value={newScene.prompt}
-                  onChange={(e) => setNewScene({ ...newScene, prompt: e.target.value })}
-                  className="bg-zinc-900/50 border-zinc-700 text-white resize-none h-24"
-                />
+                <Label className="text-zinc-300">Sora 2 Prompt</Label>
+                <Textarea data-testid="scene-prompt-input" placeholder="Detailed visual prompt for AI video generation..."
+                          value={newScene.prompt} onChange={(e) => setNewScene({ ...newScene, prompt: e.target.value })}
+                          className="bg-zinc-900/50 border-zinc-700 text-white resize-none h-24" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-zinc-300">Duration (seconds)</Label>
-                  <Input
-                    data-testid="scene-duration-input"
-                    type="number"
-                    min={1}
-                    max={60}
-                    value={newScene.duration}
-                    onChange={(e) =>
-                      setNewScene({ ...newScene, duration: parseFloat(e.target.value) || 5 })
-                    }
-                    className="bg-zinc-900/50 border-zinc-700 text-white"
-                  />
+                  <Label className="text-zinc-300">Duration (sec)</Label>
+                  <Input data-testid="scene-duration-input" type="number" min={1} max={60} value={newScene.duration}
+                         onChange={(e) => setNewScene({ ...newScene, duration: parseFloat(e.target.value) || 5 })}
+                         className="bg-zinc-900/50 border-zinc-700 text-white" />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-zinc-300">Characters</Label>
-                  <select
-                    data-testid="scene-characters-select"
-                    multiple
-                    value={newScene.characters}
-                    onChange={(e) =>
-                      setNewScene({
-                        ...newScene,
-                        characters: Array.from(e.target.selectedOptions, (o) => o.value),
-                      })
-                    }
-                    className="w-full h-20 px-2 py-1 rounded-md bg-zinc-900/50 border border-zinc-700 text-white text-sm"
-                  >
-                    {characters.map((char) => (
-                      <option key={char.id} value={char.id}>
-                        {char.name}
-                      </option>
-                    ))}
+                  <select data-testid="scene-characters-select" multiple value={newScene.characters}
+                          onChange={(e) => setNewScene({ ...newScene, characters: Array.from(e.target.selectedOptions, (o) => o.value) })}
+                          className="w-full h-20 px-2 py-1 rounded-md bg-zinc-900/50 border border-zinc-700 text-white text-sm">
+                    {characters.map((char) => (<option key={char.id} value={char.id}>{char.name}</option>))}
                   </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">Transition In</Label>
+                  <Select value={newScene.transition_in.type}
+                          onValueChange={(v) => setNewScene({ ...newScene, transition_in: { ...newScene.transition_in, type: v } })}>
+                    <SelectTrigger className="bg-zinc-900/50 border-zinc-700 text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      {TRANSITIONS.map((t) => (<SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">Transition Out</Label>
+                  <Select value={newScene.transition_out.type}
+                          onValueChange={(v) => setNewScene({ ...newScene, transition_out: { ...newScene.transition_out, type: v } })}>
+                    <SelectTrigger className="bg-zinc-900/50 border-zinc-700 text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      {TRANSITIONS.map((t) => (<SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button
-                variant="ghost"
-                onClick={() => setShowCreateScene(false)}
-                className="text-zinc-400 hover:text-white hover:bg-zinc-800"
-              >
-                Cancel
-              </Button>
-              <Button
-                data-testid="create-scene-submit-btn"
-                onClick={handleCreateScene}
-                className="bg-white text-black hover:bg-zinc-200"
-              >
-                Create Scene
-              </Button>
+              <Button variant="ghost" onClick={() => setShowCreateScene(false)} className="text-zinc-400 hover:text-white hover:bg-zinc-800">Cancel</Button>
+              <Button data-testid="create-scene-submit-btn" onClick={handleCreateScene} className="bg-white text-black hover:bg-zinc-200">Create Scene</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -1097,47 +952,165 @@ export default function EditorPage() {
         {/* Create Character Modal */}
         <Dialog open={showCreateCharacter} onOpenChange={setShowCreateCharacter}>
           <DialogContent className="bg-[#18181B] border-zinc-800 text-white">
-            <DialogHeader>
-              <DialogTitle className="font-chivo text-xl">Create Character</DialogTitle>
-            </DialogHeader>
+            <DialogHeader><DialogTitle className="font-chivo text-xl">Create Character</DialogTitle></DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label className="text-zinc-300">Character Name</Label>
-                <Input
-                  data-testid="character-name-input"
-                  placeholder="John Doe"
-                  value={newCharacter.name}
-                  onChange={(e) => setNewCharacter({ ...newCharacter, name: e.target.value })}
-                  className="bg-zinc-900/50 border-zinc-700 text-white"
-                />
+                <Input data-testid="character-name-input" placeholder="John Doe" value={newCharacter.name}
+                       onChange={(e) => setNewCharacter({ ...newCharacter, name: e.target.value })}
+                       className="bg-zinc-900/50 border-zinc-700 text-white" />
               </div>
               <div className="space-y-2">
                 <Label className="text-zinc-300">Description</Label>
-                <Textarea
-                  data-testid="character-description-input"
-                  placeholder="Physical appearance, personality traits..."
-                  value={newCharacter.description}
-                  onChange={(e) =>
-                    setNewCharacter({ ...newCharacter, description: e.target.value })
-                  }
-                  className="bg-zinc-900/50 border-zinc-700 text-white resize-none h-24"
-                />
+                <Textarea data-testid="character-description-input" placeholder="Physical appearance, personality..."
+                          value={newCharacter.description} onChange={(e) => setNewCharacter({ ...newCharacter, description: e.target.value })}
+                          className="bg-zinc-900/50 border-zinc-700 text-white resize-none h-24" />
               </div>
             </div>
             <DialogFooter>
-              <Button
-                variant="ghost"
-                onClick={() => setShowCreateCharacter(false)}
-                className="text-zinc-400 hover:text-white hover:bg-zinc-800"
-              >
-                Cancel
-              </Button>
-              <Button
-                data-testid="create-character-submit-btn"
-                onClick={handleCreateCharacter}
-                className="bg-white text-black hover:bg-zinc-200"
-              >
-                Create Character
+              <Button variant="ghost" onClick={() => setShowCreateCharacter(false)} className="text-zinc-400 hover:text-white hover:bg-zinc-800">Cancel</Button>
+              <Button data-testid="create-character-submit-btn" onClick={handleCreateCharacter} className="bg-white text-black hover:bg-zinc-200">Create Character</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Generate Video Modal */}
+        <Dialog open={showGenerateModal} onOpenChange={(open) => { if (!generatingSceneId) setShowGenerateModal(open); }}>
+          <DialogContent className="bg-[#18181B] border-zinc-800 text-white max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="font-chivo text-xl flex items-center gap-2">
+                <Wand2 className="w-5 h-5 text-[#8B5CF6]" /> Generate with Sora 2
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              {generatingSceneId ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+                    <div>
+                      <p className="text-white font-medium">{renderProgress?.message || "Generating..."}</p>
+                      <p className="text-sm text-zinc-400">This may take 2-5 minutes</p>
+                    </div>
+                  </div>
+                  <Progress value={renderProgress?.progress || 0} className="h-2" />
+                  <p className="text-center text-sm text-zinc-500">{renderProgress?.progress || 0}% complete</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <Label className="text-zinc-300">Prompt</Label>
+                    <Textarea data-testid="generate-prompt-input" placeholder="Describe the video you want to generate..."
+                              value={generateConfig.prompt} onChange={(e) => setGenerateConfig({ ...generateConfig, prompt: e.target.value })}
+                              className="bg-zinc-900/50 border-zinc-700 text-white resize-none h-32" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-zinc-300">Duration</Label>
+                      <Select value={generateConfig.duration.toString()}
+                              onValueChange={(v) => setGenerateConfig({ ...generateConfig, duration: parseInt(v) })}>
+                        <SelectTrigger className="bg-zinc-900/50 border-zinc-700 text-white"><SelectValue /></SelectTrigger>
+                        <SelectContent className="bg-zinc-900 border-zinc-700">
+                          {VIDEO_DURATIONS.map((d) => (<SelectItem key={d.value} value={d.value.toString()}>{d.label}</SelectItem>))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-zinc-300">Resolution</Label>
+                      <Select value={generateConfig.size}
+                              onValueChange={(v) => setGenerateConfig({ ...generateConfig, size: v })}>
+                        <SelectTrigger className="bg-zinc-900/50 border-zinc-700 text-white"><SelectValue /></SelectTrigger>
+                        <SelectContent className="bg-zinc-900 border-zinc-700">
+                          {VIDEO_SIZES.map((s) => (<SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="p-3 bg-zinc-900/50 rounded-lg border border-zinc-800">
+                    <div className="flex items-center gap-2 text-sm text-zinc-400">
+                      <Clock className="w-4 h-4" />
+                      <span>Estimated time: 2-5 minutes</span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            {!generatingSceneId && (
+              <DialogFooter>
+                <Button variant="ghost" onClick={() => setShowGenerateModal(false)} className="text-zinc-400 hover:text-white hover:bg-zinc-800">Cancel</Button>
+                <Button data-testid="start-generate-btn" onClick={handleGenerateVideo}
+                        className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white">
+                  <Wand2 className="w-4 h-4 mr-2" /> Generate Video
+                </Button>
+              </DialogFooter>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Export Modal */}
+        <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
+          <DialogContent className="bg-[#18181B] border-zinc-800 text-white">
+            <DialogHeader><DialogTitle className="font-chivo text-xl">Export Project</DialogTitle></DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">Format</Label>
+                  <Select value={exportConfig.format} onValueChange={(v) => setExportConfig({ ...exportConfig, format: v })}>
+                    <SelectTrigger className="bg-zinc-900/50 border-zinc-700 text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="mp4">MP4 (H.264)</SelectItem>
+                      <SelectItem value="mov">MOV (QuickTime)</SelectItem>
+                      <SelectItem value="webm">WebM</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">Resolution</Label>
+                  <Select value={exportConfig.resolution} onValueChange={(v) => setExportConfig({ ...exportConfig, resolution: v })}>
+                    <SelectTrigger className="bg-zinc-900/50 border-zinc-700 text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="720p">720p (HD)</SelectItem>
+                      <SelectItem value="1080p">1080p (Full HD)</SelectItem>
+                      <SelectItem value="4k">4K (Ultra HD)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">Frame Rate</Label>
+                  <Select value={exportConfig.fps.toString()} onValueChange={(v) => setExportConfig({ ...exportConfig, fps: parseInt(v) })}>
+                    <SelectTrigger className="bg-zinc-900/50 border-zinc-700 text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="24">24 fps (Cinema)</SelectItem>
+                      <SelectItem value="30">30 fps (Standard)</SelectItem>
+                      <SelectItem value="60">60 fps (Smooth)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">Audio</Label>
+                  <Select value={exportConfig.include_audio.toString()}
+                          onValueChange={(v) => setExportConfig({ ...exportConfig, include_audio: v === "true" })}>
+                    <SelectTrigger className="bg-zinc-900/50 border-zinc-700 text-white"><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="true">Include Audio</SelectItem>
+                      <SelectItem value="false">Video Only</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="p-3 bg-zinc-900/50 rounded-lg border border-zinc-800">
+                <p className="text-sm text-zinc-400">
+                  {scenes.filter(s => s.video_path || s.video_url).length} of {scenes.length} scenes have video ready for export.
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setShowExportModal(false)} className="text-zinc-400 hover:text-white hover:bg-zinc-800">Cancel</Button>
+              <Button data-testid="export-submit-btn" onClick={handleExport} disabled={exporting}
+                      className="bg-white text-black hover:bg-zinc-200">
+                {exporting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Download className="w-4 h-4 mr-2" />}
+                {exporting ? "Exporting..." : "Export"}
               </Button>
             </DialogFooter>
           </DialogContent>
