@@ -216,16 +216,16 @@ CineCursor is a comprehensive AI-powered video production platform inspired by C
 ## 10. Upcoming Features (Backlog)
 
 ### P1 - High Priority
-- [ ] Real video playback in VideoPreview
-- [ ] Video generation progress polling
-- [ ] Asset upload functionality
-- [ ] Audio track support
+- [ ] Real video playback in VideoPreview (when scene has video_url)
+- [ ] Asset upload functionality (images, audio)
+- [ ] Timeline drag-drop reordering
 
 ### P2 - Medium Priority
 - [ ] Character face consistency (IP-Adapter)
-- [ ] Scene transitions
-- [ ] Continuity checking (VAP)
+- [ ] Scene transitions implementation with FFmpeg
+- [ ] Continuity checking (VAP) with AI analysis
 - [ ] Multi-track timeline editing
+- [ ] Audio track support
 
 ### P3 - Future
 - [ ] Cloud sync (S3)
