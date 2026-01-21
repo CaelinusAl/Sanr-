@@ -83,12 +83,9 @@ export default function EditorPage() {
   const [zoom, setZoom] = useState(1);
   const [selectedScene, setSelectedScene] = useState(null);
   const [draggingScene, setDraggingScene] = useState(null);
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
   
   // Chat State
   const [chatMessages, setChatMessages] = useState([]);
-  const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   
   // Modal State
@@ -129,19 +126,12 @@ export default function EditorPage() {
   
   // Refs
   const timelineRef = useRef(null);
-  const chatEndRef = useRef(null);
   const playbackRef = useRef(null);
-  const videoRef = useRef(null);
 
   // Load project data
   useEffect(() => {
     if (projectId) loadProjectData();
   }, [projectId]);
-
-  // Auto-scroll chat
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatMessages]);
 
   // Playback loop
   useEffect(() => {
