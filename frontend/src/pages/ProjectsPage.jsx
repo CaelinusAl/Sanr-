@@ -157,6 +157,15 @@ export default function ProjectsPage() {
           <span className="font-chivo font-bold text-xl text-white">CineCursor</span>
         </div>
         <div className="flex items-center gap-3">
+          {/* AI Director Button - NEW */}
+          <Button
+            data-testid="ai-director-btn"
+            onClick={() => navigate('/ai-director')}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-medium"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            AI Director V2
+          </Button>
           <Button
             data-testid="templates-btn"
             variant="outline"
