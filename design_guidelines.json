@@ -1,0 +1,158 @@
+{
+  "identity": {
+    "name": "CineCursor",
+    "persona": "The Obsidian Suite",
+    "vibe": "Precision, Cinematic, Dark-Room, AI-Native",
+    "theme_mode": "dark"
+  },
+  "typography": {
+    "fonts": [
+      {
+        "family": "Chivo",
+        "url": "https://fonts.googleapis.com/css2?family=Chivo:wght@300;400;700;900&display=swap",
+        "usage": "Headings, Hero Text, Brand Elements",
+        "weights": ["300", "400", "700", "900"]
+      },
+      {
+        "family": "Manrope",
+        "url": "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap",
+        "usage": "UI Elements, Body Text, Inputs, Tooltips",
+        "weights": ["400", "500", "600"]
+      },
+      {
+        "family": "JetBrains Mono",
+        "url": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap",
+        "usage": "Timecodes, Metadata, Script formatting, Code snippets",
+        "weights": ["400", "500"]
+      }
+    ],
+    "rules": {
+      "headings": "font-chivo tracking-tight font-bold text-white",
+      "body": "font-manrope text-zinc-400 leading-relaxed",
+      "mono": "font-mono text-xs tracking-wide text-zinc-500",
+      "timecode": "font-mono text-yellow-500 font-medium"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": "#09090B",
+      "surface_1": "#18181B",
+      "surface_2": "#27272A",
+      "border": "#27272A",
+      "primary": "#3B82F6",
+      "primary_glow": "rgba(59, 130, 246, 0.5)",
+      "accent_ai": "#8B5CF6",
+      "accent_record": "#E11D48",
+      "text_primary": "#FAFAFA",
+      "text_secondary": "#A1A1AA",
+      "text_muted": "#52525B"
+    },
+    "tailwind_extension": {
+      "colors": {
+        "obsidian": "#09090B",
+        "charcoal": "#18181B",
+        "pebble": "#27272A",
+        "cinema-red": "#E11D48",
+        "ai-purple": "#8B5CF6",
+        "timeline-track": "#1F1F22",
+        "timeline-clip": "#3B82F6"
+      }
+    }
+  },
+  "layout": {
+    "spacing_system": "Generous padding for containers (p-6, p-8), tight packing for toolbars (gap-2, p-2).",
+    "grid_system": "Bento Grid for Dashboard, Flex/Grid hybrid for Editor.",
+    "border_radius": {
+      "default": "rounded-md",
+      "button": "rounded-md",
+      "panel": "rounded-lg",
+      "input": "rounded-md"
+    },
+    "z_index": {
+      "modal": 50,
+      "popover": 40,
+      "sticky_nav": 30,
+      "floating_panel": 20
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-white text-black hover:bg-zinc-200 font-medium px-4 py-2 rounded-md transition-all shadow-[0_0_10px_rgba(255,255,255,0.1)]",
+      "secondary": "bg-zinc-800 text-white hover:bg-zinc-700 border border-zinc-700 px-4 py-2 rounded-md transition-all",
+      "ghost": "text-zinc-400 hover:text-white hover:bg-zinc-800/50 px-3 py-2 rounded-md transition-colors",
+      "icon": "p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-md"
+    },
+    "inputs": {
+      "default": "bg-zinc-900/50 border border-zinc-800 focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600 text-sm text-white placeholder:text-zinc-600 rounded-md h-9 px-3",
+      "search": "pl-9 bg-zinc-900/50 border-zinc-800 rounded-md h-9"
+    },
+    "cards": {
+      "scene": "group relative overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 transition-all hover:shadow-xl",
+      "project": "flex flex-col gap-3 p-4 rounded-lg border border-zinc-800 bg-zinc-900/30 hover:bg-zinc-900/80 transition-all cursor-pointer"
+    },
+    "panels": {
+      "editor_sidebar": "bg-obsidian border-r border-zinc-800 h-full flex flex-col",
+      "timeline_area": "bg-obsidian border-t border-zinc-800 h-[300px] flex flex-col"
+    }
+  },
+  "assets": {
+    "icons": "lucide-react",
+    "image_urls": {
+      "scene_thumbnails": [
+        "https://images.pexels.com/photos/13812458/pexels-photo-13812458.jpeg",
+        "https://images.pexels.com/photos/13226337/pexels-photo-13226337.jpeg",
+        "https://images.pexels.com/photos/1117132/pexels-photo-1117132.jpeg",
+        "https://images.pexels.com/photos/13812380/pexels-photo-13812380.jpeg"
+      ],
+      "avatars": [
+        "https://images.pexels.com/photos/8089650/pexels-photo-8089650.jpeg",
+        "https://images.pexels.com/photos/8088373/pexels-photo-8088373.jpeg",
+        "https://images.pexels.com/photos/30697926/pexels-photo-30697926.jpeg"
+      ],
+      "production_assets": [
+        "https://images.pexels.com/photos/8088372/pexels-photo-8088372.jpeg"
+      ]
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-black/40 border border-white/5",
+    "gradients": {
+      "subtle_glow": "bg-gradient-to-b from-white/5 to-transparent",
+      "ai_active": "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border-l-2 border-indigo-500"
+    },
+    "shadows": {
+      "glow": "shadow-[0_0_20px_rgba(59,130,246,0.15)]"
+    }
+  },
+  "instructions_to_main_agent": [
+    "1. SETUP: Install 'lucide-react' and 'sonner' immediately.",
+    "2. THEME: Force dark mode in 'tailwind.config.js' and 'index.css'. Do not create a light mode toggle.",
+    "3. LAYOUT: The 'Editor' page must use a fixed layout (h-screen w-screen overflow-hidden) with resizable panels if possible, or fixed percentage widths.",
+    "4. TIMELINE: The timeline is the heart. It must look technical. Use 'JetBrains Mono' for the ruler. Use absolute positioning for clips.",
+    "5. AI CHAT: The AI chat should feel like a 'Co-pilot'. Use the 'ai-purple' color for AI messages and 'obsidian' for user messages.",
+    "6. IMAGES: Use the provided 'scene_thumbnails' for the project dashboard and asset library mock data.",
+    "7. DATA-TESTID: Add 'data-testid' to all interactive elements (buttons, inputs, clips).",
+    "8. SCROLLBARS: Customize webkit-scrollbar to be thin (w-1.5) and dark (bg-transparent thumb-zinc-700).",
+    "9. BORDERS: Use 'border-zinc-800' for structural borders. Avoid thick borders."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: 'transition: all'. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add '.App { text-align: center; }' in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use 'sonner' for toasts. Sonner component are located in '/app/src/components/ui/sonner.tsx'"
+  ]
+}
