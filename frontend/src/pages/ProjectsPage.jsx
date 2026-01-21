@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Film, Clock, Clapperboard, Search, MoreVertical, Trash2 } from "lucide-react";
+import { Plus, Film, Clock, Clapperboard, Search, MoreVertical, Trash2, Sparkles, Layout } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,6 +20,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import axios from "axios";
+import { OnboardingFlow } from "../components/OnboardingFlow";
+import { ProjectTemplates } from "../components/ProjectTemplates";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
