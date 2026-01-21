@@ -27,60 +27,37 @@ export default function FilmGeneratorPage() {
   const [socket, setSocket] = useState(null);
   const [error, setError] = useState(null);
 
-  // Initialize WebSocket connection
+  // Initialize polling (WebSocket disabled for now)
   useEffect(() => {
-    const socketUrl = API.replace('/api', '').replace('https://', 'wss://').replace('http://', 'ws://');
-    const newSocket = io(socketUrl, {
-      path: '/socket.io',
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000
-    });
+    // Start polling if we have a filmId
+    if (filmId && isGenerating) {
+      const pollInterval = setInterval(async () => {
+        try {
+          const response = await fetch(`${API}/film/${filmId}/status`);
+          if (response.ok) {
+            const data = await response.json();
+            setStatus(prev => ({
+              ...prev,
+              ...data
+            }));
 
-    newSocket.on('connect', () => {
-      console.log('WebSocket connected');
-    });
+            if (data.filmPlan) {
+              setFilmPlan(data.filmPlan);
+            }
 
-    newSocket.on('connect_error', (err) => {
-      console.log('WebSocket connection error, falling back to polling:', err.message);
-    });
-
-    newSocket.on('film_status', (data) => {
-      console.log('Film status update:', data);
-      if (data.filmId === filmId) {
-        setStatus(prev => ({
-          ...prev,
-          ...data,
-          workers: data.workers || prev.workers,
-          issues: data.issues || prev.issues,
-          completedScenes: data.completedScenes || prev.completedScenes,
-          qualityMetrics: data.qualityMetrics || prev.qualityMetrics
-        }));
-
-        if (data.filmPlan) {
-          setFilmPlan(data.filmPlan);
+            if (data.stage === 'complete' || data.stage === 'error') {
+              clearInterval(pollInterval);
+              setIsGenerating(false);
+            }
+          }
+        } catch (err) {
+          console.error('Polling error:', err);
         }
+      }, 2000);
 
-        if (data.stage === 'complete') {
-          setIsGenerating(false);
-        }
-      }
-    });
-
-    newSocket.on('film_error', (data) => {
-      if (data.filmId === filmId) {
-        setError(data.message);
-        setIsGenerating(false);
-      }
-    });
-
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.close();
-    };
-  }, [filmId]);
+      return () => clearInterval(pollInterval);
+    }
+  }, [filmId, isGenerating]);
 
   // Start film generation
   const handleStartGeneration = async ({ story, config }) => {
