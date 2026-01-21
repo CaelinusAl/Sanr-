@@ -86,6 +86,46 @@ export default function ProjectsPage() {
     }
   };
 
+  const handleCreateFromTemplate = async (templateData) => {
+    try {
+      // Create project
+      const response = await axios.post(`${API}/projects`, {
+        name: templateData.name,
+        description: templateData.template?.description || "",
+        style_guide: templateData.style_guide || "cinematic",
+      });
+      
+      const projectId = response.data.id;
+      
+      // Create template scenes if any
+      if (templateData.scenes && templateData.scenes.length > 0) {
+        let startTime = 0;
+        for (const sceneTemplate of templateData.scenes) {
+          await axios.post(`${API}/projects/${projectId}/scenes`, {
+            name: sceneTemplate.name,
+            prompt: sceneTemplate.prompt,
+            duration: sceneTemplate.duration,
+            start_time: startTime,
+            track_index: 0,
+          });
+          startTime += sceneTemplate.duration;
+        }
+      }
+      
+      setShowTemplates(false);
+      toast.success("Project created from template!");
+      navigate(`/editor/${projectId}`);
+    } catch (error) {
+      console.error("Error creating project from template:", error);
+      toast.error("Failed to create project");
+    }
+  };
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem("cinecursor_onboarding_complete", "true");
+    setShowOnboarding(false);
+  };
+
   const handleDeleteProject = async (projectId, e) => {
     e.stopPropagation();
     try {
