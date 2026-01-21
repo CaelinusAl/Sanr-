@@ -156,14 +156,25 @@ export default function ProjectsPage() {
           <Clapperboard className="w-7 h-7 text-[#E11D48]" />
           <span className="font-chivo font-bold text-xl text-white">CineCursor</span>
         </div>
-        <Button
-          data-testid="create-project-btn"
-          onClick={() => setShowCreateModal(true)}
-          className="bg-white text-black hover:bg-zinc-200 font-medium"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          New Project
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            data-testid="templates-btn"
+            variant="outline"
+            onClick={() => setShowTemplates(true)}
+            className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+          >
+            <Layout className="w-4 h-4 mr-2" />
+            Templates
+          </Button>
+          <Button
+            data-testid="create-project-btn"
+            onClick={() => setShowCreateModal(true)}
+            className="bg-white text-black hover:bg-zinc-200 font-medium"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Project
+          </Button>
+        </div>
       </header>
 
       {/* Main Content */}
