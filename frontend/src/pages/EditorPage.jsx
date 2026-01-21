@@ -9,6 +9,9 @@ import {
   Maximize2, FileVideo, Music, Layers, Eye,
   RefreshCw, CheckCircle, XCircle, Clock
 } from "lucide-react";
+import { ChatPanel } from "../components/ChatPanel";
+import { AssetExplorer } from "../components/AssetExplorer";
+import { VideoPreview } from "../components/VideoPreview";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
