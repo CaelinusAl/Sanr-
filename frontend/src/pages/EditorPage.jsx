@@ -618,6 +618,16 @@ export default function EditorPage() {
                     className="text-zinc-400 hover:text-white">
               <Download className="w-4 h-4 mr-1" /> Export Video
             </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button data-testid="shortcuts-btn" variant="ghost" size="icon" 
+                        onClick={() => setShowShortcutsModal(true)}
+                        className="text-zinc-400 hover:text-white">
+                  <Keyboard className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent><p>Keyboard Shortcuts</p></TooltipContent>
+            </Tooltip>
             <Button data-testid="settings-btn" variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
               <Settings className="w-4 h-4" />
             </Button>
