@@ -894,8 +894,8 @@ async def create_film_plan(story: str, duration: int) -> dict:
         scene_count=scene_count
     )
     
-    # Send message (sync call wrapped in thread)
-    response = chat.send_message(UserMessage(text=prompt))
+    # Async send message
+    response = await chat.send_message(UserMessage(text=prompt))
     
     # Parse JSON from response
     response_text = response.text.strip()
