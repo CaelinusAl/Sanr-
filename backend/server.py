@@ -894,11 +894,13 @@ async def create_film_plan(story: str, duration: int) -> dict:
         scene_count=scene_count
     )
     
-    # Async send message
+    # Async send message - returns string directly
     response = await chat.send_message(UserMessage(text=prompt))
     
-    # Parse JSON from response
-    response_text = response.text.strip()
+    # Response is a string, not an object
+    response_text = response if isinstance(response, str) else str(response)
+    response_text = response_text.strip()
+    
     if response_text.startswith('```json'):
         response_text = response_text[7:]
     if response_text.startswith('```'):
