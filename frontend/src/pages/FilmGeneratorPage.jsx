@@ -86,45 +86,12 @@ export default function FilmGeneratorPage() {
 
       const data = await response.json();
       setFilmId(data.filmId);
-      
-      // If socket not connected, use polling
-      if (!socket?.connected) {
-        startPolling(data.filmId);
-      }
+      // Polling will start automatically via useEffect
     } catch (err) {
       setError(err.message);
       setIsGenerating(false);
     }
   };
-
-  // Polling fallback for status updates
-  const startPolling = useCallback((fId) => {
-    const pollInterval = setInterval(async () => {
-      try {
-        const response = await fetch(`${API}/film/${fId}/status`);
-        if (response.ok) {
-          const data = await response.json();
-          setStatus(prev => ({
-            ...prev,
-            ...data
-          }));
-
-          if (data.filmPlan) {
-            setFilmPlan(data.filmPlan);
-          }
-
-          if (data.stage === 'complete' || data.stage === 'error') {
-            clearInterval(pollInterval);
-            setIsGenerating(false);
-          }
-        }
-      } catch (err) {
-        console.error('Polling error:', err);
-      }
-    }, 2000);
-
-    return () => clearInterval(pollInterval);
-  }, []);
 
   // Cancel generation
   const handleCancel = async () => {
