@@ -400,8 +400,8 @@ export default function EditorPage() {
     setSelectedScene(scene);
     setGenerateConfig({
       prompt: scene.prompt || "",
-      duration: Math.min(20, Math.max(4, Math.round(scene.duration / 4) * 4)) || 8,
-      size: "1920x1080",
+      duration: Math.min(12, Math.max(4, Math.round(scene.duration / 4) * 4)) || 8,
+      size: "1280x720",
       model: "sora-2"
     });
     setShowGenerateModal(true);
