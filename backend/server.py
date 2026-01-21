@@ -1031,20 +1031,6 @@ async def generate_scene_video(scene: dict, film_id: str, scene_index: int, qual
                 await asyncio.sleep(wait_time)
     
     return {'success': False, 'error': str(last_error)}
-            
-            return {
-                'success': True,
-                'video_path': str(video_path),
-                'video_url': f"/api/film-videos/{video_filename}",
-                'duration': video_duration,
-                'size': video_size
-            }
-        
-        return {'success': False, 'error': 'Video generation returned no data'}
-        
-    except Exception as e:
-        logger.error(f"Scene generation error: {str(e)}")
-        return {'success': False, 'error': str(e)}
 
 
 async def generate_film_task(film_id: str, story: str, config: FilmConfig):
