@@ -1,15 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Play, Pause, SkipBack, SkipForward, Square,
   Plus, ZoomIn, ZoomOut, Settings, Download,
   Clapperboard, ChevronLeft, Film, Users,
   AlertTriangle, Wand2, Loader2,
-  FileVideo, Music, Clock
+  FileVideo, Music, Clock, Keyboard
 } from "lucide-react";
 import { ChatPanel } from "../components/ChatPanel";
 import { AssetExplorer } from "../components/AssetExplorer";
 import { VideoPreview } from "../components/VideoPreview";
+import { SceneProperties } from "../components/SceneProperties";
+import { RenderingConsole } from "../components/RenderingConsole";
+import { useContextMenu } from "../components/ContextMenu";
+import { getKeyboardShortcuts } from "../services/keyboardShortcuts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,6 +41,9 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import axios from "axios";
+
+// Import theme styles
+import "../styles/theme.css";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const PIXELS_PER_SECOND = 50;
