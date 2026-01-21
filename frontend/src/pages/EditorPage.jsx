@@ -1,22 +1,18 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Play, Pause, SkipBack, SkipForward, Square,
   Plus, ZoomIn, ZoomOut, Settings, Download,
   Clapperboard, ChevronLeft, Film, Users,
-  Folder, AlertTriangle, Sparkles, Send,
-  Trash2, Wand2, Loader2, Volume2, VolumeX,
-  Maximize2, FileVideo, Music, Layers, Eye,
-  RefreshCw, CheckCircle, XCircle, Clock
+  AlertTriangle, Wand2, Loader2,
+  FileVideo, Music, Clock
 } from "lucide-react";
 import { ChatPanel } from "../components/ChatPanel";
 import { AssetExplorer } from "../components/AssetExplorer";
 import { VideoPreview } from "../components/VideoPreview";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
@@ -32,12 +28,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
