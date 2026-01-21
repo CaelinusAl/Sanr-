@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Film, Clock, Clapperboard, Search, MoreVertical, Trash2, Sparkles, Layout } from "lucide-react";
+import { Plus, Film, Clock, Clapperboard, Search, MoreVertical, Trash2, Sparkles, Layout, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -157,6 +157,16 @@ export default function ProjectsPage() {
           <span className="font-chivo font-bold text-xl text-white">CineCursor</span>
         </div>
         <div className="flex items-center gap-3">
+          {/* Film History Button */}
+          <Button
+            data-testid="film-history-btn"
+            variant="outline"
+            onClick={() => navigate('/film-history')}
+            className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+          >
+            <History className="w-4 h-4 mr-2" />
+            Film History
+          </Button>
           {/* AI Director Button - NEW */}
           <Button
             data-testid="ai-director-btn"
