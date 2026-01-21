@@ -1183,43 +1183,81 @@ async def generate_film_task(film_id: str, story: str, config: FilmConfig):
         )
 
 
-async def assemble_film_video(film_id: str, scenes: list) -> Optional[str]:
+async def assemble_film_video(film_id: str, scenes: list, upscale: bool = False) -> Optional[str]:
     """Assemble scene videos into final film using FFmpeg"""
     try:
         # Create file list for FFmpeg
         file_list_path = VIDEOS_DIR / f"{film_id}_filelist.txt"
-        output_path = VIDEOS_DIR / f"{film_id}_final.mp4"
+        concat_output = VIDEOS_DIR / f"{film_id}_concat.mp4"
+        final_output = VIDEOS_DIR / f"{film_id}_final.mp4"
         
         with open(file_list_path, 'w') as f:
             for scene in sorted(scenes, key=lambda x: x['number']):
                 if scene.get('video_path') and Path(scene['video_path']).exists():
                     f.write(f"file '{scene['video_path']}'\n")
         
-        # Run FFmpeg concat
-        cmd = [
+        # Step 1: Concat videos
+        concat_cmd = [
             'ffmpeg', '-y',
             '-f', 'concat',
             '-safe', '0',
             '-i', str(file_list_path),
             '-c', 'copy',
-            str(output_path)
+            str(concat_output)
         ]
         
         process = await asyncio.create_subprocess_exec(
-            *cmd,
+            *concat_cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE
         )
-        
         stdout, stderr = await process.communicate()
         
-        if process.returncode == 0 and output_path.exists():
-            # Clean up file list
-            file_list_path.unlink()
-            return str(output_path)
-        else:
-            logger.error(f"FFmpeg error: {stderr.decode()}")
+        if process.returncode != 0:
+            logger.error(f"FFmpeg concat error: {stderr.decode()}")
             return None
+        
+        # Step 2: Upscale if requested
+        if upscale and concat_output.exists():
+            logger.info(f"[Film {film_id}] Upscaling to 1080p...")
+            upscale_cmd = [
+                'ffmpeg', '-y',
+                '-i', str(concat_output),
+                '-vf', 'scale=1920:1080:flags=lanczos',
+                '-c:v', 'libx264',
+                '-preset', 'medium',
+                '-crf', '18',
+                '-c:a', 'copy',
+                str(final_output)
+            ]
+            
+            process = await asyncio.create_subprocess_exec(
+                *upscale_cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+            stdout, stderr = await process.communicate()
+            
+            if process.returncode == 0 and final_output.exists():
+                # Clean up
+                file_list_path.unlink()
+                concat_output.unlink()
+                return str(final_output)
+            else:
+                logger.error(f"FFmpeg upscale error: {stderr.decode()}")
+                # Fall back to concat output
+                concat_output.rename(final_output)
+        else:
+            # No upscale, just rename concat to final
+            concat_output.rename(final_output)
+        
+        # Clean up file list
+        if file_list_path.exists():
+            file_list_path.unlink()
+        
+        if final_output.exists():
+            return str(final_output)
+        return None
             
     except Exception as e:
         logger.error(f"Assembly error: {str(e)}")
