@@ -1117,7 +1117,85 @@ export default function EditorPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Keyboard Shortcuts Modal */}
+        <Dialog open={showShortcutsModal} onOpenChange={setShowShortcutsModal}>
+          <DialogContent className="bg-[#18181B] border-zinc-800 text-white max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="font-chivo text-xl flex items-center gap-2">
+                <Keyboard className="w-5 h-5 text-[#4ec9b0]" /> Keyboard Shortcuts
+              </DialogTitle>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-6 py-4">
+              {/* Playback */}
+              <div>
+                <h4 className="text-sm font-semibold text-[#4ec9b0] mb-3">Playback</h4>
+                <div className="space-y-2">
+                  <ShortcutRow keys="Space" description="Play / Pause" />
+                  <ShortcutRow keys="←" description="Previous frame" />
+                  <ShortcutRow keys="→" description="Next frame" />
+                  <ShortcutRow keys="Esc" description="Stop playback" />
+                  <ShortcutRow keys="Home" description="Go to start" />
+                  <ShortcutRow keys="End" description="Go to end" />
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div>
+                <h4 className="text-sm font-semibold text-[#4ec9b0] mb-3">Timeline</h4>
+                <div className="space-y-2">
+                  <ShortcutRow keys="⌘ +" description="Zoom in" />
+                  <ShortcutRow keys="⌘ -" description="Zoom out" />
+                  <ShortcutRow keys="⌘ 0" description="Fit to view" />
+                  <ShortcutRow keys="⌘ B" description="Split clip" />
+                  <ShortcutRow keys="Delete" description="Delete selected" />
+                </div>
+              </div>
+
+              {/* General */}
+              <div>
+                <h4 className="text-sm font-semibold text-[#4ec9b0] mb-3">General</h4>
+                <div className="space-y-2">
+                  <ShortcutRow keys="⌘ S" description="Save project" />
+                  <ShortcutRow keys="⌘ Z" description="Undo" />
+                  <ShortcutRow keys="⌘ ⇧ Z" description="Redo" />
+                  <ShortcutRow keys="⌘ N" description="New scene" />
+                  <ShortcutRow keys="⌘ E" description="Export" />
+                </div>
+              </div>
+
+              {/* AI & Editing */}
+              <div>
+                <h4 className="text-sm font-semibold text-[#4ec9b0] mb-3">AI & Editing</h4>
+                <div className="space-y-2">
+                  <ShortcutRow keys="⌘ I" description="Focus AI chat" />
+                  <ShortcutRow keys="⌘ G" description="Generate scene" />
+                  <ShortcutRow keys="⌘ C" description="Copy" />
+                  <ShortcutRow keys="⌘ V" description="Paste" />
+                  <ShortcutRow keys="⌘ D" description="Duplicate" />
+                </div>
+              </div>
+            </div>
+            <div className="text-xs text-zinc-500 text-center pt-2 border-t border-zinc-800">
+              Use Ctrl instead of ⌘ on Windows/Linux
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </TooltipProvider>
+  );
+}
+
+// Shortcut Row Component
+function ShortcutRow({ keys, description }) {
+  return (
+    <div className="flex items-center justify-between text-sm">
+      <span className="text-zinc-400">{description}</span>
+      <div className="flex gap-1">
+        {keys.split(' ').map((key, idx) => (
+          <span key={idx} className="shortcut-key">{key}</span>
+        ))}
+      </div>
+    </div>
   );
 }
