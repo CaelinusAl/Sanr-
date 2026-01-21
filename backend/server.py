@@ -1148,7 +1148,7 @@ async def generate_film_task(film_id: str, story: str, config: FilmConfig):
         
         # Assemble final video using FFmpeg
         if successful_scenes:
-            final_video_path = await assemble_film_video(film_id, successful_scenes)
+            final_video_path = await assemble_film_video(film_id, successful_scenes, config.upscale)
             if final_video_path:
                 film_data['finalVideoUrl'] = f"/api/film-videos/{Path(final_video_path).name}"
         
