@@ -1070,7 +1070,7 @@ async def generate_film_task(film_id: str, story: str, config: FilmConfig):
             # Generate scenes in parallel
             tasks = []
             for scene_idx, scene in batch:
-                task = generate_scene_video(scene, film_id, scene_idx, config.quality)
+                task = generate_scene_video(scene, film_id, scene_idx, config.quality, config.aspectRatio)
                 tasks.append((scene_idx, scene, task))
             
             # Wait for batch to complete
