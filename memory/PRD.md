@@ -218,6 +218,8 @@ CineCursor is a comprehensive AI-powered video production platform inspired by C
 - **NEW: Film Plan Generator** - Claude Sonnet 4 creates detailed JSON film plans
 - **NEW: Parallel Worker System** - Multiple scenes can be generated simultaneously
 - **NEW: Film Generation API** - /api/film/generate, /api/film/{id}/status endpoints
+- **NEW: Sora 2 Video Generation** - text_to_video method working, scenes generated successfully
+- **NEW: FFmpeg Assembly** - Multiple scene videos combined into final film
 
 ---
 
