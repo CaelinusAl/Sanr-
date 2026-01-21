@@ -2,83 +2,76 @@
 
 The platform should include:
 - A professional UI with a multi-track timeline editor, an asset explorer, a video preview player, and an AI Director chat panel.
-- An advanced backend with asset management (including metadata extraction, semantic search, and cloud sync), character management (with face embeddings for consistency), and project/scene management.
-- An AI Director powered by Claude for translating natural language prompts into scene plans, orchestrating sequences, and suggesting improvements.
-- A Video Analysis Protocol (VAP) for detecting continuity errors (e.g., character face mismatches, lighting jumps).
-- A video generation engine integrated with models like Sora 2 and Runway Gen-3 to create video clips based on the AI Director's plans.
+- An advanced backend with asset management, character management, and project/scene management.
+- An AI Director powered by Claude for translating natural language prompts into scene plans.
+- A Video Analysis Protocol (VAP) for detecting continuity errors.
+- A video generation engine integrated with models like Sora 2 to create video clips.
 - Features for adding transitions, audio tracks, and exporting the final video.
-
-The user's instructions have been hepsini yap (do all of it), indicating a desire to implement the full scope of the provided blueprint.
+The user's instruction has been hepsini yap (do all of it), indicating a desire to implement the full scope of the provided blueprint.
 
 **User's preferred language**: The user's primary language is **Turkish**. The next agent MUST respond in Turkish.
 
 **what currently exists?**
-A functional React + FastAPI web application that serves as the Minimum Viable Product (MVP) for CineCursor.
-- **Backend**: A FastAPI server with MongoDB integration. It provides CRUD APIs for projects, scenes, and characters. It includes an endpoint for the AI Director chat which is connected to Claude via the Emergent LLM Key. It also has stubbed endpoints for v2.0 features like Sora 2 generation, transitions, audio, and export.
-- **Frontend**: A React application featuring a project dashboard to create and view projects. The main editor page () has a sophisticated layout with resizable panels for a timeline, video preview, asset explorer, and an AI Director chat panel. The UI has been updated to show controls for v2.0 features.
-- **Core Functionality**: Users can create a project, enter the editor, chat with the AI Director to generate (mocked) scene plans, and see those scenes appear on the timeline.
+A sophisticated React + FastAPI web application MVP for CineCursor.
+- **Backend**: A FastAPI server with MongoDB, providing CRUD APIs for projects, scenes, and characters. It includes a working AI Director chat endpoint (Claude) and an in-progress video generation endpoint using Sora 2. It also has stubbed routes for export.
+- **Frontend**: A React application featuring:
+    - **Projects Page**: A dashboard to create/view projects, featuring a new-user onboarding flow and project templates (e.g., Short Film, Commercial).
+    - **Editor Page**: A highly detailed editor with resizable panels for , , a , an , a  panel for editing selected clips, and a  to show generation progress.
+- **Core Functionality**: Users can create projects, enter the editor, chat with the AI to generate scene data, and view scenes on the timeline. Video generation can be initiated, but it is not fully functional. Keyboard shortcuts and context menus are also implemented.
 
 **Last working item**:
--   **Last item agent was working**: The agent was in the process of upgrading the UI by implementing the professional-grade components described in PART 2 of the user's blueprint. It successfully created the files for these new components (, , ) and was about to modify the main  to integrate and render them, replacing the initial, simpler UI placeholders.
+-   **Last item agent was working**: The agent was fixing the core video generation feature. The user reported that generation gets stuck and never completes. The agent identified this as a frontend issue where progress was not being polled. It implemented a polling mechanism in  to repeatedly call a new backend endpoint () to get real-time progress. It also added a 4K resolution option as requested by the user.
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: both. First, use the screenshot tool to visually confirm that the new components are rendered correctly within the  layout. Then, use the frontend testing agent to verify the interactivity of the new components (e.g., sending a message in the new , searching for an asset in ).
+-   **Which testing method agent to use?**: both. The backend endpoint  needs to be created/verified with . The end-to-end flow should be tested using the screenshot tool to trigger generation and observe the UI updating with real progress.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1 (P0)**: Integrate the new professional UI components into the main editor page.
-    -   **Attempted fixes**: None, this is the current task.
+-   **Issue 1 (P0)**: Video generation is stuck and does not complete.
+    -   **Attempted fixes**: The agent modified  in  to poll a status endpoint () every 3 seconds and updated the UI to reflect the polled progress. A 4K option was also added to the UI.
     -   **Next debug checklist**:
-        -   Modify .
-        -   Import  from .
-        -   Import  from .
-        -   Import  from .
-        -   Replace the existing JSX for the chat, asset, and preview panels with these new components.
-        -   Ensure props are passed correctly to the new components.
-    -   **Why fix this issue and what will be achieved with the fix?**: This will bring the application's UI in line with the more detailed and professional design specified by the user in Part 2 of their blueprint, completing the current implementation phase.
+        1.  In , create or verify the  endpoint. It should query the database for the scene's status (, , ) and progress percentage.
+        2.  Review the  background task in . Ensure it correctly updates the scene's status and progress in the MongoDB document during generation.
+        3.  Check backend logs for errors from the Sora 2 API call via .
+        4.  Perform an end-to-end test: trigger generation from the UI and verify that the progress bar updates correctly and the final video becomes available.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is the application's most critical feature. Fixing it will make the platform functional and useful.
     -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: frontend
+    -   **Is recurring issue?**: Y
+    -   **Should Test frontend/backend/both after fix?**: both
     -   **Blocked on other issue**: None
 
 **In progress Task List**:
--   **Task 1 (P0)**: Refactor  to use advanced UI components.
-    -   **Where to resume**: The agent needs to edit  to import and render the newly created components: , , and .
-    -   **What will be achieved with this?**: The application's UI will be significantly upgraded to match the professional specifications from the user's blueprint.
+-   **Task 1 (P0)**: Complete the implementation of real-time video generation progress.
+    -   **Where to resume**: Implement the backend status endpoint () in . The frontend polling logic is already in place in .
+    -   **What will be achieved with this?**: The user will see a functional, real-time progress bar and status updates during video generation.
     -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: frontend
-    -   **Blocked on something**: None
+    -   **Should Test frontend/backend/both after fix?**: both
+    -   **Blocked on something**: Directly related to Pending Issue 1.
 
 **Upcoming and Future Tasks**
 *   **Upcoming Tasks (P1):**
-    *   **Real Video Generation:** Implement the actual video generation logic in  using the Sora 2 playbook. This involves calling the  library to process scene plans from the AI director and generate video.
-    *   **Real Video Playback:** Update the  component to play the video files generated by the backend.
-    *   **Asset Service Backend:** Implement the backend logic in  for file uploads, metadata extraction (using /), and serving assets.
-    *   **Timeline Interactivity:** Add full functionality to the timeline, including drag-drop reordering, resizing clips, and managing multiple audio/video tracks.
+    *   **Real Video Playback:** Update  to play the actual video URL when a scene's status is 'complete'.
+    *   **Full Timeline Interactivity:** Implement drag-drop reordering, resizing, and splitting clips, using the events defined in .
+    *   **Full Asset Management:** Implement backend logic for uploading and serving character images, audio files, and effects.
+    *   **Implement Export Functionality**: Connect the frontend Export UI to the backend  logic to render the final video.
 
 *   **Future Tasks (P2):**
-    *   **Advanced AI Services:** Implement the Video Analysis Protocol (VAP) for continuity checking and the full AI Director's film optimization capabilities.
-    *   **Character Consistency:** Implement the face embedding extraction and comparison logic in the backend to ensure character consistency across scenes.
-    *   **Export Functionality:** Build the backend process to take the final timeline data and use  to render a final MP4/MOV video file.
-    *   **Cloud Sync:** Integrate with S3 for asset backup and cloud-based project access as per the blueprint.
-    *   **Electron App:** Convert the final web application into a cross-platform Electron desktop application as originally envisioned in the blueprint.
+    *   **Advanced AI Services:** Implement the Video Analysis Protocol (VAP) for continuity checking.
+    *   **Character Consistency:** Implement the face embedding extraction and comparison logic.
+    *   **Cloud Sync & Version Control:** Integrate the (currently non-functional) frontend services with a real backend implementation.
+    *   **Electron App:** Convert the web application into a cross-platform desktop application.
 
 **Completed work in this session**
--   **CineCursor MVP v1.0:**
-    -   Backend API created in  for managing projects, scenes, and characters, with a working AI chat endpoint.
-    -   Frontend created with a Project Dashboard () and a functional Editor Page ().
-    -   Initial UI for timeline, chat, and preview panels implemented.
-    -   Successfully tested with a 98.7% pass rate from the testing agent.
--   **CineCursor v2.0 (Features Stubbed):**
-    -   Backend API in  updated to include routes and logic for Sora 2 video generation, transitions, and export.
-    -   Frontend UI in  updated with controls for Sora 2 generation, scene transitions, and video export.
-    -   Created professional component files as per user's Part 2 blueprint:
-        -   
-        -   
-        -   
+-   **Full Professional UI (Part 2 & 3):** Successfully created and integrated all advanced UI components from the user's blueprint, including , , , , and a  manager.
+-   **Projects Page Enhancements (Part 5):** Implemented a new-user  and a  modal for starting projects. Added  for project searching.
+-   **Bug Fixes:**
+    -   Resolved an issue where keyboard shortcuts (Spacebar for play/pause) interfered with typing in input fields.
+    -   Fixed the chat input to correctly handle Shift+Enter for new lines.
+    -   Attempted to hide a recurring PostHog analytics error overlay by modifying , , and .
+    -   Fixed a rendering bug where scenes were not appearing on the timeline.
 
 **Earlier issues found/mentioned but not fixed**
-None. The agent successfully navigated a temporary backend startup issue and pivoted from a slow testing agent run.
+None.
 
 **Known issue recurrence from previous fork**
 N/A
@@ -87,70 +80,69 @@ N/A
 
 
 **Key Technical Concepts**
--   **Frontend**: React.js, TailwindCSS
+-   **Frontend**: React.js, TailwindCSS, 
 -   **Backend**: FastAPI (Python)
 -   **Database**: MongoDB
--   **AI Integration**: Claude for AI Director, Sora 2 for Video Generation
--   **Core Idea**: A web-based Cursor for Film that uses AI to assist in video production.
+-   **AI Integration**: Claude (AI Director), Sora 2 (Video Generation)
+-   **Architecture**: Web-based MVP with a rich client-side editor.
 
 **key DB schema**
--   : {_id, name, description, createdAt}
--   : {_id, projectId, prompt, status, videoUrl, createdAt}
+-   : {_id, name, description, createdAt, total_duration}
+-   : {_id, projectId, prompt, status, videoUrl, progress, createdAt, start_time, duration, track_index}
 -   : {_id, projectId, name, description, referenceImageUrl}
 -   : {_id, projectId, role, content, timestamp}
 
 **changes in tech stack**
-None.
+-   Added  on the frontend for fuzzy searching.
 
 **All files of reference**
-*   : The main FastAPI application logic for all API endpoints.
-*   : The core UI for the video editor. **This file is the next target for modification.**
-*   : The initial dashboard for project management.
-*   : New advanced chat component.
-*   : New advanced asset explorer component.
-*   : New advanced video preview component.
+*   : The main FastAPI application. Needs a new  endpoint.
+*   : The core UI for the editor. Contains the new polling logic for video generation. It is very large and a candidate for refactoring.
+*   : The project dashboard, updated with onboarding and templates.
+*   , : Contain all the newly created UI and service modules. Note that some service files are non-functional.
 *   : The Product Requirements Document updated by the agent.
 
 **Areas that need refactoring**:
--    is about to be refactored to incorporate the new, more advanced components. This is the immediate next step.
+-   ****: This file is now over 1100 lines and manages the state for numerous complex components. It should be broken down using React Context or a state management library to improve maintainability.
+-   **Frontend Services**: Files like  and  were created in  but contain Node.js code (, ). They are non-functional in a browser environment and represent a misunderstanding of the blueprint. They should be removed or their logic should be moved to the backend.
 
 **key api endpoints**
 -   : Create a new project.
 -   : Get all projects.
--   : Get scenes for a project.
--   : Create a new scene.
 -   : Send a message to the AI Director.
--   : (v2.0) Generate video using Sora 2.
+-   : Initiate video generation for a scene.
+-   : **(Needs to be implemented)** Get the generation status and progress of a scene.
+-   : (Stubbed) Export the final video.
 
 **Critical Info for New Agent**
--   The user has provided a very detailed, multi-part blueprint and expects all of it to be implemented. The project was started as a web app (React/FastAPI) for faster iteration, even though the final goal is an Electron app.
--   You are currently in the middle of a UI upgrade. You must complete the integration of the new professional components (, , ) into .
+-   **Your top priority is to fix the video generation.** This involves implementing the  endpoint on the backend and ensuring the background generation task correctly updates the scene's status and progress in MongoDB.
+-   The user's blueprint is for a final **Electron app**, but the current implementation is a **web app**. The previous agent created several service files in the frontend (, ) that contain Node.js code and **will not work**. Ignore these non-functional files and focus on implementing features within the existing React/FastAPI stack.
 -   The user's language is Turkish. All your responses must be in Turkish.
 
 **documents and test reports created in this job**
 -   
--   
+-    (from a previous session, but relevant)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **user**:  (do all of it) - In response to the agent's initial plan.
-2.  **user**: (Pastes the entire blueprint again)
-3.  **user**:  (all of them) - In response to the agent's v2.0 feature list.
-4.  **user**:  (continue) - While the testing agent was running.
-5.  **user**: (Pastes Part 2 of the blueprint, detailing UI components)
-
-All user messages have been acted upon. The current task is to implement the UI from the last message.
+1.  **user**:  (Do it all) - Approving the plan to implement Part 4 & 5.
+2.  **user**:  (This error appears when I open it) - Reports the PostHog error overlay.
+3.  **user**:  (I refreshed, but the error appeared again) - Confirms the PostHog error is persistent.
+4.  **user**:  (I can't make a space here) - Reports that the spacebar doesn't work in the chat input.
+5.  **user**:  (Strangely, if I hold down any key, the space works, otherwise it doesn't work again) - Provides more detail on the spacebar bug.
+6.  **user**:  (It gets stuck on this screen and doesn't produce a video, 5 minutes have passed. Fix this professionally in the best way. And let's be able to produce 4k video, I think that option is not here. Does it really take this long to make even a 12-second video?) - **This is the main pending request.** Reports the core issue of video generation failing and requests a 4K option.
 
 **Project Health Check:**
-*   **Broken**: 0
-*   **Mocked**: 1 (Video Generation via Sora 2 is currently mocked on the backend; it returns a success message but doesn't generate a real video yet).
+*   **Broken**: 1 (Video generation does not complete).
+*   **Mocked**: 1 (Video export is stubbed on the backend).
 
 **3rd Party Integrations**
-*   **Anthropic Claude Sonnet 4.5**: For the AI Director chat. Uses Emergent LLM Key.
-*   **Sora 2**: For video generation. Playbook received, uses Emergent LLM Key. Implementation is pending.
+*   **Anthropic Claude Sonnet 4.5**: For the AI Director chat. Uses Emergent LLM Key. (Working)
+*   **Sora 2**: For video generation. Uses Emergent LLM Key. (Implementation in progress, currently broken).
+*   **fuse.js**: For frontend project searching. (Working)
 
 **Testing status**
--   **Testing agent used after significant changes**: YES (after MVP v1.0). An attempt was made after v2.0 but it was slow, so the agent pivoted to manual screenshot testing.
--   **Troubleshoot agent used after agent stuck in loop**: NO
+-   **Testing agent used after significant changes**: YES (after initial UI refactors).
+-   **Troubleshoot agent used after agent stuck in loop**: NO.
 -   **Test files created**: None.
 -   **Known regressions**: None.
 
@@ -158,4 +150,5 @@ All user messages have been acted upon. The current task is to implement the UI 
 No authentication is implemented. The application is directly accessible.
 
 **What agent forgot to execute**
-The agent correctly deferred the full Electron app implementation in favor of a web-based MVP, which is a sound strategy. It also pivoted from a slow testing-agent run to manual verification, which was an effective way to maintain momentum. No critical tasks from the user's directives have been forgotten.</analysis>
+- The agent created multiple service files (, , etc.) in the frontend directory with Node.js-specific code (, ), making them non-functional in the browser. It followed the blueprint literally without adapting it to the current web-app context. These files are currently dead code.
+- The agent identified the need for a polling mechanism for video generation but did not implement the required backend status endpoint, leaving the fix incomplete.</analysis>
