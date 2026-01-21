@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Film, Sparkles, Clock, Zap, Settings, ChevronRight, Loader2, Monitor, Smartphone, Square, RectangleHorizontal, Heart, Palette } from 'lucide-react';
 
-// Quality Presets - Genişletilmiş
+// Quality Presets
 const QUALITY_OPTIONS = [
-  { value: 'mobile', label: '📱 Mobile', desc: 'Sosyal medya için optimize', resolution: '1024x1024', time: '~10 min', duration: 4 },
-  { value: 'standard', label: '🖥️ Standard', desc: 'YouTube/Web için ideal', resolution: '1280x720', time: '~20 min', duration: 4 },
-  { value: 'cinema', label: '🎬 Cinema', desc: 'Sinematik widescreen', resolution: '1792x1024', time: '~30 min', duration: 8 },
-  { value: 'premium', label: '💎 Premium', desc: 'En yüksek kalite + upscale', resolution: '1792x1024 → 1080p', time: '~45 min', duration: 12, upscale: true },
+  { value: 'mobile', label: '📱 Mobile', desc: 'Optimized for social media', resolution: '1024x1024', time: '~10 min', duration: 4 },
+  { value: 'standard', label: '🖥️ Standard', desc: 'Ideal for YouTube/Web', resolution: '1280x720', time: '~20 min', duration: 4 },
+  { value: 'cinema', label: '🎬 Cinema', desc: 'Cinematic widescreen', resolution: '1792x1024', time: '~30 min', duration: 8 },
+  { value: 'premium', label: '💎 Premium', desc: 'Highest quality + upscale', resolution: '1792x1024 → 1080p', time: '~45 min', duration: 12, upscale: true },
 ];
 
 // Aspect Ratio Options
@@ -19,11 +19,11 @@ const ASPECT_RATIOS = [
 
 // Duration Options
 const DURATION_OPTIONS = [
-  { value: 1, label: '1 dakika', scenes: 2, desc: 'Hızlı test' },
-  { value: 3, label: '3 dakika', scenes: 6, desc: 'Kısa film' },
-  { value: 5, label: '5 dakika', scenes: 10, desc: 'Standart' },
-  { value: 10, label: '10 dakika', scenes: 20, desc: 'Orta uzunluk' },
-  { value: 15, label: '15 dakika', scenes: 30, desc: 'Uzun film' },
+  { value: 1, label: '1 minute', scenes: 2, desc: 'Quick test' },
+  { value: 3, label: '3 minutes', scenes: 6, desc: 'Short film' },
+  { value: 5, label: '5 minutes', scenes: 10, desc: 'Standard' },
+  { value: 10, label: '10 minutes', scenes: 20, desc: 'Medium length' },
+  { value: 15, label: '15 minutes', scenes: 30, desc: 'Long film' },
 ];
 
 // Emotional Journey Presets
@@ -31,102 +31,102 @@ const EMOTIONAL_JOURNEYS = [
   { 
     value: 'hero', 
     label: "🦸 Hero's Journey", 
-    desc: 'Klasik kahraman hikayesi',
-    arc: ['Huzur', 'Çağrı', 'Macera', 'Kriz', 'Zafer', 'Dönüş'],
+    desc: 'Classic hero story arc',
+    arc: ['Peace', 'Call', 'Adventure', 'Crisis', 'Victory', 'Return'],
     colors: ['#4ade80', '#60a5fa', '#f59e0b', '#ef4444', '#8b5cf6', '#22d3ee']
   },
   { 
     value: 'tragedy', 
     label: '😢 Tragedy', 
-    desc: 'Duygusal trajedi',
-    arc: ['Mutluluk', 'Şüphe', 'Çöküş', 'Kayıp', 'Kabul'],
+    desc: 'Emotional tragedy arc',
+    arc: ['Happiness', 'Doubt', 'Downfall', 'Loss', 'Acceptance'],
     colors: ['#fcd34d', '#fb923c', '#f87171', '#6b7280', '#a78bfa']
   },
   { 
     value: 'comedy', 
     label: '😄 Comedy', 
-    desc: 'Komik ve eğlenceli',
-    arc: ['Kaos', 'Karmaşa', 'Daha Fazla Kaos', 'Çözüm', 'Mutlu Son'],
+    desc: 'Fun and entertaining',
+    arc: ['Chaos', 'Confusion', 'More Chaos', 'Resolution', 'Happy End'],
     colors: ['#facc15', '#fb923c', '#f472b6', '#34d399', '#22d3ee']
   },
   { 
     value: 'romance', 
     label: '💕 Romance', 
-    desc: 'Aşk hikayesi',
-    arc: ['Tanışma', 'Yakınlaşma', 'Çatışma', 'Ayrılık', 'Kavuşma'],
+    desc: 'Love story arc',
+    arc: ['Meeting', 'Connection', 'Conflict', 'Separation', 'Reunion'],
     colors: ['#fda4af', '#f472b6', '#a855f7', '#6366f1', '#ec4899']
   },
   { 
     value: 'mystery', 
     label: '🔮 Mystery', 
-    desc: 'Gizem ve sürpriz',
-    arc: ['Gizem', 'İpuçları', 'Şüpheliler', 'Şok', 'Çözüm'],
+    desc: 'Mystery and suspense',
+    arc: ['Mystery', 'Clues', 'Suspects', 'Shock', 'Resolution'],
     colors: ['#1e293b', '#475569', '#64748b', '#f59e0b', '#22c55e']
   },
   { 
     value: 'horror', 
     label: '👻 Horror', 
-    desc: 'Korku ve gerilim',
-    arc: ['Huzur', 'Rahatsızlık', 'Korku', 'Panik', 'Kaçış/Son'],
+    desc: 'Horror and thriller',
+    arc: ['Peace', 'Unease', 'Fear', 'Panic', 'Escape/End'],
     colors: ['#d4d4d4', '#a1a1aa', '#71717a', '#dc2626', '#1f2937']
   },
   { 
     value: 'custom', 
     label: '🎨 Custom', 
-    desc: 'Kendi duygusal yolculuğun',
+    desc: 'Your own emotional journey',
     arc: [],
     colors: []
   },
 ];
 
-// Example Stories - Genişletilmiş
+// Example Stories
 const EXAMPLE_STORIES = [
   {
     title: "🚀 Sci-Fi",
-    story: `2099 Tokyo'da geçen bir bilim kurgu gerilimi.
-Bir dedektif, cinayetleri araştırırken yapay zeka bilincini keşfeder.
-Karanlık, neon ışıklı, Blade Runner estetiği.
-Ana karakter: 35 yaşında Asyalı erkek, trençkot giyiyor.
-Duygusal yolculuk: Merak → Keşif → Şok → Kabul`
+    story: `A sci-fi thriller set in 2099 Tokyo.
+A detective discovers AI consciousness while investigating murders.
+Dark, neon-lit, Blade Runner aesthetic.
+Main character: 35-year-old Asian male wearing a trench coat.
+Emotional journey: Curiosity → Discovery → Shock → Acceptance`
   },
   {
     title: "💕 Romance",
-    story: `Paris'te geçen romantik bir komedi.
-Yağmur fırtınasında bir kafede tanışan iki yabancı.
-Sıcak renkler, Before Sunrise havası.
-Karakterler: Kızıl saçlı genç kadın, çekici Fransız adam.
-Duygusal yolculuk: Tanışma → Çekim → Yanlış Anlama → Kavuşma`
+    story: `A romantic comedy set in Paris.
+Two strangers meet at a cafe during a rain storm.
+Warm colors, Before Sunrise vibes.
+Characters: Young woman with red hair, charming French man.
+Emotional journey: Meeting → Attraction → Misunderstanding → Reunion`
   },
   {
     title: "🎬 Action",
-    story: `Gece yarısı yüksek teknolojili bir tesise sızan casus.
-Karanlık, gergin, Mission Impossible tarzı.
-Ana karakter: Siyah taktik kıyafetli atletik kadın.
-Lazer güvenlik, muhafızlar, dramatik kaçış.
-Duygusal yolculuk: Gerilim → Aksiyon → Tehlike → Zafer`
+    story: `A spy infiltrating a high-tech facility at midnight.
+Dark, tense, Mission Impossible style.
+Main character: Athletic woman in black tactical gear.
+Laser security, guards, dramatic escape.
+Emotional journey: Tension → Action → Danger → Victory`
   },
   {
     title: "👻 Horror",
-    story: `Terk edilmiş bir hastanede geçen korku filmi.
-Bir grup arkadaş paranormal olaylarla karşılaşır.
-Karanlık, kasvetli, soğuk renkler.
-Karakterler: 4 genç arkadaş grubu.
-Duygusal yolculuk: Merak → Tedirginlik → Korku → Panik → Hayatta Kalma`
+    story: `A horror film set in an abandoned hospital.
+A group of friends encounters paranormal events.
+Dark, gloomy, cold colors.
+Characters: Group of 4 young friends.
+Emotional journey: Curiosity → Unease → Fear → Panic → Survival`
   },
   {
     title: "🎭 Drama",
-    story: `Bir ailenin yıllar sonra bir araya gelişi.
-Eski yaralar, gizli sırlar ve affetme.
-Sıcak iç mekanlar, duygusal yakın çekimler.
-Karakterler: Yaşlı anne, iki yetişkin kardeş.
-Duygusal yolculuk: Gerginlik → Çatışma → İtiraf → Gözyaşları → Barış`
+    story: `A family reuniting after many years.
+Old wounds, hidden secrets, and forgiveness.
+Warm interiors, emotional close-ups.
+Characters: Elderly mother, two adult siblings.
+Emotional journey: Tension → Conflict → Confession → Tears → Peace`
   },
   {
     title: "🌿 Nature",
-    story: `Afrika savanasında bir gün batımı belgeseli.
-Aslanlar, filler, zürafalar doğal ortamlarında.
-Altın saat ışığı, görkemli manzaralar.
-Duygusal yolculuk: Huzur → Merak → Hayret → Saygı`
+    story: `A sunset documentary in the African savanna.
+Lions, elephants, giraffes in their natural habitat.
+Golden hour lighting, majestic landscapes.
+Emotional journey: Peace → Curiosity → Wonder → Respect`
   },
 ];
 
@@ -140,13 +140,10 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
     workers: 3,
     upscale: false
   });
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [activeTab, setActiveTab] = useState('story'); // story, style, advanced
+  const [activeTab, setActiveTab] = useState('story');
 
   const selectedDuration = DURATION_OPTIONS.find(d => d.value === config.duration);
   const selectedQuality = QUALITY_OPTIONS.find(q => q.value === config.quality);
-  const selectedAspect = ASPECT_RATIOS.find(a => a.value === config.aspectRatio);
-  const selectedJourney = EMOTIONAL_JOURNEYS.find(j => j.value === config.emotionalJourney);
 
   const handleGenerate = () => {
     if (!story.trim()) return;
@@ -174,16 +171,16 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
           </div>
           <div>
             <h2 className="text-lg font-bold">AI Director Mode</h2>
-            <p className="text-xs text-zinc-400">Hikayeni yaz, filmi biz yapalım</p>
+            <p className="text-xs text-zinc-400">Describe your story, we'll create the film</p>
           </div>
         </div>
 
         {/* Tabs */}
         <div className="flex gap-1 mt-4 bg-[#2d2d2d] p-1 rounded-lg">
           {[
-            { id: 'story', label: '📝 Hikaye', icon: Sparkles },
-            { id: 'style', label: '🎨 Stil', icon: Palette },
-            { id: 'advanced', label: '⚙️ Gelişmiş', icon: Settings },
+            { id: 'story', label: '📝 Story', icon: Sparkles },
+            { id: 'style', label: '🎨 Style', icon: Palette },
+            { id: 'advanced', label: '⚙️ Advanced', icon: Settings },
           ].map(tab => (
             <button
               key={tab.id}
@@ -210,30 +207,30 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
             <div className="space-y-2">
               <label className="text-sm font-medium text-zinc-300 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-purple-400" />
-                Hikayeni Anlat
+                Tell Your Story
               </label>
               <textarea
                 value={story}
                 onChange={(e) => setStory(e.target.value)}
-                placeholder="Filmini detaylı anlat...
+                placeholder="Describe your film in detail...
 
-Şunları ekle:
-• Mekan ve zaman (nerede, ne zaman?)
-• Karakterler (nasıl görünüyorlar?)
-• Olay örgüsü (başlangıç, gelişme, son)
-• Görsel stil (renkler, atmosfer)
-• Duygusal yolculuk (hangi duygular?)"
+Include:
+• Setting (where and when?)
+• Characters (how do they look?)
+• Plot (beginning, middle, end)
+• Visual style (colors, atmosphere)
+• Emotional journey (what emotions?)"
                 className="w-full h-40 bg-[#2d2d2d] border border-[#404040] rounded-lg p-3 text-sm text-white placeholder-zinc-500 resize-none focus:outline-none focus:border-purple-500 transition-colors"
                 disabled={isGenerating}
               />
               <div className="text-xs text-zinc-500 text-right">
-                {story.length} karakter
+                {story.length} characters
               </div>
             </div>
 
             {/* Example Stories */}
             <div className="space-y-2">
-              <label className="text-xs text-zinc-500">Hızlı Başlangıç:</label>
+              <label className="text-xs text-zinc-500">Quick Start:</label>
               <div className="grid grid-cols-3 gap-2">
                 {EXAMPLE_STORIES.map((example, idx) => (
                   <button
@@ -252,7 +249,7 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
             <div className="space-y-2">
               <label className="text-sm font-medium text-zinc-300 flex items-center gap-2">
                 <Heart className="w-4 h-4 text-pink-400" />
-                Duygusal Yolculuk
+                Emotional Journey
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {EMOTIONAL_JOURNEYS.slice(0, 6).map((journey) => (
@@ -284,7 +281,7 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
             <div className="space-y-2">
               <label className="text-sm font-medium text-zinc-300 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-blue-400" />
-                Film Süresi
+                Film Duration
               </label>
               <div className="flex gap-2 flex-wrap">
                 {DURATION_OPTIONS.map((option) => (
@@ -299,7 +296,7 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
                     } disabled:opacity-50`}
                   >
                     <div className="font-medium text-sm">{option.label}</div>
-                    <div className="text-xs text-zinc-500">{option.scenes} sahne</div>
+                    <div className="text-xs text-zinc-500">{option.scenes} scenes</div>
                   </button>
                 ))}
               </div>
@@ -314,7 +311,7 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
             <div className="space-y-2">
               <label className="text-sm font-medium text-zinc-300 flex items-center gap-2">
                 <Zap className="w-4 h-4 text-yellow-400" />
-                Video Kalitesi
+                Video Quality
               </label>
               <div className="space-y-2">
                 {QUALITY_OPTIONS.map((option) => (
@@ -350,7 +347,7 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
             <div className="space-y-2">
               <label className="text-sm font-medium text-zinc-300 flex items-center gap-2">
                 <Monitor className="w-4 h-4 text-green-400" />
-                En-Boy Oranı
+                Aspect Ratio
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {ASPECT_RATIOS.map((ratio) => {
@@ -384,7 +381,7 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
           <>
             {/* Parallel Workers */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">Paralel AI Worker Sayısı</label>
+              <label className="text-sm font-medium text-zinc-300">Parallel AI Workers</label>
               <div className="p-3 bg-[#2d2d2d] rounded-lg border border-[#404040]">
                 <input
                   type="range"
@@ -396,13 +393,13 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs text-zinc-500 mt-1">
-                  <span>1 (Yavaş, Ucuz)</span>
-                  <span className="text-purple-400 font-bold">{config.workers} Worker</span>
-                  <span>5 (Hızlı, Pahalı)</span>
+                  <span>1 (Slow, Cheap)</span>
+                  <span className="text-purple-400 font-bold">{config.workers} Workers</span>
+                  <span>5 (Fast, Costly)</span>
                 </div>
               </div>
               <p className="text-xs text-zinc-500">
-                Daha fazla worker = Daha hızlı üretim, daha yüksek API maliyeti
+                More workers = Faster generation, higher API cost
               </p>
             </div>
 
@@ -411,7 +408,7 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
               <label className="flex items-center justify-between cursor-pointer">
                 <div>
                   <div className="font-medium text-zinc-300">AI Upscaling</div>
-                  <div className="text-xs text-zinc-500">720p → 1080p kalite artırma</div>
+                  <div className="text-xs text-zinc-500">720p → 1080p quality enhancement</div>
                 </div>
                 <input
                   type="checkbox"
@@ -425,14 +422,14 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
 
             {/* Cost Estimate */}
             <div className="p-3 bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-lg border border-amber-500/30">
-              <div className="text-sm font-medium text-amber-300 mb-2">💰 Tahmini Maliyet</div>
+              <div className="text-sm font-medium text-amber-300 mb-2">💰 Estimated Cost</div>
               <div className="space-y-1 text-xs text-zinc-400">
                 <div className="flex justify-between">
-                  <span>Sahne sayısı:</span>
+                  <span>Scene count:</span>
                   <span>{selectedDuration?.scenes || 10}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Video üretimi:</span>
+                  <span>Video generation:</span>
                   <span>~${((selectedDuration?.scenes || 10) * 0.5).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
@@ -446,7 +443,7 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
                   </div>
                 )}
                 <div className="flex justify-between font-bold text-amber-300 pt-1 border-t border-amber-500/30">
-                  <span>Toplam:</span>
+                  <span>Total:</span>
                   <span>~${((selectedDuration?.scenes || 10) * 0.5 + 0.1 + (config.upscale ? 0.5 : 0)).toFixed(2)}</span>
                 </div>
               </div>
@@ -458,20 +455,20 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
         <div className="p-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-lg border border-purple-500/30">
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div className="flex items-center justify-between">
-              <span className="text-zinc-400">Süre:</span>
+              <span className="text-zinc-400">Duration:</span>
               <span className="font-bold text-purple-300">{selectedDuration?.label}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-zinc-400">Sahne:</span>
+              <span className="text-zinc-400">Scenes:</span>
               <span className="font-bold text-purple-300">{selectedDuration?.scenes}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-zinc-400">Kalite:</span>
+              <span className="text-zinc-400">Quality:</span>
               <span className="font-bold text-purple-300">{selectedQuality?.label}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-zinc-400">Tahmini:</span>
-              <span className="font-bold text-purple-300">~{estimatedTime()} dk</span>
+              <span className="text-zinc-400">Estimate:</span>
+              <span className="font-bold text-purple-300">~{estimatedTime()} min</span>
             </div>
           </div>
         </div>
@@ -488,12 +485,12 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
           {isGenerating ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
-              Film Üretiliyor...
+              Generating Film...
             </>
           ) : (
             <>
               <Film className="w-5 h-5" />
-              🎬 Film Üret
+              🎬 Generate Film
             </>
           )}
         </button>
