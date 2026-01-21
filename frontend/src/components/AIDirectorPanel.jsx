@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Film, Sparkles, Clock, Zap, Settings, ChevronRight, Loader2, Monitor, Smartphone, Square, RectangleHorizontal, Heart, Palette } from 'lucide-react';
 
-// Quality Presets
+// Quality Presets - Updated for proper scene duration
 const QUALITY_OPTIONS = [
-  { value: 'mobile', label: '📱 Mobile', desc: 'Optimized for social media', resolution: '1024x1024', time: '~10 min', duration: 4 },
-  { value: 'standard', label: '🖥️ Standard', desc: 'Ideal for YouTube/Web', resolution: '1280x720', time: '~20 min', duration: 4 },
-  { value: 'cinema', label: '🎬 Cinema', desc: 'Cinematic widescreen', resolution: '1792x1024', time: '~30 min', duration: 8 },
-  { value: 'premium', label: '💎 Premium', desc: 'Highest quality + upscale', resolution: '1792x1024 → 1080p', time: '~45 min', duration: 12, upscale: true },
+  { value: 'mobile', label: '📱 Mobile', desc: 'Optimized for social media', resolution: '1024x1024', time: '~15 min/scene', duration: 8, sceneDuration: '8s/scene' },
+  { value: 'standard', label: '🖥️ Standard', desc: 'Ideal for YouTube/Web', resolution: '1280x720', time: '~20 min/scene', duration: 12, sceneDuration: '12s/scene' },
+  { value: 'cinema', label: '🎬 Cinema', desc: 'Cinematic widescreen', resolution: '1792x1024', time: '~25 min/scene', duration: 12, sceneDuration: '12s/scene' },
+  { value: 'premium', label: '💎 Premium', desc: 'Highest quality + upscale', resolution: '1792x1024 → 1080p', time: '~30 min/scene', duration: 15, upscale: true, sceneDuration: '15s/scene' },
 ];
 
 // Aspect Ratio Options
