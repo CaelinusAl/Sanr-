@@ -23,7 +23,6 @@ export default function FilmGeneratorPage() {
     previewUrl: null,
     finalVideoUrl: null
   });
-  const [socket, setSocket] = useState(null);
   const [error, setError] = useState(null);
 
   // Initialize polling (WebSocket disabled for now)
