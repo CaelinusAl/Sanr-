@@ -52,23 +52,31 @@ export function SceneProperties({
     noiseReduction: false,
   });
 
-  // Reset effects when scene changes
-  useEffect(() => {
-    if (scene?.effects) {
-      setLocalEffects(scene.effects);
-    } else {
-      setLocalEffects({
-        brightness: 0,
-        contrast: 0,
-        saturation: 0,
-        hue: 0,
-        slowMotion: false,
-        blurBackground: false,
-        stabilization: false,
-        noiseReduction: false,
-      });
+  // Reset effects when scene changes - use useMemo pattern to avoid effect
+  const sceneEffects = scene?.effects;
+  const sceneId = scene?.id;
+  
+  // Use a ref to track if we need to update
+  const prevSceneIdRef = React.useRef(sceneId);
+  
+  if (prevSceneIdRef.current !== sceneId) {
+    prevSceneIdRef.current = sceneId;
+    // This is safe because we're checking if scene changed
+    const newEffects = sceneEffects || {
+      brightness: 0,
+      contrast: 0,
+      saturation: 0,
+      hue: 0,
+      slowMotion: false,
+      blurBackground: false,
+      stabilization: false,
+      noiseReduction: false,
+    };
+    // Only update if different
+    if (JSON.stringify(newEffects) !== JSON.stringify(localEffects)) {
+      setLocalEffects(newEffects);
     }
-  }, [scene?.id]);
+  }
 
   const handleEffectChange = (key, value) => {
     const newEffects = { ...localEffects, [key]: value };
