@@ -842,7 +842,10 @@ FILM_PLAN_PROMPT = '''You are a Hollywood screenwriter and director.
 USER STORY:
 {story}
 
-TARGET DURATION: {duration} minutes (approximately {scene_count} scenes, each 30 seconds)
+TARGET DURATION: {duration} minutes
+REQUIRED SCENES: {scene_count} scenes (each scene will be 12 seconds of video)
+
+IMPORTANT: You MUST create EXACTLY {scene_count} scenes to achieve the target duration.
 
 Create a detailed film breakdown as JSON. Return ONLY valid JSON, no markdown:
 
