@@ -386,9 +386,12 @@ class CineCursorAPITester:
             success_count += 1
         
         return success_count > 0
+        # Advanced features
+        self.test_continuity_check()
+        self.test_export_timeline()
         
-        # Cleanup
-        self.test_delete_operations()
+        # V2.0 specific features
+        self.test_v2_features()
         
         # Results
         self.log(f"\n📊 Test Results: {self.tests_passed}/{self.tests_run} passed")
