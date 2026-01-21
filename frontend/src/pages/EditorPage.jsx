@@ -782,7 +782,8 @@ export default function EditorPage() {
                            style={{ left: `${scene.start_time * PIXELS_PER_SECOND * zoom}px`,
                                     width: `${Math.max(40, scene.duration * PIXELS_PER_SECOND * zoom)}px` }}
                            onClick={(e) => { e.stopPropagation(); setSelectedScene(scene); }}
-                           onMouseDown={(e) => handleSceneDrag(scene.id, e)}>
+                           onContextMenu={(e) => handleTimelineContextMenu(e, scene)}
+                           onMouseDown={(e) => { if (e.button === 0) handleSceneDrag(scene.id, e); }}>
                         <div className="h-full flex items-center px-2 gap-2">
                           {scene.thumbnail && (
                             <img src={scene.thumbnail.startsWith('http') ? scene.thumbnail : `${API}/thumbnails/${scene.id}`}
