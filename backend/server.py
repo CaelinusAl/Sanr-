@@ -800,8 +800,27 @@ active_films: Dict[str, Dict[str, Any]] = {}
 
 class FilmConfig(BaseModel):
     duration: int = 5  # minutes
-    quality: str = "fast"  # fast, balanced, hollywood
-    workers: int = 5
+    quality: str = "standard"  # mobile, standard, cinema, premium
+    aspectRatio: str = "16:9"  # 16:9, 9:16, 1:1, 21:9
+    emotionalJourney: str = "hero"  # hero, tragedy, comedy, romance, mystery, horror, custom
+    workers: int = 3
+    upscale: bool = False
+
+# Aspect ratio to Sora 2 size mapping
+ASPECT_RATIO_SIZES = {
+    "16:9": "1280x720",
+    "9:16": "1024x1792",
+    "1:1": "1024x1024",
+    "21:9": "1792x1024"
+}
+
+# Quality to settings mapping
+QUALITY_SETTINGS = {
+    "mobile": {"size": "1024x1024", "duration": 4},
+    "standard": {"size": "1280x720", "duration": 4},
+    "cinema": {"size": "1792x1024", "duration": 8},
+    "premium": {"size": "1792x1024", "duration": 12}
+}
 
 class FilmGenerateRequest(BaseModel):
     story: str
