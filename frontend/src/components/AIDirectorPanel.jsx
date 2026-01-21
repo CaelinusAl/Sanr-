@@ -17,13 +17,13 @@ const ASPECT_RATIOS = [
   { value: '21:9', label: '21:9', desc: 'Cinematic Ultra-wide', icon: Monitor, size: '1792x1024' },
 ];
 
-// Duration Options
+// Duration Options - CORRECTED: scenes calculated for actual duration
 const DURATION_OPTIONS = [
-  { value: 1, label: '1 minute', scenes: 2, desc: 'Quick test' },
-  { value: 3, label: '3 minutes', scenes: 6, desc: 'Short film' },
-  { value: 5, label: '5 minutes', scenes: 10, desc: 'Standard' },
-  { value: 10, label: '10 minutes', scenes: 20, desc: 'Medium length' },
-  { value: 15, label: '15 minutes', scenes: 30, desc: 'Long film' },
+  { value: 1, label: '1 minute', scenes: 5, desc: 'Quick test' },      // 5 scenes x 12s = 60s
+  { value: 3, label: '3 minutes', scenes: 15, desc: 'Short film' },    // 15 scenes x 12s = 180s
+  { value: 5, label: '5 minutes', scenes: 25, desc: 'Standard' },      // 25 scenes x 12s = 300s
+  { value: 10, label: '10 minutes', scenes: 50, desc: 'Medium length' }, // 50 scenes x 12s = 600s
+  { value: 15, label: '15 minutes', scenes: 75, desc: 'Long film' },   // 75 scenes x 12s = 900s
 ];
 
 // Emotional Journey Presets
