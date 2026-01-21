@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 
 class CineCursorAPITester:
-    def __init__(self, base_url="https://filmcursor.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cinecursor.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
