@@ -37,6 +37,8 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [newProject, setNewProject] = useState({
     name: "",
@@ -46,6 +48,11 @@ export default function ProjectsPage() {
 
   useEffect(() => {
     fetchProjects();
+    // Check if first visit
+    const hasSeenOnboarding = localStorage.getItem("cinecursor_onboarding_complete");
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
   }, []);
 
   const fetchProjects = async () => {
