@@ -9,11 +9,11 @@ const QUALITY_OPTIONS = [
   { value: 'premium', label: '💎 Premium', desc: 'Highest quality + upscale', resolution: '1792x1024 → 1080p', time: '~30 min/scene', duration: 15, upscale: true, sceneDuration: '15s/scene' },
 ];
 
-// Aspect Ratio Options
+// Aspect Ratio Options - UPDATED: 1024x1024 no longer supported by Sora 2
 const ASPECT_RATIOS = [
   { value: '16:9', label: '16:9', desc: 'Widescreen', icon: RectangleHorizontal, size: '1280x720' },
   { value: '9:16', label: '9:16', desc: 'Portrait/TikTok', icon: Smartphone, size: '1024x1792' },
-  { value: '1:1', label: '1:1', desc: 'Square/Instagram', icon: Square, size: '1024x1024' },
+  { value: '1:1', label: '1:1', desc: 'Square (uses 16:9)', icon: Square, size: '1280x720' },
   { value: '21:9', label: '21:9', desc: 'Cinematic Ultra-wide', icon: Monitor, size: '1792x1024' },
 ];
 
