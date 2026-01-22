@@ -1228,8 +1228,12 @@ async def generate_scene_video(scene: dict, film_id: str, scene_index: int, qual
     else:
         video_size = settings['size']
     
-    # Get video duration based on quality (Sora 2 supports 5-20 seconds)
+    # Get video duration based on quality (Sora 2 supports 4, 8, 12 seconds)
     video_duration = settings['duration']
+    
+    # CRITICAL: Sora 2 only supports 4, 8, 12 seconds
+    if video_duration not in [4, 8, 12]:
+        video_duration = 12  # Default to 12 if invalid
     
     video_filename = f"{film_id}_scene_{scene_index + 1}.mp4"
     video_path = VIDEOS_DIR / video_filename
