@@ -976,6 +976,228 @@ async def create_film_plan(story: str, duration: int, max_retries: int = 3) -> d
     raise Exception(f"Failed to generate film plan after {max_retries} attempts: {str(last_error)}")
 
 
+# ============ PHASE 1: CHARACTER CONSISTENCY SYSTEM ============
+
+def build_character_template(character: dict) -> str:
+    """Build a detailed character template for consistent video generation"""
+    specs = character.get('physicalSpecs', {})
+    colors = specs.get('colors', {})
+    
+    template = f"""
+[CHARACTER: {character.get('name', 'Unknown')}]
+[ID: {character.get('id', 'char_unknown')}]
+
+=== CRITICAL PHYSICAL SPECIFICATIONS (MUST MATCH EXACTLY) ===
+HEIGHT & BUILD: {specs.get('height', 'medium height')}, {specs.get('build', 'average build')}
+HEAD: {specs.get('head', 'standard features')}
+BODY: {specs.get('body', 'normal proportions')}
+CLOTHING: {specs.get('clothing', 'casual attire')}
+UNIQUE FEATURES: {specs.get('uniqueFeatures', 'none specified')}
+
+=== COLOR PALETTE (DO NOT DEVIATE) ===
+PRIMARY COLOR: {colors.get('primary', '#808080')}
+SECONDARY COLOR: {colors.get('secondary', '#404040')}
+TERTIARY COLOR: {colors.get('tertiary', '#C0C0C0')}
+
+=== MOVEMENT & LIGHTING ===
+MOVEMENT STYLE: {character.get('movementStyle', 'natural movement')}
+LIGHTING PROFILE: {character.get('lightingProfile', 'standard lighting')}
+
+*** THIS IS A RECURRING CHARACTER - MAINTAIN EXACT APPEARANCE IN EVERY SCENE ***
+"""
+    return template.strip()
+
+
+def build_scene_prompt_with_character_template(
+    scene: dict, 
+    characters: list, 
+    visual_style: dict = None
+) -> str:
+    """Build a comprehensive scene prompt with character templates for consistency"""
+    
+    # Find characters in this scene
+    scene_char_ids = scene.get('characters', [])
+    
+    # Build character templates for characters in this scene
+    char_templates = []
+    for char in characters:
+        char_id = char.get('id') or char.get('name')
+        if char_id in scene_char_ids or char.get('name') in scene_char_ids:
+            char_templates.append(build_character_template(char))
+    
+    # Build the prompt
+    prompt_sections = []
+    
+    # Add character templates first (most important for consistency)
+    if char_templates:
+        prompt_sections.append("=== CHARACTERS IN THIS SCENE (MUST MATCH EXACTLY) ===")
+        prompt_sections.extend(char_templates)
+        prompt_sections.append("")
+    
+    # Add visual style consistency
+    if visual_style:
+        style_desc = []
+        if visual_style.get('colorPalette'):
+            style_desc.append(f"Color Palette: {', '.join(visual_style['colorPalette'][:3])}")
+        if visual_style.get('lighting'):
+            style_desc.append(f"Overall Lighting: {visual_style['lighting']}")
+        if visual_style.get('cinematography'):
+            style_desc.append(f"Cinematography: {visual_style['cinematography']}")
+        
+        if style_desc:
+            prompt_sections.append("=== VISUAL STYLE ===")
+            prompt_sections.extend(style_desc)
+            prompt_sections.append("")
+    
+    # Add scene-specific details
+    prompt_sections.append("=== SCENE ACTION ===")
+    prompt_sections.append(scene.get('action', 'Character in scene'))
+    prompt_sections.append("")
+    
+    prompt_sections.append("=== SCENE DETAILS ===")
+    prompt_sections.append(f"Location: {scene.get('location', 'interior')}")
+    prompt_sections.append(f"Time of Day: {scene.get('timeOfDay', 'day')}")
+    prompt_sections.append(f"Weather: {scene.get('weather', 'clear')}")
+    prompt_sections.append(f"Mood: {scene.get('mood', 'neutral')}")
+    prompt_sections.append(f"Camera Angle: {scene.get('cameraAngle', 'medium shot')}")
+    prompt_sections.append(f"Lighting: {scene.get('lighting', 'natural')}")
+    
+    return "\n".join(prompt_sections)
+
+
+async def generate_scene_video_with_consistency(
+    scene: dict, 
+    film_id: str, 
+    scene_index: int, 
+    quality: str, 
+    aspect_ratio: str = "16:9",
+    characters: list = None,
+    visual_style: dict = None,
+    versions: int = 1,
+    max_retries: int = 2
+) -> dict:
+    """Generate video with character consistency - optionally multiple versions"""
+    
+    # Build prompt with character templates
+    if characters:
+        video_prompt = build_scene_prompt_with_character_template(scene, characters, visual_style)
+    else:
+        # Fallback to basic prompt
+        prompt_parts = [
+            scene.get('action', ''),
+            f"Setting: {scene.get('location', '')}",
+            f"Time: {scene.get('timeOfDay', 'day')}",
+            f"Mood: {scene.get('mood', '')}",
+            f"Camera: {scene.get('cameraAngle', 'medium shot')}",
+            f"Lighting: {scene.get('lighting', 'natural')}"
+        ]
+        if scene.get('characters'):
+            prompt_parts.append(f"Characters: {', '.join(scene['characters'])}")
+        video_prompt = ". ".join(filter(None, prompt_parts))
+    
+    # Get settings
+    settings = QUALITY_SETTINGS.get(quality, QUALITY_SETTINGS['standard'])
+    
+    if quality in ['mobile', 'standard']:
+        video_size = ASPECT_RATIO_SIZES.get(aspect_ratio, "1280x720")
+    else:
+        video_size = settings['size']
+    
+    video_duration = settings['duration']
+    
+    # Determine how many versions to generate
+    versions_to_generate = max(1, min(versions, 5))  # Cap at 5
+    
+    logger.info(f"[Scene {scene_index + 1}] Generating {versions_to_generate} version(s) for consistency selection")
+    
+    generated_versions = []
+    
+    for ver in range(versions_to_generate):
+        video_filename = f"{film_id}_scene_{scene_index + 1}_v{ver + 1}.mp4"
+        video_path = VIDEOS_DIR / video_filename
+        
+        last_error = None
+        
+        for attempt in range(max_retries):
+            try:
+                logger.info(f"[Scene {scene_index + 1}] Version {ver + 1}/{versions_to_generate} (attempt {attempt + 1}/{max_retries})")
+                
+                video_gen = OpenAIVideoGeneration(
+                    api_key=os.environ.get('EMERGENT_LLM_KEY')
+                )
+                
+                video_bytes = await asyncio.to_thread(
+                    video_gen.text_to_video,
+                    prompt=video_prompt,
+                    model="sora-2",
+                    size=video_size,
+                    duration=video_duration,
+                    max_wait_time=900
+                )
+                
+                if video_bytes:
+                    await asyncio.to_thread(video_gen.save_video, video_bytes, str(video_path))
+                    
+                    generated_versions.append({
+                        'version': ver + 1,
+                        'video_path': str(video_path),
+                        'video_url': f"/api/film-videos/{video_filename}",
+                        'success': True
+                    })
+                    break
+                else:
+                    raise Exception("Video generation returned no data")
+                    
+            except Exception as e:
+                last_error = e
+                logger.warning(f"[Scene {scene_index + 1}] Version {ver + 1} attempt {attempt + 1} failed: {str(e)}")
+                
+                if attempt < max_retries - 1:
+                    wait_time = (attempt + 1) * 10
+                    await asyncio.sleep(wait_time)
+        
+        if not any(v['version'] == ver + 1 for v in generated_versions):
+            generated_versions.append({
+                'version': ver + 1,
+                'success': False,
+                'error': str(last_error) if last_error else "Unknown error"
+            })
+    
+    # Select best version (for now, use first successful one)
+    # In future: implement AI-based consistency scoring
+    successful_versions = [v for v in generated_versions if v.get('success')]
+    
+    if successful_versions:
+        # Use the first successful version as the "best"
+        best = successful_versions[0]
+        
+        # Rename to final filename (without version suffix)
+        final_filename = f"{film_id}_scene_{scene_index + 1}.mp4"
+        final_path = VIDEOS_DIR / final_filename
+        
+        # Copy best version to final
+        import shutil
+        shutil.copy(best['video_path'], str(final_path))
+        
+        return {
+            'success': True,
+            'video_path': str(final_path),
+            'video_url': f"/api/film-videos/{final_filename}",
+            'duration': video_duration,
+            'size': video_size,
+            'versions_generated': len(generated_versions),
+            'versions_successful': len(successful_versions),
+            'selected_version': best['version']
+        }
+    else:
+        return {
+            'success': False,
+            'error': 'All version generation attempts failed',
+            'versions_generated': len(generated_versions),
+            'versions_successful': 0
+        }
+
+
 async def generate_scene_video(scene: dict, film_id: str, scene_index: int, quality: str, aspect_ratio: str = "16:9", max_retries: int = 2) -> dict:
     """Generate video for a single scene using Sora 2 with retry logic"""
     # Create detailed prompt for video generation
