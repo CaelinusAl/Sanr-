@@ -1278,15 +1278,16 @@ async def generate_scene_video(scene: dict, film_id: str, scene_index: int, qual
 
 
 async def generate_film_task(film_id: str, story: str, config: FilmConfig):
-    """Background task to generate complete film"""
+    """Background task to generate complete film with character consistency"""
     try:
         film_data = active_films.get(film_id, {})
         film_data['stage'] = 'pre-production'
         film_data['progress'] = 0
+        film_data['characterConsistency'] = config.characterConsistency
         active_films[film_id] = film_data
         
         # ===== PHASE 1: PRE-PRODUCTION (0-20%) =====
-        logger.info(f"[Film {film_id}] Starting pre-production")
+        logger.info(f"[Film {film_id}] Starting pre-production (Character Consistency: {config.characterConsistency})")
         
         film_data['progress'] = 5
         active_films[film_id] = film_data
@@ -1297,10 +1298,26 @@ async def generate_film_task(film_id: str, story: str, config: FilmConfig):
         film_data['progress'] = 15
         active_films[film_id] = film_data
         
+        # Extract characters and visual style for consistency
+        characters = film_plan.get('characters', [])
+        visual_style = film_plan.get('visualStyle', {})
+        
+        # Log character templates if consistency is enabled
+        if config.characterConsistency and characters:
+            logger.info(f"[Film {film_id}] Building character templates for {len(characters)} character(s)")
+            for char in characters:
+                template = build_character_template(char)
+                logger.info(f"[Film {film_id}] Character Template:\n{template[:500]}...")
+        
         # Save to database
         await db.films.update_one(
             {"id": film_id},
-            {"$set": {"film_plan": film_plan, "updated_at": datetime.now(timezone.utc).isoformat()}},
+            {"$set": {
+                "film_plan": film_plan, 
+                "character_consistency": config.characterConsistency,
+                "versions_per_scene": config.versionsPerScene,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }},
             upsert=True
         )
         
@@ -1341,15 +1358,30 @@ async def generate_film_task(film_id: str, story: str, config: FilmConfig):
                         'id': i,
                         'status': 'generating',
                         'currentScene': scene_idx + 1,
-                        'progress': 0
+                        'progress': 0,
+                        'versions': config.versionsPerScene if config.characterConsistency else 1
                     }
             film_data['workers'] = workers
             active_films[film_id] = film_data
             
-            # Generate scenes in parallel
+            # Generate scenes in parallel - use consistency system if enabled
             tasks = []
             for scene_idx, scene in batch:
-                task = generate_scene_video(scene, film_id, scene_idx, config.quality, config.aspectRatio)
+                if config.characterConsistency:
+                    # Use enhanced generation with character templates
+                    task = generate_scene_video_with_consistency(
+                        scene=scene,
+                        film_id=film_id,
+                        scene_index=scene_idx,
+                        quality=config.quality,
+                        aspect_ratio=config.aspectRatio,
+                        characters=characters,
+                        visual_style=visual_style,
+                        versions=config.versionsPerScene
+                    )
+                else:
+                    # Use basic generation
+                    task = generate_scene_video(scene, film_id, scene_idx, config.quality, config.aspectRatio)
                 tasks.append((scene_idx, scene, task))
             
             # Wait for batch to complete
@@ -1362,7 +1394,9 @@ async def generate_film_task(film_id: str, story: str, config: FilmConfig):
                     'video_url': result.get('video_url'),
                     'video_path': result.get('video_path'),
                     'duration': result.get('duration', scene.get('duration', 4)),
-                    'error': result.get('error')
+                    'error': result.get('error'),
+                    'versions_generated': result.get('versions_generated', 1),
+                    'selected_version': result.get('selected_version', 1)
                 }
                 completed_scenes.append(scene_data)
                 
