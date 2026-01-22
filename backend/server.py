@@ -840,7 +840,7 @@ class FilmPlan(BaseModel):
     visualStyle: Dict[str, Any]
     audioStyle: Dict[str, Any]
 
-FILM_PLAN_PROMPT = '''You are a Hollywood screenwriter and director.
+FILM_PLAN_PROMPT = '''You are a Hollywood screenwriter and director specializing in AI-generated films.
 
 USER STORY:
 {story}
@@ -849,6 +849,10 @@ TARGET DURATION: {duration} minutes
 REQUIRED SCENES: {scene_count} scenes (each scene will be 12 seconds of video)
 
 IMPORTANT: You MUST create EXACTLY {scene_count} scenes to achieve the target duration.
+
+CRITICAL FOR CHARACTER CONSISTENCY:
+For each character, provide EXTREMELY DETAILED physical specifications that will be used IDENTICALLY across all scenes.
+Be specific about: exact colors, proportions, unique identifiers, clothing details.
 
 Create a detailed film breakdown as JSON. Return ONLY valid JSON, no markdown:
 
@@ -866,11 +870,26 @@ Create a detailed film breakdown as JSON. Return ONLY valid JSON, no markdown:
   ],
   "characters": [
     {{
+      "id": "char_001",
       "name": "Character name",
       "age": 35,
-      "description": "Detailed physical description for AI video generation",
       "role": "protagonist",
-      "arc": "Character journey"
+      "arc": "Character journey",
+      "physicalSpecs": {{
+        "height": "tall/medium/short with specific description",
+        "build": "slim/athletic/muscular/average - detailed",
+        "head": "Face shape, eye color, hair color/style/length, facial hair, skin tone",
+        "body": "Posture, proportions, any distinctive body features",
+        "clothing": "EXACT outfit description - colors, style, textures, accessories",
+        "uniqueFeatures": "Scars, tattoos, glasses, jewelry, anything distinctive",
+        "colors": {{
+          "primary": "#hexcode - main clothing/fur/skin color",
+          "secondary": "#hexcode - accent color",
+          "tertiary": "#hexcode - detail color"
+        }}
+      }},
+      "movementStyle": "How they move - confident stride, cautious steps, graceful, etc",
+      "lightingProfile": "How light interacts with character - skin reflectivity, etc"
     }}
   ],
   "scenes": [
@@ -880,7 +899,7 @@ Create a detailed film breakdown as JSON. Return ONLY valid JSON, no markdown:
       "location": "Specific location",
       "timeOfDay": "night",
       "weather": "clear",
-      "characters": ["Character Name"],
+      "characters": ["char_001"],
       "action": "Detailed action description for video generation - be specific about movements, expressions, camera angles",
       "cameraAngle": "wide establishing shot / medium shot / close-up / tracking shot / etc",
       "mood": "mysterious, tense",
@@ -901,7 +920,7 @@ Create a detailed film breakdown as JSON. Return ONLY valid JSON, no markdown:
   }}
 }}
 
-Make scenes detailed and specific. Each scene should be a clear, filmable moment with specific actions and camera work.'''
+REMEMBER: Character physicalSpecs MUST be detailed enough to recreate the EXACT same character in every scene. This is critical for visual consistency.'''
 
 
 async def create_film_plan(story: str, duration: int, max_retries: int = 3) -> dict:
