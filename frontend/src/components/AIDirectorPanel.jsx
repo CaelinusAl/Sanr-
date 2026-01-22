@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Film, Sparkles, Clock, Zap, Settings, ChevronRight, Loader2, Monitor, Smartphone, Square, RectangleHorizontal, Heart, Palette } from 'lucide-react';
+import { Film, Sparkles, Clock, Zap, Settings, ChevronRight, Loader2, Monitor, Smartphone, Square, RectangleHorizontal, Heart, Palette, Users, Layers } from 'lucide-react';
 
 // Quality Presets - Updated for proper scene duration
 const QUALITY_OPTIONS = [
@@ -138,7 +138,10 @@ export default function AIDirectorPanel({ onStartGeneration, isGenerating }) {
     aspectRatio: '16:9',
     emotionalJourney: 'hero',
     workers: 3,
-    upscale: false
+    upscale: false,
+    // PHASE 1: Character Consistency
+    characterConsistency: true,
+    versionsPerScene: 1
   });
   const [activeTab, setActiveTab] = useState('story');
 
