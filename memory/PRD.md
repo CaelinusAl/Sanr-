@@ -231,6 +231,17 @@ CineCursor is a comprehensive AI-powered video production platform inspired by C
 - **NEW: Cost Estimator** - Shows estimated API costs before generation
 - **NEW: Worker Slider** - 1-5 parallel workers for speed/cost balance
 
+### ✅ CineCursor V2.2 - Film History & Character Consistency (January 22, 2026)
+- **NEW: Film History Page** - `/film-history` route to view all generated films
+- **NEW: Video Playback** - Watch completed films directly in the browser
+- **NEW: Film Management** - Download and delete generated films
+- **NEW: PHASE 1 Character Consistency** - Template-based character system for visual consistency
+  - Detailed physicalSpecs in film plan (height, build, head, body, clothing, colors)
+  - Character templates injected into every scene prompt
+  - Multi-generation option (1x, 2x, 3x versions per scene)
+  - Best version selection for consistency
+- **FIX: Missing Video URLs** - Database migration to fix films with missing final_video_url
+
 ---
 
 ## 10. Upcoming Features (Backlog)
@@ -241,13 +252,18 @@ CineCursor is a comprehensive AI-powered video production platform inspired by C
 - [ ] Timeline drag-drop reordering
 
 ### P2 - Medium Priority
+- [ ] **PHASE 2: Style Reference** - Runway Gen-3 API with reference images
+- [ ] Scene transitions implementation with FFmpeg (fade, dissolve, wipe)
+- [ ] Color correction/grading for film consistency
 - [ ] Character face consistency (IP-Adapter)
-- [ ] Scene transitions implementation with FFmpeg
 - [ ] Continuity checking (VAP) with AI analysis
 - [ ] Multi-track timeline editing
 - [ ] Audio track support
+- [ ] Persist film generation state to MongoDB (currently in-memory)
 
-### P3 - Future
+### P3 - Future (PHASE 3 Hollywood)
+- [ ] **PHASE 3: Validation AI** - AI-based consistency scoring
+- [ ] Problematic scene flagging with manual review
 - [ ] Cloud sync (S3)
 - [ ] Team collaboration
 - [ ] Plugin system
