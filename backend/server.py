@@ -805,6 +805,9 @@ class FilmConfig(BaseModel):
     emotionalJourney: str = "hero"  # hero, tragedy, comedy, romance, mystery, horror, custom
     workers: int = 3
     upscale: bool = False
+    # PHASE 1: Character Consistency Settings
+    characterConsistency: bool = True  # Enable character template system
+    versionsPerScene: int = 3  # Generate multiple versions, select best (1-5)
 
 # Aspect ratio to Sora 2 size mapping
 ASPECT_RATIO_SIZES = {
