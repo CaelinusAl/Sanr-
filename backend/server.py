@@ -809,18 +809,18 @@ class FilmConfig(BaseModel):
     characterConsistency: bool = True  # Enable character template system
     versionsPerScene: int = 3  # Generate multiple versions, select best (1-5)
 
-# Aspect ratio to Sora 2 size mapping
+# Aspect ratio to Sora 2 size mapping - UPDATED: 1024x1024 no longer supported
 ASPECT_RATIO_SIZES = {
     "16:9": "1280x720",
-    "9:16": "1024x1792",
-    "1:1": "1024x1024",
+    "9:16": "1024x1792",  # Portrait
+    "1:1": "1280x720",    # Square not supported, use 16:9 as fallback
     "21:9": "1792x1024"
 }
 
 # Quality to settings mapping - Sora 2 supports ONLY 4, 8, 12 seconds
-# Using 12 seconds as maximum for proper film duration
+# Supported sizes: 720x1280, 1280x720, 1024x1792, 1792x1024
 QUALITY_SETTINGS = {
-    "mobile": {"size": "1024x1024", "duration": 8},      # 8 sec per scene
+    "mobile": {"size": "1280x720", "duration": 8},       # 8 sec per scene (was 1024x1024)
     "standard": {"size": "1280x720", "duration": 12},    # 12 sec per scene
     "cinema": {"size": "1792x1024", "duration": 12},     # 12 sec per scene
     "premium": {"size": "1792x1024", "duration": 12}     # 12 sec per scene (max quality)
