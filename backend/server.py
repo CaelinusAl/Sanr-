@@ -817,13 +817,13 @@ ASPECT_RATIO_SIZES = {
     "21:9": "1792x1024"
 }
 
-# Quality to settings mapping - Sora 2 supports 5-20 seconds
-# Using 12 seconds as standard for proper film duration
+# Quality to settings mapping - Sora 2 supports ONLY 4, 8, 12 seconds
+# Using 12 seconds as maximum for proper film duration
 QUALITY_SETTINGS = {
     "mobile": {"size": "1024x1024", "duration": 8},      # 8 sec per scene
     "standard": {"size": "1280x720", "duration": 12},    # 12 sec per scene
     "cinema": {"size": "1792x1024", "duration": 12},     # 12 sec per scene
-    "premium": {"size": "1792x1024", "duration": 15}     # 15 sec per scene (max quality)
+    "premium": {"size": "1792x1024", "duration": 12}     # 12 sec per scene (max quality)
 }
 
 class FilmGenerateRequest(BaseModel):
