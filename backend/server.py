@@ -1105,6 +1105,10 @@ async def generate_scene_video_with_consistency(
     
     video_duration = settings['duration']
     
+    # CRITICAL: Sora 2 only supports 4, 8, 12 seconds
+    if video_duration not in [4, 8, 12]:
+        video_duration = 12  # Default to 12 if invalid
+    
     # Determine how many versions to generate
     versions_to_generate = max(1, min(versions, 5))  # Cap at 5
     
