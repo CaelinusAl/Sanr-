@@ -382,6 +382,64 @@ Include:
         {/* TAB 3: ADVANCED */}
         {activeTab === 'advanced' && (
           <>
+            {/* Character Consistency - PHASE 1 */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300 flex items-center gap-2">
+                <Users className="w-4 h-4 text-cyan-400" />
+                Character Consistency
+                <span className="px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 text-xs rounded">PHASE 1</span>
+              </label>
+              <div className="p-3 bg-[#2d2d2d] rounded-lg border border-[#404040] space-y-3">
+                <label className="flex items-center justify-between cursor-pointer">
+                  <div>
+                    <div className="font-medium text-zinc-300">Enable Character Templates</div>
+                    <div className="text-xs text-zinc-500">Detailed character specs for consistent appearance</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={config.characterConsistency}
+                    onChange={(e) => setConfig({ ...config, characterConsistency: e.target.checked })}
+                    disabled={isGenerating}
+                    className="w-5 h-5 rounded bg-[#404040] border-none accent-cyan-500"
+                  />
+                </label>
+                
+                {config.characterConsistency && (
+                  <div className="pt-2 border-t border-[#404040]">
+                    <label className="text-xs text-zinc-400 flex items-center gap-2 mb-2">
+                      <Layers className="w-3 h-3" />
+                      Versions per Scene (Multi-generation)
+                    </label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3].map((v) => (
+                        <button
+                          key={v}
+                          onClick={() => setConfig({ ...config, versionsPerScene: v })}
+                          disabled={isGenerating}
+                          className={`flex-1 py-2 px-3 rounded-lg border text-center transition-all ${
+                            config.versionsPerScene === v
+                              ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300'
+                              : 'bg-[#3d3d3d] border-[#505050] text-zinc-400 hover:border-zinc-500'
+                          } disabled:opacity-50`}
+                        >
+                          <div className="font-bold">{v}x</div>
+                          <div className="text-xs">
+                            {v === 1 ? 'Standard' : v === 2 ? 'Better' : 'Best'}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-zinc-500 mt-2">
+                      {config.versionsPerScene > 1 
+                        ? `Generate ${config.versionsPerScene} versions of each scene, select the most consistent one. Increases cost ${config.versionsPerScene}x.`
+                        : 'Single generation per scene (default).'
+                      }
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Parallel Workers */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-zinc-300">Parallel AI Workers</label>
